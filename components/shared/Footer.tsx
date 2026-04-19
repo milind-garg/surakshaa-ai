@@ -37,7 +37,7 @@ export default function Footer() {
               <span className="font-bold text-xl">Suraksha AI</span>
             </div>
             <p className="text-blue-200 text-sm leading-relaxed">
-              AI-powered insurance intelligence for Indian families.
+              AI-powered insurance intelligence for Indian families. 
               Understand your policies in plain Hindi & English.
             </p>
             <p className="text-blue-200 text-sm font-hindi">

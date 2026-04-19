@@ -9,6 +9,8 @@ import { Badge } from "@/components/ui/badge";
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
 
+// ── Data ──────────────────────────────────────────────────────────────────────
+
 const features = [
   {
     icon: Upload,
@@ -118,6 +120,8 @@ const testimonials = [
   },
 ];
 
+// ── Page ──────────────────────────────────────────────────────────────────────
+
 export default function HomePage() {
   return (
     <div className="min-h-screen bg-white dark:bg-gray-950">
@@ -125,6 +129,7 @@ export default function HomePage() {
 
       {/* ── HERO SECTION ── */}
       <section className="relative pt-24 pb-20 overflow-hidden">
+        {/* Background gradient blobs */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-40 -right-40 w-96 h-96 bg-blue-100 dark:bg-blue-900/20 rounded-full blur-3xl opacity-60" />
           <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-orange-100 dark:bg-orange-900/20 rounded-full blur-3xl opacity-60" />
@@ -132,6 +137,7 @@ export default function HomePage() {
 
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-4xl mx-auto">
+            {/* Badge */}
             <div className="inline-flex items-center gap-2 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-full px-4 py-2 mb-6">
               <Zap className="w-4 h-4 text-[#FF6B35]" />
               <span className="text-sm font-medium text-[#1E3A5F] dark:text-blue-300">
@@ -139,6 +145,7 @@ export default function HomePage() {
               </span>
             </div>
 
+            {/* Headline */}
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-[#1E3A5F] dark:text-white leading-tight mb-6">
               Your Insurance,{" "}
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF6B35] to-[#f59e0b]">
@@ -146,16 +153,19 @@ export default function HomePage() {
               </span>
             </h1>
 
+            {/* Hindi Subtitle */}
             <p className="text-2xl font-hindi text-gray-500 dark:text-gray-400 mb-4">
               बीमा को समझें — हिंदी में, आसान भाषा में
             </p>
 
+            {/* Subheadline */}
             <p className="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto mb-10 leading-relaxed">
               Upload your policy. Our AI reads it, explains it in plain Hindi or
               English, finds coverage gaps, and recommends the best plans for
               your family — all for free.
             </p>
 
+            {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link href="/signup">
                 <Button
@@ -178,6 +188,7 @@ export default function HomePage() {
               </Link>
             </div>
 
+            {/* Trust signals */}
             <div className="flex flex-wrap justify-center gap-6 mt-10">
               {["100% Free", "No Spam", "Hindi Support", "Secure & Private"].map(
                 (item) => (
@@ -306,6 +317,7 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {steps.map((step, index) => (
               <div key={step.step} className="relative">
+                {/* Connector line */}
                 {index < steps.length - 1 && (
                   <div className="hidden lg:block absolute top-10 left-full w-full h-0.5 bg-gradient-to-r from-[#1E3A5F] to-transparent z-0" />
                 )}

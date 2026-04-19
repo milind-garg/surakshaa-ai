@@ -21,6 +21,10 @@ export default function Navbar() {
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
 
+  const toggleLanguage = () => {
+    setLanguage((prev) => (prev === "en" ? "hi" : "en"));
+  };
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -61,10 +65,11 @@ export default function Navbar() {
 
           {/* Right Side Actions */}
           <div className="hidden md:flex items-center gap-2">
+            {/* Language Toggle */}
             <Button
               variant="ghost"
               size="sm"
-              onClick={() => setLanguage((prev) => (prev === "en" ? "hi" : "en"))}
+              onClick={toggleLanguage}
               className="gap-1 text-gray-600 dark:text-gray-300"
             >
               <Globe className="w-4 h-4" />
@@ -73,6 +78,7 @@ export default function Navbar() {
               </span>
             </Button>
 
+            {/* Theme Toggle */}
             <Button
               variant="ghost"
               size="icon"
@@ -118,7 +124,7 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 px-4 py-4 space-y-2">
+        <div className="md:hidden border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 px-4 py-4 space-y-2 animate-fade-in">
           {navLinks.map((link) => (
             <Link
               key={link.href}
@@ -136,7 +142,10 @@ export default function Navbar() {
               </Button>
             </Link>
             <Link href="/signup" className="flex-1">
-              <Button className="w-full bg-[#1E3A5F] text-white" size="sm">
+              <Button
+                className="w-full bg-[#1E3A5F] text-white"
+                size="sm"
+              >
                 Get Started
               </Button>
             </Link>
