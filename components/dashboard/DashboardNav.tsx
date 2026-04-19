@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Shield, Bell, Search, Menu } from "lucide-react";
+import { Shield, Bell, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -14,20 +14,10 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { createClient } from "@/lib/supabase/client";
-import { useRouter } from "next/navigation";
+import { signOut } from "@/app/(auth)/actions";
 import type { User } from "@supabase/supabase-js";
 
 export default function DashboardNav({ user }: { user: User }) {
-  const router = useRouter();
-  const supabase = createClient();
-
-  const handleSignOut = async () => {
-    await supabase.auth.signOut();
-    router.push("/");
-    router.refresh();
-  };
-
   const initials = user.email?.slice(0, 2).toUpperCase() ?? "SA";
 
   return (
@@ -57,13 +47,11 @@ export default function DashboardNav({ user }: { user: User }) {
 
         {/* Right Side */}
         <div className="flex items-center gap-2">
-          {/* Notifications */}
           <Button variant="ghost" size="icon" className="relative">
             <Bell className="w-5 h-5 text-gray-600 dark:text-gray-300" />
             <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-[#FF6B35] rounded-full" />
           </Button>
 
-          {/* User Menu */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="gap-2 rounded-xl">
@@ -89,11 +77,15 @@ export default function DashboardNav({ user }: { user: User }) {
                 <Link href="/dashboard">Dashboard</Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={handleSignOut}
-                className="text-red-600 focus:text-red-600"
-              >
-                Sign Out
+              <DropdownMenuItem asChild>
+                <form action={signOut}>
+                  <button
+                    type="submit"
+                    className="w-full text-left text-red-600 focus:text-red-600 text-sm"
+                  >
+                    Sign Out
+                  </button>
+                </form>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
