@@ -2,8 +2,14 @@
 
 import { useState } from "react";
 import {
-  Shield, Star, CheckCircle, TrendingUp,
-  ChevronDown, ChevronUp, Award, Zap,
+  Shield,
+  Star,
+  CheckCircle,
+  TrendingUp,
+  ChevronDown,
+  ChevronUp,
+  Award,
+  Zap,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -21,6 +27,10 @@ const typeColors: Record<string, string> = {
   life: "bg-blue-50 text-blue-700 border-blue-200",
   term: "bg-purple-50 text-purple-700 border-purple-200",
   vehicle: "bg-orange-50 text-orange-700 border-orange-200",
+  travel: "bg-sky-50 text-sky-700 border-sky-200",
+  home: "bg-yellow-50 text-yellow-700 border-yellow-200",
+  family_floater: "bg-teal-50 text-teal-700 border-teal-200",
+  critical_illness: "bg-red-50 text-red-700 border-red-200",
   other: "bg-gray-50 text-gray-700 border-gray-200",
 };
 
@@ -62,7 +72,7 @@ export default function RecommendationCards({
               "overflow-hidden border transition-all duration-200",
               rec.rank === 1
                 ? "border-yellow-300 shadow-md"
-                : "border-gray-100 dark:border-gray-800"
+                : "border-gray-100 dark:border-gray-800",
             )}
           >
             {/* Card Header */}
@@ -71,7 +81,7 @@ export default function RecommendationCards({
                 "p-4 cursor-pointer",
                 rec.rank === 1
                   ? "bg-gradient-to-r from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20"
-                  : "bg-white dark:bg-gray-900"
+                  : "bg-white dark:bg-gray-900",
               )}
               onClick={() => setExpandedId(isExpanded ? null : rec.rank)}
             >
@@ -80,7 +90,7 @@ export default function RecommendationCards({
                 <div
                   className={cn(
                     "w-8 h-8 rounded-xl flex items-center justify-center text-xs font-bold shrink-0",
-                    rankBadge[rec.rank] ?? "bg-gray-100 text-gray-600"
+                    rankBadge[rec.rank] ?? "bg-gray-100 text-gray-600",
                   )}
                 >
                   {rec.rank === 1 ? (
@@ -105,7 +115,7 @@ export default function RecommendationCards({
                       <Badge
                         className={cn(
                           "text-xs border",
-                          typeColors[rec.policy_type] ?? typeColors.other
+                          typeColors[rec.policy_type] ?? typeColors.other,
                         )}
                       >
                         {rec.policy_type}
@@ -207,7 +217,7 @@ export default function RecommendationCards({
                   onClick={() =>
                     window.open(
                       `https://www.google.com/search?q=${encodeURIComponent(rec.policy_name + " " + rec.insurer + " India")}`,
-                      "_blank"
+                      "_blank",
                     )
                   }
                 >
@@ -220,7 +230,8 @@ export default function RecommendationCards({
       })}
 
       <p className="text-xs text-gray-400 text-center pt-1">
-        * Recommendations are AI-generated. Always verify with the insurer. Not financial advice.
+        * Recommendations are AI-generated. Always verify with the insurer. Not
+        financial advice.
       </p>
     </div>
   );

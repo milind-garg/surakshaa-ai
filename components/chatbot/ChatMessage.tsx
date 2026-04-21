@@ -31,7 +31,7 @@ export default function ChatMessage({ message }: ChatMessageProps) {
     <div
       className={cn(
         "flex gap-3 animate-fade-in",
-        isUser ? "flex-row-reverse" : "flex-row"
+        isUser ? "flex-row-reverse" : "flex-row",
       )}
     >
       {/* Avatar */}
@@ -40,7 +40,7 @@ export default function ChatMessage({ message }: ChatMessageProps) {
           "w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mt-1",
           isUser
             ? "bg-[#1E3A5F]"
-            : "bg-gradient-to-br from-[#FF6B35] to-[#f59e0b]"
+            : "bg-gradient-to-br from-[#FF6B35] to-[#f59e0b]",
         )}
       >
         {isUser ? (
@@ -54,7 +54,7 @@ export default function ChatMessage({ message }: ChatMessageProps) {
       <div
         className={cn(
           "max-w-[80%] space-y-2",
-          isUser ? "items-end" : "items-start"
+          isUser ? "items-end" : "items-start",
         )}
       >
         <div
@@ -62,13 +62,18 @@ export default function ChatMessage({ message }: ChatMessageProps) {
             "rounded-2xl px-4 py-3 text-sm leading-relaxed",
             isUser
               ? "bg-[#1E3A5F] text-white rounded-tr-sm"
-              : "bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 text-gray-800 dark:text-gray-200 rounded-tl-sm shadow-sm"
+              : "bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 text-gray-800 dark:text-gray-200 rounded-tl-sm shadow-sm",
           )}
         >
           {isLoading ? (
             <TypingIndicator />
           ) : (
-            <div className="whitespace-pre-wrap">{message.content}</div>
+            <div className="whitespace-pre-wrap">
+              {message.content
+                .replace(/```(?:json)?\s*[\s\S]*?```/gi, "")
+                .replace(/\n{3,}/g, "\n\n")
+                .trim()}
+            </div>
           )}
         </div>
 
@@ -81,10 +86,12 @@ export default function ChatMessage({ message }: ChatMessageProps) {
 
         {/* Timestamp */}
         {!isLoading && (
+          // Replace with:
           <p
+            suppressHydrationWarning
             className={cn(
               "text-xs text-gray-400",
-              isUser ? "text-right" : "text-left"
+              isUser ? "text-right" : "text-left",
             )}
           >
             {message.timestamp.toLocaleTimeString("en-IN", {

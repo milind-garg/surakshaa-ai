@@ -8,7 +8,12 @@ import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import toast from "react-hot-toast";
 
-export type UploadStage = "idle" | "uploading" | "processing" | "success" | "error";
+export type UploadStage =
+  | "idle"
+  | "uploading"
+  | "processing"
+  | "success"
+  | "error";
 
 export interface UploadedPolicy {
   id: string;
@@ -21,7 +26,9 @@ export default function UploadContainer() {
   const { user } = useAuth();
   const [stage, setStage] = useState<UploadStage>("idle");
   const [progress, setProgress] = useState(0);
-  const [uploadedPolicy, setUploadedPolicy] = useState<UploadedPolicy | null>(null);
+  const [uploadedPolicy, setUploadedPolicy] = useState<UploadedPolicy | null>(
+    null,
+  );
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const supabase = createClient();
 
@@ -45,7 +52,9 @@ export default function UploadContainer() {
       const isPdf = fileExt === "pdf";
 
       if (!isImage && !isPdf) {
-        throw new Error("Only PDF and image files (JPG, PNG, WebP) are supported.");
+        throw new Error(
+          "Only PDF and image files (JPG, PNG, WebP) are supported.",
+        );
       }
 
       const fileType = isPdf ? "pdf" : "image";
@@ -61,7 +70,8 @@ export default function UploadContainer() {
           upsert: false,
         });
 
-      if (storageError) throw new Error(`Storage error: ${storageError.message}`);
+      if (storageError)
+        throw new Error(`Storage error: ${storageError.message}`);
 
       setProgress(50);
 
@@ -94,41 +104,43 @@ export default function UploadContainer() {
       // ── Step 5: Trigger AI analysis ──────────────────────────────
       setStage("processing");
 
-      const analysisResponse = await fetch("/api/analyze", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          policyId: policyData.id,
-          filePath,
-          fileType,
-          fileName: file.name,
-        }),
-      });
+      try {
+        const analysisResponse = await fetch("/api/analyze", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            policyId: policyData.id,
+            filePath,
+            fileType,
+            fileName: file.name,
+          }),
+        });
 
-      setProgress(100);
+        const analysisResult = await analysisResponse.json();
 
-      if (!analysisResponse.ok) {
-        // Analysis failed but upload succeeded — still show success
-        await supabase
-          .from("policies")
-          .update({ status: "error" })
-          .eq("id", policyData.id);
-
-        toast.error("File uploaded but AI analysis failed. You can retry from My Policies.");
+        if (!analysisResponse.ok || !analysisResult.success) {
+          console.error("Analysis error:", analysisResult);
+          toast.error(
+            `Analysis issue: ${analysisResult.error ?? "Unknown error"}. Check console for details.`,
+          );
+        }
+      } catch (analysisErr) {
+        console.error("Analysis fetch error:", analysisErr);
+        toast.error("AI analysis failed. File was uploaded successfully.");
       }
 
+      setProgress(100);
       setUploadedPolicy({
         id: policyData.id,
         fileName: file.name,
         fileUrl: urlData?.signedUrl ?? "",
         fileType,
       });
-
       setStage("success");
-      toast.success("Policy uploaded and analyzed successfully!");
-
+      toast.success("Policy uploaded successfully!");
     } catch (err) {
-      const message = err instanceof Error ? err.message : "Upload failed. Please try again.";
+      const message =
+        err instanceof Error ? err.message : "Upload failed. Please try again.";
       setErrorMessage(message);
       setStage("error");
       toast.error(message);
@@ -158,8 +170,12 @@ export default function UploadContainer() {
 
       {stage === "error" && (
         <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-6 text-center">
-          <p className="text-red-600 dark:text-red-400 font-semibold mb-2">Upload Failed</p>
-          <p className="text-red-500 dark:text-red-400 text-sm mb-4">{errorMessage}</p>
+          <p className="text-red-600 dark:text-red-400 font-semibold mb-2">
+            Upload Failed
+          </p>
+          <p className="text-red-500 dark:text-red-400 text-sm mb-4">
+            {errorMessage}
+          </p>
           <button
             onClick={handleReset}
             className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-xl text-sm font-medium transition-colors"
@@ -200,8 +216,12 @@ export default function UploadContainer() {
               <p className="font-semibold text-[#1E3A5F] dark:text-white text-sm">
                 {tip.title}
               </p>
-              <p className="text-xs font-hindi text-gray-400 mb-1">{tip.titleHindi}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">{tip.desc}</p>
+              <p className="text-xs font-hindi text-gray-400 mb-1">
+                {tip.titleHindi}
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                {tip.desc}
+              </p>
             </div>
           ))}
         </div>

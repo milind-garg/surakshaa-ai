@@ -38,8 +38,8 @@ export function useChatStore(sessionId: string | null) {
   const updateLastMessage = useCallback((updates: Partial<Message>) => {
     setMessages((prev) =>
       prev.map((msg, i) =>
-        i === prev.length - 1 ? { ...msg, ...updates } : msg
-      )
+        i === prev.length - 1 ? { ...msg, ...updates } : msg,
+      ),
     );
   }, []);
 
@@ -93,7 +93,11 @@ export function useChatStore(sessionId: string | null) {
           }),
         });
 
-        if (!response.ok) throw new Error("Chat API failed");
+        if (!response.ok) {
+          const errBody = await response.json().catch(() => ({}));
+          console.error("Chat API error response:", errBody);
+          throw new Error(errBody?.details ?? "Chat API failed");
+        }
 
         const data = await response.json();
 
@@ -108,9 +112,7 @@ export function useChatStore(sessionId: string | null) {
 
         // Replace loading message
         setMessages((prev) =>
-          prev.map((msg) =>
-            msg.isLoading ? assistantMessage : msg
-          )
+          prev.map((msg) => (msg.isLoading ? assistantMessage : msg)),
         );
 
         // Save assistant message to DB
@@ -123,8 +125,10 @@ export function useChatStore(sessionId: string | null) {
             ? { recommendations: data.recommendations }
             : {},
         });
-
       } catch (err) {
+        // Add this ↓ to see the real error in your browser console
+        console.error("Chat send error:", err);
+
         updateLastMessage({
           content: "Sorry, I encountered an error. Please try again.",
           isLoading: false,
@@ -133,7 +137,7 @@ export function useChatStore(sessionId: string | null) {
         setIsLoading(false);
       }
     },
-    [user, isLoading, messages, supabase]
+    [user, isLoading, messages, supabase],
   );
 
   const loadMessages = useCallback(
@@ -152,11 +156,11 @@ export function useChatStore(sessionId: string | null) {
             content: m.content,
             timestamp: new Date(m.created_at),
             recommendations: (m.metadata as any)?.recommendations,
-          }))
+          })),
         );
       }
     },
-    [supabase]
+    [supabase],
   );
 
   return {

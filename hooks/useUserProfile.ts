@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "./useAuth";
 
-interface UserProfile {
+export interface UserProfile {
   id: string;
   user_id: string;
   full_name: string | null;
@@ -14,8 +14,10 @@ interface UserProfile {
   annual_income: number | null;
   family_size: number | null;
   health_conditions: string[] | null;
+  existing_policies: string[] | null;
   risk_appetite: string | null;
   preferred_language: string | null;
+  avatar_url: string | null;
   is_profile_complete: boolean | null;
 }
 

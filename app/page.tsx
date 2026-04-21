@@ -1,8 +1,19 @@
 import Link from "next/link";
 import {
-  Shield, Upload, Brain, MessageSquare, TrendingUp,
-  CheckCircle, Star, ArrowRight, FileText, AlertTriangle,
-  Users, Award, Zap, Globe
+  Shield,
+  Upload,
+  Brain,
+  MessageSquare,
+  TrendingUp,
+  CheckCircle,
+  Star,
+  ArrowRight,
+  FileText,
+  AlertTriangle,
+  Users,
+  Award,
+  Zap,
+  Globe,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -72,19 +83,22 @@ const steps = [
   {
     step: "02",
     title: "Upload Your Policy",
-    description: "Drag & drop your insurance document. PDF or image — both work.",
+    description:
+      "Drag & drop your insurance document. PDF or image — both work.",
     icon: Upload,
   },
   {
     step: "03",
     title: "Get AI Insights",
-    description: "Our AI explains everything in plain Hindi or English within seconds.",
+    description:
+      "Our AI explains everything in plain Hindi or English within seconds.",
     icon: Brain,
   },
   {
     step: "04",
     title: "Get Recommendations",
-    description: "Chat with AI to get top 5 policies matching your exact needs.",
+    description:
+      "Chat with AI to get top 5 policies matching your exact needs.",
     icon: MessageSquare,
   },
 ];
@@ -190,14 +204,20 @@ export default function HomePage() {
 
             {/* Trust signals */}
             <div className="flex flex-wrap justify-center gap-6 mt-10">
-              {["100% Free", "No Spam", "Hindi Support", "Secure & Private"].map(
-                (item) => (
-                  <div key={item} className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400">
-                    <CheckCircle className="w-4 h-4 text-green-500" />
-                    <span>{item}</span>
-                  </div>
-                )
-              )}
+              {[
+                "100% Free",
+                "No Spam",
+                "Hindi Support",
+                "Secure & Private",
+              ].map((item) => (
+                <div
+                  key={item}
+                  className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400"
+                >
+                  <CheckCircle className="w-4 h-4 text-green-500" />
+                  <span>{item}</span>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -209,7 +229,9 @@ export default function HomePage() {
                   <Shield className="w-5 h-5" />
                 </div>
                 <div>
-                  <p className="font-semibold">HDFC Ergo Health Optima Policy</p>
+                  <p className="font-semibold">
+                    HDFC Ergo Health Optima Policy
+                  </p>
                   <p className="text-blue-200 text-sm">Analyzed just now ✓</p>
                 </div>
                 <Badge className="ml-auto bg-green-500/20 text-green-300 border-green-500/30">
@@ -232,8 +254,8 @@ export default function HomePage() {
               </div>
               <div className="bg-white/10 rounded-xl p-4">
                 <p className="text-sm text-blue-100 font-hindi leading-relaxed">
-                  🤖 AI: आपकी पॉलिसी में मातृत्व लाभ, मानसिक स्वास्थ्य और
-                  डेंटल कवर शामिल नहीं है। इन्हें जोड़ने पर विचार करें।
+                  🤖 AI: आपकी पॉलिसी में मातृत्व लाभ, मानसिक स्वास्थ्य और डेंटल
+                  कवर शामिल नहीं है। इन्हें जोड़ने पर विचार करें।
                 </p>
               </div>
             </div>
@@ -250,7 +272,9 @@ export default function HomePage() {
                 <p className="text-4xl font-bold text-[#1E3A5F] dark:text-white mb-2">
                   {stat.value}
                 </p>
-                <p className="text-gray-500 dark:text-gray-400 text-sm">{stat.label}</p>
+                <p className="text-gray-500 dark:text-gray-400 text-sm">
+                  {stat.label}
+                </p>
               </div>
             ))}
           </div>
@@ -280,7 +304,9 @@ export default function HomePage() {
                 key={feature.title}
                 className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-6 hover:shadow-lg transition-all hover:-translate-y-1 group"
               >
-                <div className={`w-12 h-12 ${feature.color} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
+                <div
+                  className={`w-12 h-12 ${feature.color} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}
+                >
                   <feature.icon className="w-6 h-6" />
                 </div>
                 <h3 className="font-bold text-[#1E3A5F] dark:text-white text-lg mb-1">
@@ -325,7 +351,9 @@ export default function HomePage() {
                   <div className="w-20 h-20 bg-[#1E3A5F] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
                     <step.icon className="w-8 h-8 text-white" />
                   </div>
-                  <span className="text-[#FF6B35] font-bold text-sm">{step.step}</span>
+                  <span className="text-[#FF6B35] font-bold text-sm">
+                    {step.step}
+                  </span>
                   <h3 className="font-bold text-[#1E3A5F] dark:text-white text-lg mt-1 mb-2">
                     {step.title}
                   </h3>
@@ -358,7 +386,10 @@ export default function HomePage() {
               >
                 <div className="flex gap-1 mb-3">
                   {Array.from({ length: t.rating }).map((_, i) => (
-                    <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                    <Star
+                      key={i}
+                      className="w-4 h-4 fill-yellow-400 text-yellow-400"
+                    />
                   ))}
                 </div>
                 <p className="text-gray-700 dark:text-gray-300 text-sm mb-2 leading-relaxed">
@@ -395,7 +426,8 @@ export default function HomePage() {
             Ready to Understand Your Insurance?
           </h2>
           <p className="text-blue-200 text-lg mb-4">
-            Join thousands of Indian families making smarter insurance decisions.
+            Join thousands of Indian families making smarter insurance
+            decisions.
           </p>
           <p className="text-blue-300 font-hindi text-xl mb-10">
             अभी शुरू करें — बिल्कुल मुफ़्त
@@ -413,8 +445,7 @@ export default function HomePage() {
             <Link href="/login">
               <Button
                 size="lg"
-                variant="outline"
-                className="border-2 border-white/30 text-white hover:bg-white/10 rounded-2xl px-10 py-6 text-base font-semibold"
+                className="bg-transparent border-2 border-white/30 text-white hover:bg-white/10 rounded-2xl px-10 py-6 text-base font-semibold"
               >
                 Already have an account? Log In
               </Button>

@@ -41,6 +41,12 @@ export async function updateSession(request: NextRequest) {
   }
 
   const authPaths = ["/login", "/signup"];
+  const publicPaths = ["/update-password", "/forgot-password"];
+  const isPublicPath = publicPaths.some((path) =>
+    request.nextUrl.pathname.startsWith(path)
+  );
+  if (isPublicPath) return supabaseResponse;
+  
   const isAuthPath = authPaths.some((path) =>
     request.nextUrl.pathname.startsWith(path)
   );

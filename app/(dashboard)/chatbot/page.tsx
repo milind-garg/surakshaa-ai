@@ -16,7 +16,8 @@ interface ChatSession {
   created_at: string;
 }
 
-const WELCOME_MESSAGE = {
+// ✅ Add this helper inside the component file, above the component:
+const makeWelcomeMessage = () => ({
   id: "welcome",
   role: "assistant" as const,
   content: `Namaste! 🙏 I'm Suraksha AI, your personal insurance advisor.
@@ -31,7 +32,7 @@ To give you the best recommendations, I already have access to your profile and 
 
 Try asking: *"Recommend the best health insurance for my family"* 🏥`,
   timestamp: new Date(),
-};
+});
 
 export default function ChatbotPage() {
   const { user } = useAuth();
@@ -60,7 +61,7 @@ export default function ChatbotPage() {
   // Load messages when session changes
   useEffect(() => {
     if (!activeSessionId) {
-      setMessages([WELCOME_MESSAGE]);
+      setMessages([makeWelcomeMessage()]);
       return;
     }
     loadMessages(activeSessionId);
@@ -98,7 +99,7 @@ export default function ChatbotPage() {
 
     setSessions((prev) => [data, ...prev]);
     setActiveSessionId(data.id);
-    setMessages([WELCOME_MESSAGE]);
+    setMessages([makeWelcomeMessage()]);
   }, [user, supabase]);
 
   const handleSendMessage = useCallback(
@@ -128,26 +129,28 @@ export default function ChatbotPage() {
         setSessions((prev) => [data, ...prev]);
       } else {
         // Update session title from first user message
-        const isFirstUserMessage = messages.filter((m) => m.role === "user").length === 0;
+        const isFirstUserMessage =
+          messages.filter((m) => m.role === "user").length === 0;
         if (isFirstUserMessage) {
           await supabase
             .from("chat_sessions")
-            .update({ title: content.slice(0, 40) + (content.length > 40 ? "..." : "") })
+            .update({
+              title: content.slice(0, 40) + (content.length > 40 ? "..." : ""),
+            })
             .eq("id", sessionId);
 
           setSessions((prev) =>
             prev.map((s) =>
-              s.id === sessionId
-                ? { ...s, title: content.slice(0, 40) }
-                : s
-            )
+              s.id === sessionId ? { ...s, title: content.slice(0, 40) } : s,
+            ),
           );
         }
       }
 
+      if (!sessionId) return; // safety guard
       await sendMessage(content, sessionId);
     },
-    [activeSessionId, user, supabase, messages, sendMessage]
+    [activeSessionId, user, supabase, messages, sendMessage],
   );
 
   const handleDeleteSession = async (sessionId: string) => {
@@ -156,7 +159,7 @@ export default function ChatbotPage() {
 
     if (activeSessionId === sessionId) {
       setActiveSessionId(null);
-      setMessages([WELCOME_MESSAGE]);
+      setMessages([makeWelcomeMessage()]);
     }
 
     toast.success("Chat deleted");
@@ -166,8 +169,7 @@ export default function ChatbotPage() {
     setActiveSessionId(sessionId);
   };
 
-  const displayMessages =
-    messages.length === 0 ? [WELCOME_MESSAGE] : messages;
+  const displayMessages = messages.length === 0 ? [makeWelcomeMessage()] : messages;
 
   return (
     <div className="-m-6 h-[calc(100vh-4rem)] flex overflow-hidden">
@@ -186,7 +188,6 @@ export default function ChatbotPage() {
 
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col min-w-0 bg-gray-50 dark:bg-gray-950">
-
         {/* Chat Header */}
         <div className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
