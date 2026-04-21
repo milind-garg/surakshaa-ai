@@ -14,6 +14,9 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+
+import PolicySummaryToggle from "@/components/policy/PolicySummaryToggle";
+
 import Link from "next/link";
 
 export default async function PolicyDetailPage({
@@ -48,19 +51,24 @@ export default async function PolicyDetailPage({
     .single();
 
   const claimProb = analysis?.claim_success_probability ?? 0;
+
   const claimColor =
-    claimProb >= 75
-      ? "text-green-600"
-      : claimProb >= 50
-        ? "text-yellow-600"
-        : "text-red-600";
+    claimProb === 0
+      ? "text-gray-400"
+      : claimProb >= 75
+        ? "text-green-600"
+        : claimProb >= 50
+          ? "text-yellow-600"
+          : "text-red-600";
 
   const claimBg =
-    claimProb >= 75
-      ? "bg-green-50 border-green-200"
-      : claimProb >= 50
-        ? "bg-yellow-50 border-yellow-200"
-        : "bg-red-50 border-red-200";
+    claimProb === 0
+      ? "bg-gray-50 border-gray-200"
+      : claimProb >= 75
+        ? "bg-green-50 border-green-200"
+        : claimProb >= 50
+          ? "bg-yellow-50 border-yellow-200"
+          : "bg-red-50 border-red-200";
 
   return (
     <div className="space-y-6 animate-fade-in">
@@ -147,31 +155,10 @@ export default async function PolicyDetailPage({
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column */}
           <div className="lg:col-span-2 space-y-6">
-            {/* English Summary */}
-            <Card className="p-6 border-gray-100">
-              <div className="flex items-center gap-2 mb-4">
-                <Shield className="w-5 h-5 text-[#1E3A5F]" />
-                <h2 className="font-bold text-[#1E3A5F]">
-                  Policy Summary (English)
-                </h2>
-              </div>
-              <p className="text-gray-700 leading-relaxed text-sm">
-                {analysis.summary_english}
-              </p>
-            </Card>
-
-            {/* Hindi Summary */}
-            <Card className="p-6 border-orange-100 bg-orange-50/50">
-              <div className="flex items-center gap-2 mb-4">
-                <Star className="w-5 h-5 text-[#FF6B35]" />
-                <h2 className="font-bold text-[#1E3A5F]">
-                  पॉलिसी सारांश (हिंदी)
-                </h2>
-              </div>
-              <p className="text-gray-700 leading-relaxed font-hindi text-base">
-                {analysis.summary_hindi}
-              </p>
-            </Card>
+            <PolicySummaryToggle
+              summaryEnglish={analysis.summary_english ?? ""}
+              summaryHindi={analysis.summary_hindi ?? ""}
+            />
 
             {/* Coverage Details */}
             <Card className="p-6 border-gray-100">
@@ -241,11 +228,13 @@ export default async function PolicyDetailPage({
               </p>
               <Progress value={claimProb} className="h-2 mb-2" />
               <p className="text-xs text-gray-500">
-                {claimProb >= 75
-                  ? "High probability — well-structured policy."
-                  : claimProb >= 50
-                    ? "Moderate — review exclusions carefully."
-                    : "Low — significant gaps found."}
+                {claimProb === 0
+                  ? "Not an insurance document — no claim data available."
+                  : claimProb >= 75
+                    ? "High probability — well-structured policy."
+                    : claimProb >= 50
+                      ? "Moderate — review exclusions carefully."
+                      : "Low — significant gaps found."}
               </p>
             </Card>
 
