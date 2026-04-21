@@ -3,22 +3,22 @@ import { Shield, Heart, Mail, Phone, MapPin } from "lucide-react";
 
 const footerLinks = {
   product: [
-    { label: "Features", href: "#features" },
-    { label: "How It Works", href: "#how-it-works" },
-    { label: "Pricing", href: "#pricing" },
-    { label: "FAQ", href: "#faq" },
+    { label: "Features", href: "#features", id: "features" },
+    { label: "How It Works", href: "#how-it-works", id: "how-it-works" },
+    { label: "Pricing", href: "#pricing", id: "pricing" },
+    { label: "FAQ", href: "#faq", id: "faq" },
   ],
   support: [
-    { label: "Help Center", href: "#" },
-    { label: "Privacy Policy", href: "#" },
-    { label: "Terms of Service", href: "#" },
-    { label: "Contact Us", href: "#" },
+    { label: "Help Center", href: "#help", id: "help" },
+    { label: "Privacy Policy", href: "#privacy", id: "privacy" },
+    { label: "Terms of Service", href: "#terms", id: "terms" },
+    { label: "Contact Us", href: "#contact", id: "contact" },
   ],
   insurance: [
-    { label: "Health Insurance", href: "#" },
-    { label: "Life Insurance", href: "#" },
-    { label: "Vehicle Insurance", href: "#" },
-    { label: "Term Plans", href: "#" },
+    { label: "Health Insurance", href: "#health", id: "health" },
+    { label: "Life Insurance", href: "#life", id: "life" },
+    { label: "Vehicle Insurance", href: "#vehicle", id: "vehicle" },
+    { label: "Term Plans", href: "#term", id: "term" },
   ],
 };
 
@@ -27,8 +27,7 @@ export default function Footer() {
     <footer className="bg-[#1E3A5F] text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
-
-          {/* Brand Column */}
+          {/* Brand */}
           <div className="space-y-4">
             <div className="flex items-center gap-2">
               <div className="w-9 h-9 bg-white/10 rounded-xl flex items-center justify-center">
@@ -37,8 +36,8 @@ export default function Footer() {
               <span className="font-bold text-xl">Suraksha AI</span>
             </div>
             <p className="text-blue-200 text-sm leading-relaxed">
-              AI-powered insurance intelligence for Indian families. 
-              Understand your policies in plain Hindi & English.
+              AI-powered insurance intelligence for Indian families. Understand
+              your policies in plain Hindi & English.
             </p>
             <p className="text-blue-200 text-sm font-hindi">
               भारतीय परिवारों के लिए AI-संचालित बीमा सहायक
@@ -59,12 +58,12 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Product Links */}
+          {/* Product */}
           <div>
             <h3 className="font-semibold text-white mb-4">Product</h3>
             <ul className="space-y-2">
               {footerLinks.product.map((link) => (
-                <li key={link.href}>
+                <li key={link.id}>
                   <Link
                     href={link.href}
                     className="text-blue-200 hover:text-white text-sm transition-colors"
@@ -76,12 +75,12 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Support Links */}
+          {/* Support */}
           <div>
             <h3 className="font-semibold text-white mb-4">Support</h3>
             <ul className="space-y-2">
               {footerLinks.support.map((link) => (
-                <li key={link.href}>
+                <li key={link.id}>
                   <Link
                     href={link.href}
                     className="text-blue-200 hover:text-white text-sm transition-colors"
@@ -98,7 +97,7 @@ export default function Footer() {
             <h3 className="font-semibold text-white mb-4">Insurance Types</h3>
             <ul className="space-y-2">
               {footerLinks.insurance.map((link) => (
-                <li key={link.href}>
+                <li key={link.id}>
                   <Link
                     href={link.href}
                     className="text-blue-200 hover:text-white text-sm transition-colors"
@@ -111,13 +110,14 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-blue-800 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-blue-300 text-sm">
             © 2026 Suraksha AI. All rights reserved.
           </p>
           <p className="text-blue-300 text-sm flex items-center gap-1">
-            Made with <Heart className="w-3 h-3 text-red-400 fill-red-400" /> for Indian families
+            Made with{" "}
+            <Heart className="w-3 h-3 text-red-400 fill-red-400 mx-1" /> for
+            Indian families
           </p>
           <p className="text-blue-300 text-xs">
             Not affiliated with IRDAI. For informational purposes only.

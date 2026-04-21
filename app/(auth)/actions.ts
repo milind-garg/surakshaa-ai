@@ -3,9 +3,8 @@
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 
-// ─── Sign Up ────────────────────────────────────────────────────────────────
 export async function signUp(formData: FormData) {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
@@ -35,7 +34,6 @@ export async function signUp(formData: FormData) {
     return { error: error.message };
   }
 
-  // Update profile name (trigger already created the row)
   if (data.user) {
     await supabase
       .from("user_profiles")
@@ -46,9 +44,8 @@ export async function signUp(formData: FormData) {
   redirect("/dashboard");
 }
 
-// ─── Sign In ────────────────────────────────────────────────────────────────
 export async function signIn(formData: FormData) {
-  const supabase = createClient();
+  const supabase = await createClient();
 
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
@@ -75,16 +72,14 @@ export async function signIn(formData: FormData) {
   redirect("/dashboard");
 }
 
-// ─── Sign Out ────────────────────────────────────────────────────────────────
 export async function signOut() {
-  const supabase = createClient();
+  const supabase = await createClient();
   await supabase.auth.signOut();
   redirect("/");
 }
 
-// ─── Reset Password ──────────────────────────────────────────────────────────
 export async function resetPassword(formData: FormData) {
-  const supabase = createClient();
+  const supabase = await createClient();
   const email = formData.get("email") as string;
 
   if (!email) {
@@ -92,7 +87,7 @@ export async function resetPassword(formData: FormData) {
   }
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback?next=/update-password`,
+    redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback?next=/update-password&type=recovery`,
   });
 
   if (error) {
@@ -100,4 +95,30 @@ export async function resetPassword(formData: FormData) {
   }
 
   return { success: "Password reset link sent! Check your email." };
+}
+
+export async function updatePassword(formData: FormData) {
+  const supabase = await createClient();
+  const password = formData.get("password") as string;
+  const confirmPassword = formData.get("confirmPassword") as string;
+
+  if (!password || !confirmPassword) {
+    return { error: "Please fill in all fields." };
+  }
+
+  if (password.length < 6) {
+    return { error: "Password must be at least 6 characters." };
+  }
+
+  if (password !== confirmPassword) {
+    return { error: "Passwords do not match." };
+  }
+
+  const { error } = await supabase.auth.updateUser({ password });
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  return { success: "Password updated successfully! You can now log in." };
 }

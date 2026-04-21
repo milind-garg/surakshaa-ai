@@ -1,0 +1,18 @@
+{
+  "css.customData": [],
+  "css.validate": false,
+  "scss.validate": false,
+  "less.validate": false,
+  "tailwindCSS.experimental.classRegex": [],
+  "editor.quickSuggestions": {
+    "strings": "on"
+  },
+  "[css]": {
+    "editor.defaultFormatter": "bradlc.vscode-tailwindcss"
+  },
+  "builder.serverUrl": "",
+  "builder.command": "npm run dev",
+  "builder.runDevServer": false,
+  "builder.autoDetectDevServer": true,
+  "builder.launchType": "editor"
+}

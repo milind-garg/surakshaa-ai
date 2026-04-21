@@ -3,10 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Shield, Menu, X, Moon, Sun, Globe } from "lucide-react";
+import { Shield, Menu, X, Globe } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useTheme } from "next-themes";
 
 const navLinks = [
   { href: "/", label: "Home" },
@@ -19,14 +18,9 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const [language, setLanguage] = useState<"en" | "hi">("en");
   const pathname = usePathname();
-  const { theme, setTheme } = useTheme();
-
-  const toggleLanguage = () => {
-    setLanguage((prev) => (prev === "en" ? "hi" : "en"));
-  };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 dark:bg-gray-900/90 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 shadow-sm">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-100 shadow-sm">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
 
@@ -36,7 +30,7 @@ export default function Navbar() {
               <Shield className="w-5 h-5 text-white" />
             </div>
             <div className="flex flex-col leading-none">
-              <span className="font-bold text-[#1E3A5F] dark:text-white text-lg">
+              <span className="font-bold text-[#1E3A5F] text-lg">
                 Suraksha
               </span>
               <span className="text-[10px] font-medium text-[#FF6B35] tracking-wider uppercase">
@@ -54,8 +48,8 @@ export default function Navbar() {
                 className={cn(
                   "px-4 py-2 rounded-lg text-sm font-medium transition-colors",
                   pathname === link.href
-                    ? "text-[#1E3A5F] bg-blue-50 dark:text-white dark:bg-gray-800"
-                    : "text-gray-600 hover:text-[#1E3A5F] hover:bg-gray-50 dark:text-gray-300 dark:hover:text-white dark:hover:bg-gray-800"
+                    ? "text-[#1E3A5F] bg-blue-50"
+                    : "text-gray-600 hover:text-[#1E3A5F] hover:bg-gray-50"
                 )}
               >
                 {link.label}
@@ -69,8 +63,8 @@ export default function Navbar() {
             <Button
               variant="ghost"
               size="sm"
-              onClick={toggleLanguage}
-              className="gap-1 text-gray-600 dark:text-gray-300"
+              onClick={() => setLanguage((prev) => (prev === "en" ? "hi" : "en"))}
+              className="gap-1 text-gray-600"
             >
               <Globe className="w-4 h-4" />
               <span className="text-xs font-semibold">
@@ -78,25 +72,11 @@ export default function Navbar() {
               </span>
             </Button>
 
-            {/* Theme Toggle */}
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-              className="text-gray-600 dark:text-gray-300"
-            >
-              {theme === "dark" ? (
-                <Sun className="w-4 h-4" />
-              ) : (
-                <Moon className="w-4 h-4" />
-              )}
-            </Button>
-
             <Link href="/login">
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-[#1E3A5F] dark:text-white font-medium"
+                className="text-[#1E3A5F] font-medium"
               >
                 {language === "en" ? "Log In" : "लॉग इन"}
               </Button>
@@ -114,7 +94,7 @@ export default function Navbar() {
 
           {/* Mobile Menu Button */}
           <button
-            className="md:hidden p-2 rounded-lg text-gray-600 dark:text-gray-300"
+            className="md:hidden p-2 rounded-lg text-gray-600"
             onClick={() => setIsOpen(!isOpen)}
           >
             {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -124,18 +104,18 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {isOpen && (
-        <div className="md:hidden border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 px-4 py-4 space-y-2 animate-fade-in">
+        <div className="md:hidden border-t border-gray-100 bg-white px-4 py-4 space-y-2">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
               onClick={() => setIsOpen(false)}
-              className="block px-4 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
+              className="block px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50"
             >
               {link.label}
             </Link>
           ))}
-          <div className="flex gap-2 pt-2 border-t border-gray-100 dark:border-gray-800">
+          <div className="flex gap-2 pt-2 border-t border-gray-100">
             <Link href="/login" className="flex-1">
               <Button variant="outline" className="w-full" size="sm">
                 Log In

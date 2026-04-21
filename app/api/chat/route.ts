@@ -5,10 +5,65 @@ import type { NextRequest } from "next/server";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
+// ── Detect insurance type from message ───────────────────────────────────────
+function detectInsuranceType(message: string): string | null {
+  if (/car|vehicle|auto|bike|motor|two.?wheel/i.test(message)) return "vehicle";
+  if (/health|medical|hospital|illness|disease|mediclaim/i.test(message))
+    return "health";
+  if (/term|life insurance|death benefit|mortality/i.test(message))
+    return "term";
+  if (/travel|trip|abroad|international|flight/i.test(message)) return "travel";
+  if (/home|property|house/i.test(message)) return "home";
+  return null;
+}
+
+// ── Strip all JSON/code blocks from text ─────────────────────────────────────
+function stripJsonBlocks(text: string): string {
+  return text
+    .replace(/```(?:json)?\s*[\s\S]*?```/gi, "") // fenced code blocks
+    .replace(/\{\s*"recommendations"\s*:\s*\[[\s\S]*?\]\s*\}/g, "") // raw JSON objects
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
+// ── Extract recommendations from raw Gemini response ─────────────────────────
+function extractRecommendations(raw: string): any[] | null {
+  // Try fenced ```json block first
+  const fencedMatch = raw.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  if (fencedMatch) {
+    try {
+      const parsed = JSON.parse(fencedMatch[1].trim());
+      if (parsed.recommendations) return parsed.recommendations;
+    } catch {}
+  }
+
+  // Try raw JSON object
+  const rawMatch = raw.match(
+    /\{\s*"recommendations"\s*:\s*(\[[\s\S]*?\])\s*\}/,
+  );
+  if (rawMatch) {
+    try {
+      return JSON.parse(rawMatch[1]);
+    } catch {}
+  }
+
+  // Try finding just the array
+  const arrayMatch = raw.match(/"recommendations"\s*:\s*(\[[\s\S]*?\])/);
+  if (arrayMatch) {
+    try {
+      return JSON.parse(arrayMatch[1]);
+    } catch {}
+  }
+
+  return null;
+}
+
 export async function POST(request: NextRequest) {
   try {
-    const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -16,14 +71,13 @@ export async function POST(request: NextRequest) {
 
     const { message, sessionId, history } = await request.json();
 
-    // ── Fetch user profile for personalization ───────────────────
+    // ── Fetch user profile ────────────────────────────────────────
     const { data: profile } = await supabase
       .from("user_profiles")
       .select("*")
       .eq("user_id", user.id)
       .single();
 
-    // ── Fetch user's existing policies ───────────────────────────
     const { data: policies } = await supabase
       .from("policies")
       .select(`*, policy_analyses(*)`)
@@ -31,20 +85,21 @@ export async function POST(request: NextRequest) {
       .eq("status", "analyzed")
       .limit(5);
 
-    // ── Build rich user context ───────────────────────────────────
-    const userContext = profile ? `
+    // ── Build context ─────────────────────────────────────────────
+    const userContext = profile
+      ? `
 USER PROFILE:
 - Name: ${profile.full_name ?? "Not provided"}
 - Age: ${profile.age ?? "Not provided"}
 - Gender: ${profile.gender ?? "Not provided"}
 - Occupation: ${profile.occupation ?? "Not provided"}
 - Annual Income: ₹${profile.annual_income ? (profile.annual_income / 100000).toFixed(1) + " Lakh" : "Not provided"}
-- Family Size: ${profile.family_size ?? "Not provided"} members
 - Health Conditions: ${profile.health_conditions?.join(", ") || "None"}
 - Existing Policies: ${profile.existing_policies?.join(", ") || "None"}
 - Risk Appetite: ${profile.risk_appetite ?? "Medium"}
 - Preferred Language: ${profile.preferred_language ?? "English"}
-` : "User profile not complete.";
+`
+      : "User profile not complete.";
 
     const policiesContext =
       policies && policies.length > 0
@@ -53,78 +108,148 @@ USER'S EXISTING POLICIES:
 ${policies
   .map((p) => {
     const a = (p as any).policy_analyses?.[0];
-    return `- ${a?.policy_name ?? p.file_name}: ${a?.policy_type ?? "unknown type"}, ₹${((a?.sum_insured ?? 0) / 100000).toFixed(1)}L cover, Gaps: ${a?.coverage_gaps?.join(", ") ?? "unknown"}`;
+    return `- ${a?.policy_name ?? p.file_name}: ${a?.policy_type ?? "unknown"}, ₹${((a?.sum_insured ?? 0) / 100000).toFixed(1)}L, Gaps: ${a?.coverage_gaps?.join(", ") ?? "unknown"}`;
   })
   .join("\n")}
 `
         : "No existing policies uploaded yet.";
 
-    // ── Detect if user wants recommendations ─────────────────────
+    // ── Intent detection ──────────────────────────────────────────
     const wantsRecommendations =
-      /recommend|suggest|best|policy|plan|cover|insurance|buy|need|suitable|top/i.test(
-        message
+      /recommend|suggest|best|which policy|top.*(policy|plan|insurance)|should i (buy|get|take)/i.test(
+        message,
       );
 
-    // ── Build the system prompt ───────────────────────────────────
-    const systemPrompt = `
-You are Suraksha AI, a friendly and expert Indian insurance advisor chatbot. You help Indian families understand, compare, and choose the right insurance policies.
+    const detectedType = detectInsuranceType(message);
 
-${userContext}
-${policiesContext}
+    // ML only makes sense for health/term — skip for vehicle/travel/home
+    const mlApplicable =
+      wantsRecommendations &&
+      (!detectedType || ["health", "term"].includes(detectedType));
 
-YOUR PERSONALITY:
-- Warm, friendly, and professional
-- Use simple language — avoid insurance jargon
-- Mix Hindi words naturally when helpful (like "Namaste", "bilkul", "theek hai")
-- Address the user by their first name when known
-- Be empathetic — insurance is confusing and people are often worried
+    // ── Call ML engine if applicable ──────────────────────────────
+    let mlRecommendations = null;
+    if (mlApplicable) {
+      try {
+        const mlBase =
+          process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
+        const mlResponse = await fetch(`${mlBase}/api/recommend`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Cookie: request.headers.get("cookie") ?? "",
+          },
+          body: JSON.stringify({ requirements: message, sessionId }),
+        });
+        if (mlResponse.ok) {
+          const mlData = await mlResponse.json();
+          mlRecommendations = mlData.recommendations ?? null;
+        }
+      } catch (mlErr) {
+        console.warn("ML recommendation call failed (non-fatal):", mlErr);
+      }
+    }
 
-YOUR CAPABILITIES:
-1. Answer questions about insurance policies in simple language
-2. Explain what coverage means in real-life scenarios
-3. Identify gaps in existing coverage
-4. Recommend top 5 policies based on user's profile and needs
-5. Compare different insurance products
-6. Guide users on claim filing
+    // ── Type-specific recommendation rules ────────────────────────
+    const typeRules: Record<string, string> = {
+      vehicle: `
+STRICT RULE — VEHICLE INSURANCE ONLY:
+- Recommend ONLY car/bike/vehicle insurance. NO health, life, or term policies.
+- Types to include: Third-Party Liability, Comprehensive, Zero Depreciation Add-on, Engine Protection, Roadside Assistance
+- Real insurers: Bajaj Allianz, HDFC Ergo, ICICI Lombard, New India Assurance, Tata AIG, United India Insurance, Reliance General
+- sum_insured field should say "IDV: ₹X Lakh" (Insured Declared Value) for vehicle policies
+- policy_type must be "vehicle" for all 5 recommendations`,
 
-RECOMMENDATION RULES (when asked for recommendations):
-- Always recommend exactly 5 policies
-- Base recommendations on the user's age, income, family size, health, and existing coverage
-- Include a mix of types if profile is incomplete (health + life + term)
-- Reference real Indian insurance products (LIC, HDFC, ICICI, SBI, Max, Bajaj, Tata, Star Health, etc.)
-- Always explain WHY each policy is recommended for THIS specific user
+      health: `
+HEALTH INSURANCE RULES:
+- Recommend health/mediclaim/family floater plans
+- Real insurers: Star Health, Niva Bupa, HDFC Ergo, Care Health, Aditya Birla Health, ICICI Lombard, Bajaj Allianz
+- Consider user's age, family size, and pre-existing conditions`,
 
-RESPONSE FORMAT:
-- Keep responses concise (3-5 sentences for general answers)
-- Use bullet points for lists
-- For recommendations, ALWAYS end your text response with the JSON block
-- If the user writes in Hindi, respond partially in Hindi
+      term: `
+TERM INSURANCE RULES:
+- Recommend only term life insurance plans
+- Real insurers: LIC, HDFC Life, ICICI Prudential, Max Life, Tata AIA, SBI Life, Bajaj Allianz Life
+- sum_insured should be "₹X Crore" for term plans`,
 
-${wantsRecommendations ? `
-IMPORTANT: The user seems to want recommendations. After your conversational response, include a JSON block with exactly this format:
+      travel: `
+TRAVEL INSURANCE RULES:
+- Recommend only travel insurance policies
+- Include: international travel, domestic travel, student travel
+- Real insurers: Bajaj Allianz, HDFC Ergo, Tata AIG, ICICI Lombard, New India Assurance`,
+
+      home: `
+HOME INSURANCE RULES:
+- Recommend only home/property insurance
+- Real insurers: Bajaj Allianz, HDFC Ergo, New India Assurance, United India, Reliance General`,
+    };
+
+    const recommendationBlock = wantsRecommendations
+      ? `
+
+IMPORTANT — RECOMMENDATION REQUIRED:
+The user wants recommendations for: ${detectedType ? `**${detectedType.toUpperCase()} INSURANCE**` : "insurance (general)"}
+
+${detectedType && typeRules[detectedType] ? typeRules[detectedType] : ""}
+
+You MUST end your response with EXACTLY this JSON format inside a code block.
+The JSON must be the LAST thing in your response:
 
 \`\`\`json
 {
   "recommendations": [
     {
       "rank": 1,
-      "policy_name": "Policy Name",
+      "policy_name": "Exact Policy Name",
       "insurer": "Insurer Name",
-      "policy_type": "health/life/term/vehicle",
+      "policy_type": "${detectedType ?? "health"}",
       "premium_estimate": "₹X,XXX - ₹XX,XXX/year",
-      "sum_insured": "₹X Lakh - ₹XX Lakh",
-      "key_features": ["Feature 1", "Feature 2", "Feature 3"],
-      "why_recommended": "Specific reason based on this user's profile",
+      "sum_insured": "₹X Lakh",
+      "key_features": ["Feature 1", "Feature 2", "Feature 3", "Feature 4"],
+      "why_recommended": "Specific reason for THIS user mentioning their age/income/needs",
       "match_score": 95
-    }
+    },
+    { "rank": 2, ... },
+    { "rank": 3, ... },
+    { "rank": 4, ... },
+    { "rank": 5, ... }
   ]
 }
 \`\`\`
-` : ""}
-`;
+`
+      : "";
 
-    // ── Build chat history for Gemini ────────────────────────────
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    // ── System prompt ─────────────────────────────────────────────
+    const systemPrompt = `
+You are Suraksha AI, a warm and expert Indian insurance advisor chatbot helping Indian families.
+
+${userContext}
+${policiesContext}
+
+YOUR PERSONALITY:
+- Warm, friendly, professional
+- Simple language — no insurance jargon
+- Mix Hindi naturally ("Namaste", "bilkul", "theek hai", "zaroor")
+- Address user by first name when known
+- Empathetic — people find insurance confusing
+
+YOUR CAPABILITIES:
+1. Explain any insurance policy in simple Hindi or English
+2. Identify coverage gaps in existing policies
+3. Recommend top 5 policies tailored to the user
+4. Compare insurance products
+5. Guide on claim filing
+
+RESPONSE FORMAT:
+- Conversational text first (3-6 sentences)
+- Use bullet points for lists
+- ${wantsRecommendations ? "END with the JSON block — it will be rendered as beautiful cards, not shown as text" : "No JSON needed for this response"}
+${recommendationBlock}`;
+
+    // ── Gemini chat ───────────────────────────────────────────────
+    const model = genAI.getGenerativeModel({
+      model: process.env.GEMINI_MODEL ?? "gemini-2.5-flash",
+    });
 
     const chat = model.startChat({
       history: [
@@ -136,7 +261,7 @@ IMPORTANT: The user seems to want recommendations. After your conversational res
           role: "model",
           parts: [
             {
-              text: `Namaste! I'm Suraksha AI, your personal insurance advisor. I'm here to help you understand your policies, find coverage gaps, and recommend the best insurance plans for your family. How can I help you today?`,
+              text: `Namaste! I'm Suraksha AI, your personal insurance advisor. I'm here to help you understand your policies, find coverage gaps, and recommend the best insurance plans. How can I help you today?`,
             },
           ],
         },
@@ -147,51 +272,42 @@ IMPORTANT: The user seems to want recommendations. After your conversational res
       ],
       generationConfig: {
         temperature: 0.7,
-        maxOutputTokens: 2048,
+        maxOutputTokens: 3000,
       },
     });
 
     const result = await chat.sendMessage(message);
     const rawResponse = result.response.text();
 
-    // ── Extract recommendations JSON if present ───────────────────
-    let recommendations = null;
-    let cleanResponse = rawResponse;
+    // ── Extract & strip recommendations ───────────────────────────
+    const geminiRecommendations = extractRecommendations(rawResponse);
+    const cleanResponse = stripJsonBlocks(rawResponse);
 
-    const jsonMatch = rawResponse.match(/```json\n?([\s\S]*?)```/);
-    if (jsonMatch) {
-      try {
-        const parsed = JSON.parse(jsonMatch[1]);
-        recommendations = parsed.recommendations;
-        // Remove JSON block from displayed text
-        cleanResponse = rawResponse
-          .replace(/```json\n?[\s\S]*?```/g, "")
-          .trim();
-      } catch {
-        // JSON parse failed — show full response
-      }
-    }
+    // ── Final recommendations: prefer ML for health/term, else Gemini
+    const finalRecommendations =
+      mlApplicable && mlRecommendations
+        ? mlRecommendations
+        : geminiRecommendations;
 
-    // ── Save recommendations to DB if present ────────────────────
-    if (recommendations && sessionId) {
+    // ── Save to DB ────────────────────────────────────────────────
+    if (finalRecommendations && sessionId) {
       await supabase.from("policy_recommendations").insert({
         user_id: user.id,
         session_id: sessionId,
-        recommendations,
+        recommendations: finalRecommendations,
         user_requirements: message,
       });
     }
 
     return NextResponse.json({
       response: cleanResponse,
-      recommendations,
+      recommendations: finalRecommendations,
     });
-
   } catch (err) {
     console.error("Chat API error:", err);
     return NextResponse.json(
       { error: "Chat failed", details: String(err) },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }
