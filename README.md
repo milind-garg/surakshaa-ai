@@ -13,7 +13,7 @@
 [![Python](https://img.shields.io/badge/Python-3.10+-yellow?style=flat-square&logo=python)](https://python.org)
 [![License](https://img.shields.io/badge/License-MIT-red?style=flat-square)](LICENSE)
 
-[Live Demo](#) · [Report Bug](https://github.com/milind-garg/suraksha-ai/issues) · [Request Feature](https://github.com/milind-garg/suraksha-ai/issues)
+[Live Demo](https://surakshaa-ai.vercel.app/) · [Report Bug](https://github.com/milind-garg/suraksha-ai/issues) · [Request Feature](https://github.com/milind-garg/suraksha-ai/issues)
 
 </div>
 
