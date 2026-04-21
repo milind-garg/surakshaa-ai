@@ -2,8 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-const GEMINI_MODEL =
-  process.env.GEMINI_MODEL ?? "gemini-2.5-flash";
+const GEMINI_MODEL = process.env.GEMINI_MODEL ?? "gemini-2.5-flash";
 
 export async function POST(request: NextRequest) {
   try {
@@ -207,7 +206,8 @@ Return ONLY a valid JSON object with no markdown or code blocks:
   "key_benefits": ["actual benefit 1 from document", "actual benefit 2"],
   "coverage_gaps": ["identified gap 1", "identified gap 2"],
   "claim_process": "actual claim process described in document or general process for this insurer",
-  "claim_success_probability": number between 60 and 95 based on policy completeness,
+  "is_insurance_document": true or false (false if this is NOT an insurance policy),
+  "claim_success_probability": 0 if not an insurance document, otherwise number between 60 and 95 based on policy completeness,
   "summary_english": "2-3 sentences explaining what this policy actually covers in simple English",
   "summary_hindi": "2-3 वाक्यों में इस पॉलिसी का सरल हिंदी सारांश",
   "recommendations": ["specific recommendation 1", "specific recommendation 2", "specific recommendation 3"]
@@ -294,7 +294,7 @@ Return ONLY a valid JSON object with no markdown or code blocks:
         coverage_gaps: ["Full analysis unavailable — re-upload recommended"],
         claim_process:
           "Please refer to your insurer's website or policy document.",
-        claim_success_probability: 70,
+        claim_success_probability: 0,
         summary_english: `The document "${fileName}" was uploaded but could not be fully analyzed. Please ensure it is a clear, readable insurance policy PDF.`,
         summary_hindi: `"${fileName}" दस्तावेज़ अपलोड हुआ लेकिन AI इसे पूरी तरह नहीं पढ़ सका। कृपया स्पष्ट PDF अपलोड करें।`,
         recommendations: [
@@ -322,7 +322,9 @@ Return ONLY a valid JSON object with no markdown or code blocks:
         coverage_gaps: analysisData.coverage_gaps || [],
         claim_process: analysisData.claim_process || "",
         claim_success_probability:
-          Number(analysisData.claim_success_probability) || 70,
+          analysisData.is_insurance_document === false
+            ? 0
+            : Number(analysisData.claim_success_probability) || 0,
         summary_english: analysisData.summary_english || "",
         summary_hindi: analysisData.summary_hindi || "",
         recommendations: analysisData.recommendations || [],
