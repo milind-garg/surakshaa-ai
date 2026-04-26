@@ -22,5 +22,5 @@ export async function GET(request: NextRequest) {
   }
 
   // Check for hash-based recovery (Supabase sends token in URL hash sometimes)
-  return NextResponse.redirect(`${origin}/update-password`);
+  return NextResponse.redirect(`${origin}/login?error=auth_callback_failed`);
 }
