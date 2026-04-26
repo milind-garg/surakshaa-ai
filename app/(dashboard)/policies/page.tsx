@@ -2,12 +2,13 @@ import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import {
   FileText, Upload, CheckCircle,
-  Clock, AlertCircle, ArrowRight, Search,
+  Clock, AlertCircle, ArrowRight,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import DeletePolicyButton from "@/components/policy/DeletePolicyButton";
 
 const statusConfig = {
   analyzed: {
@@ -103,9 +104,7 @@ export default async function PoliciesPage() {
           <h2 className="text-xl font-bold text-gray-500 dark:text-gray-400 mb-2">
             No policies yet
           </h2>
-          <p className="text-gray-400 font-hindi mb-6">
-            अभी तक कोई पॉलिसी नहीं
-          </p>
+          <p className="text-gray-400 font-hindi mb-6">अभी तक कोई पॉलिसी नहीं</p>
           <Link href="/upload">
             <Button className="bg-[#1E3A5F] text-white rounded-xl px-8">
               Upload Your First Policy
@@ -191,8 +190,15 @@ export default async function PoliciesPage() {
                     )}
                   </div>
 
-                  {/* Actions */}
+                  {/* Actions — Delete + View */}
                   <div className="flex items-center gap-2 shrink-0">
+                    {/* ✅ Delete button — always visible */}
+                    <DeletePolicyButton
+                      policyId={policy.id}
+                      fileName={policy.file_name ?? "this policy"}
+                      filePath={policy.file_path ?? ""}
+                    />
+
                     {policy.status === "analyzed" && (
                       <Link href={`/policies/${policy.id}`}>
                         <Button

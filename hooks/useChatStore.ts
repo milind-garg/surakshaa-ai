@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "./useAuth";
 
@@ -29,6 +29,7 @@ export function useChatStore(sessionId: string | null) {
   const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const isLoadingRef = useRef(false); // ref to avoid stale closure
   const supabase = createClient();
 
   const addMessage = useCallback((message: Message) => {
@@ -45,7 +46,15 @@ export function useChatStore(sessionId: string | null) {
 
   const sendMessage = useCallback(
     async (content: string, currentSessionId: string) => {
-      if (!user || isLoading) return;
+      // Use ref to prevent double sends, don't block on user check here
+      if (isLoadingRef.current) return;
+      if (!user) {
+        console.warn("sendMessage called before user loaded");
+        return;
+      }
+
+      isLoadingRef.current = true;
+      setIsLoading(true);
 
       const userMessage: Message = {
         id: `user-${Date.now()}`,
@@ -54,10 +63,6 @@ export function useChatStore(sessionId: string | null) {
         timestamp: new Date(),
       };
 
-      setMessages((prev) => [...prev, userMessage]);
-      setIsLoading(true);
-
-      // Add loading assistant message
       const loadingMessage: Message = {
         id: `assistant-loading-${Date.now()}`,
         role: "assistant",
@@ -65,21 +70,24 @@ export function useChatStore(sessionId: string | null) {
         timestamp: new Date(),
         isLoading: true,
       };
-      setMessages((prev) => [...prev, loadingMessage]);
+
+      setMessages((prev) => [...prev, userMessage, loadingMessage]);
 
       try {
-        // Save user message to DB
-        await supabase.from("chat_messages").insert({
+        // Save user message to DB (non-blocking — don't await before API call)
+        supabase.from("chat_messages").insert({
           session_id: currentSessionId,
           user_id: user.id,
           role: "user",
           content,
+        }).then(({ error }) => {
+          if (error) console.warn("Failed to save user message:", error);
         });
 
-        // Get conversation history for context
+        // Build history from current messages (exclude loading + welcome)
         const history = messages
-          .filter((m) => !m.isLoading)
-          .slice(-10) // last 10 messages for context
+          .filter((m) => !m.isLoading && m.id !== "welcome")
+          .slice(-10)
           .map((m) => ({ role: m.role, content: m.content }));
 
         // Call chat API
@@ -89,34 +97,38 @@ export function useChatStore(sessionId: string | null) {
           body: JSON.stringify({
             message: content,
             sessionId: currentSessionId,
-            history,
+            history, // clean history, no welcome message
           }),
         });
 
         if (!response.ok) {
           const errBody = await response.json().catch(() => ({}));
           console.error("Chat API error response:", errBody);
-          throw new Error(errBody?.details ?? "Chat API failed");
+          throw new Error(errBody?.details ?? `API error ${response.status}`);
         }
 
         const data = await response.json();
+
+        if (!data.response) {
+          throw new Error("Empty response from API");
+        }
 
         const assistantMessage: Message = {
           id: `assistant-${Date.now()}`,
           role: "assistant",
           content: data.response,
           timestamp: new Date(),
-          recommendations: data.recommendations,
+          recommendations: data.recommendations ?? undefined,
           isLoading: false,
         };
 
-        // Replace loading message
+        // Replace loading message with real response
         setMessages((prev) =>
           prev.map((msg) => (msg.isLoading ? assistantMessage : msg)),
         );
 
         // Save assistant message to DB
-        await supabase.from("chat_messages").insert({
+        supabase.from("chat_messages").insert({
           session_id: currentSessionId,
           user_id: user.id,
           role: "assistant",
@@ -124,20 +136,23 @@ export function useChatStore(sessionId: string | null) {
           metadata: data.recommendations
             ? { recommendations: data.recommendations }
             : {},
+        }).then(({ error }) => {
+          if (error) console.warn("Failed to save assistant message:", error);
         });
-      } catch (err) {
-        // Add this ↓ to see the real error in your browser console
-        console.error("Chat send error:", err);
 
+      } catch (err) {
+        console.error("Chat send error:", err);
         updateLastMessage({
           content: "Sorry, I encountered an error. Please try again.",
           isLoading: false,
         });
       } finally {
+        isLoadingRef.current = false;
         setIsLoading(false);
       }
     },
-    [user, isLoading, messages, supabase],
+    // Remove isLoading from deps — use ref instead to avoid stale closures
+    [user, messages, supabase, updateLastMessage],
   );
 
   const loadMessages = useCallback(
