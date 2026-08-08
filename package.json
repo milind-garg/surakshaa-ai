@@ -6,13 +6,14 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "eslint app components lib hooks types"
   },
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "@hookform/resolvers": "^5.2.2",
     "@supabase/ssr": "^0.10.2",
     "@supabase/supabase-js": "^2.103.3",
+    "@tailwindcss/typography": "^0.5.19",
     "axios": "^1.15.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -27,6 +28,7 @@
     "react-dropzone": "^15.0.0",
     "react-hook-form": "^7.72.1",
     "react-hot-toast": "^2.6.0",
+    "react-markdown": "^10.1.0",
     "shadcn": "^4.3.0",
     "sonner": "^2.0.7",
     "tailwind-merge": "^3.5.0",

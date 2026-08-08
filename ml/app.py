@@ -99,7 +99,7 @@ def score_single():
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5001))
-    print(f"\n🚀 Suraksha AI ML Service")
+    print(f"\n[Suraksha AI ML Service]")
     print(f"   Running at: http://localhost:{port}")
     print(f"   Routes:")
     print(f"     GET  http://localhost:{port}/health")
