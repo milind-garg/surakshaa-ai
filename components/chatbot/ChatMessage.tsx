@@ -4,6 +4,7 @@ import { Shield, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import RecommendationCards from "./RecommendationCards";
 import type { Message } from "@/hooks/useChatStore";
+import ReactMarkdown from "react-markdown";
 
 interface ChatMessageProps {
   message: Message;
@@ -67,12 +68,26 @@ export default function ChatMessage({ message }: ChatMessageProps) {
         >
           {isLoading ? (
             <TypingIndicator />
+          ) : isUser ? (
+            // User message — plain white text, no prose
+            <div className="text-white text-sm leading-relaxed whitespace-pre-wrap">
+              {message.content}
+            </div>
           ) : (
-            <div className="whitespace-pre-wrap">
-              {message.content
-                .replace(/```(?:json)?\s*[\s\S]*?```/gi, "")
-                .replace(/\n{3,}/g, "\n\n")
-                .trim()}
+            // Assistant message — markdown rendered
+            <div className="prose prose-sm max-w-none
+              prose-p:my-1 prose-p:leading-relaxed
+              prose-ul:my-1 prose-ul:pl-4
+              prose-li:my-0.5
+              prose-strong:text-[#1E3A5F] prose-strong:font-semibold
+              prose-headings:text-[#1E3A5F]
+              [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
+              <ReactMarkdown>
+                {message.content
+                  .replace(/```(?:json)?\s*[\s\S]*?```/gi, "")
+                  .replace(/\n{3,}/g, "\n\n")
+                  .trim()}
+              </ReactMarkdown>
             </div>
           )}
         </div>
@@ -86,7 +101,6 @@ export default function ChatMessage({ message }: ChatMessageProps) {
 
         {/* Timestamp */}
         {!isLoading && (
-          // Replace with:
           <p
             suppressHydrationWarning
             className={cn(
