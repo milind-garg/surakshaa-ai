@@ -19,29 +19,30 @@ const config: Config = {
     },
     extend: {
       colors: {
-        // Suraksha AI Brand Colors
+        // AegisFlow Enterprise Palette
         primary: {
-          DEFAULT: "#1E3A5F",   // Deep Navy Blue
+          DEFAULT: "#1D7A6C",   // Aegis Deep Emerald Teal
           foreground: "#FFFFFF",
-          50: "#E8EDF5",
-          100: "#C5D3E8",
-          200: "#9FB5D8",
-          300: "#7A97C8",
-          400: "#5579B8",
-          500: "#1E3A5F",
-          600: "#1A3354",
-          700: "#152A46",
-          800: "#102138",
-          900: "#0B1829",
+          50: "#F0FDFA",
+          100: "#EAF4F2",
+          200: "#BEE3DB",
+          300: "#89C4B7",
+          400: "#4D9F91",
+          500: "#1D7A6C",
+          600: "#165E53",
+          700: "#114941",
+          800: "#0D3731",
+          900: "#092521",
         },
         secondary: {
-          DEFAULT: "#FF6B35",   // Warm Orange (Indian feel)
+          DEFAULT: "#0F172A",   // Slate 900
           foreground: "#FFFFFF",
         },
         accent: {
-          DEFAULT: "#F7C59F",   // Soft Saffron
-          foreground: "#1E3A5F",
+          DEFAULT: "#EAF4F2",   // Soft Teal Tint
+          foreground: "#1D7A6C",
         },
+        darkCard: "#0A1118",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         card: {

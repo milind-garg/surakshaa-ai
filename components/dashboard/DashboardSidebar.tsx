@@ -46,7 +46,7 @@ export default function DashboardSidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="fixed left-0 top-16 bottom-0 w-64 bg-white dark:bg-gray-900 border-r border-gray-100 dark:border-gray-800 hidden lg:flex flex-col z-40">
+    <aside className="fixed left-0 top-16 bottom-0 w-64 bg-white border-r border-slate-200 hidden lg:flex flex-col z-40">
       <nav className="flex-1 p-4 space-y-1">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
@@ -55,29 +55,29 @@ export default function DashboardSidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-all group",
+                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all group",
                 isActive
-                  ? "bg-[#1E3A5F] text-white shadow-md"
-                  : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-[#1E3A5F] dark:hover:text-white"
+                  ? "bg-[#1D7A6C] text-white shadow-xs"
+                  : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
               )}
             >
               <item.icon
                 className={cn(
-                  "w-5 h-5 transition-transform group-hover:scale-110",
-                  isActive ? "text-white" : "text-gray-400 group-hover:text-[#1E3A5F]"
+                  "w-4 h-4 transition-transform group-hover:scale-105",
+                  isActive ? "text-white" : "text-slate-400 group-hover:text-[#1D7A6C]"
                 )}
               />
               <div className="flex-1">
-                <p>{item.label}</p>
+                <p className="text-xs font-semibold">{item.label}</p>
                 <p className={cn(
-                  "text-xs font-hindi",
-                  isActive ? "text-blue-200" : "text-gray-400"
+                  "text-[10px] font-hindi",
+                  isActive ? "text-teal-100" : "text-slate-400"
                 )}>
                   {item.labelHindi}
                 </p>
               </div>
               {item.badge && (
-                <span className="text-[10px] bg-[#FF6B35] text-white px-1.5 py-0.5 rounded-full font-bold">
+                <span className="text-[10px] bg-teal-500/20 text-teal-700 font-mono font-bold px-1.5 py-0.5 rounded uppercase">
                   {item.badge}
                 </span>
               )}
@@ -87,11 +87,11 @@ export default function DashboardSidebar() {
       </nav>
 
       {/* Bottom section */}
-      <div className="p-4 border-t border-gray-100 dark:border-gray-800">
-        <div className="bg-gradient-to-br from-[#1E3A5F] to-[#2d5986] rounded-xl p-4 text-white">
-          <TrendingUp className="w-6 h-6 mb-2 text-[#FF6B35]" />
-          <p className="text-xs font-semibold mb-1">Pro Tip</p>
-          <p className="text-xs text-blue-200 leading-relaxed">
+      <div className="p-4 border-t border-slate-200">
+        <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 text-white">
+          <TrendingUp className="w-5 h-5 mb-2 text-teal-400" />
+          <p className="text-xs font-semibold mb-1 text-white">Pro Tip</p>
+          <p className="text-[11px] text-slate-300 leading-relaxed">
             Upload your policy to get an instant AI analysis in Hindi or English.
           </p>
         </div>

@@ -79,14 +79,14 @@ export default function FileDropzone({ onFilesAccepted }: FileDropzoneProps) {
       <div
         {...getRootProps()}
         className={cn(
-          "relative border-2 border-dashed rounded-3xl p-12 text-center cursor-pointer transition-all duration-200",
+          "relative border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition-all duration-200",
           isDragActive && !isDragReject
-            ? "border-[#1E3A5F] bg-blue-50 dark:bg-blue-900/20 scale-[1.01]"
+            ? "border-[#1D7A6C] bg-teal-50/50 scale-[1.005]"
             : isDragReject
-            ? "border-red-400 bg-red-50 dark:bg-red-900/20"
+            ? "border-red-400 bg-red-50"
             : selectedFile
-            ? "border-green-400 bg-green-50 dark:bg-green-900/20"
-            : "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900 hover:border-[#1E3A5F] hover:bg-blue-50/50 dark:hover:bg-blue-900/10"
+            ? "border-teal-500 bg-teal-50/30"
+            : "border-slate-300 bg-slate-50/50 hover:border-[#1D7A6C] hover:bg-slate-50"
         )}
       >
         <input {...getInputProps()} />
@@ -94,70 +94,70 @@ export default function FileDropzone({ onFilesAccepted }: FileDropzoneProps) {
         {selectedFile ? (
           /* File Selected State */
           <div className="space-y-4">
-            <div className="w-20 h-20 bg-white dark:bg-gray-800 rounded-2xl flex items-center justify-center mx-auto shadow-md border border-gray-100 dark:border-gray-700">
+            <div className="w-16 h-16 bg-white rounded-xl flex items-center justify-center mx-auto shadow-xs border border-slate-200">
               {isPdf ? (
-                <FileText className="w-10 h-10 text-red-500" />
+                <FileText className="w-8 h-8 text-red-500" />
               ) : (
-                <Image className="w-10 h-10 text-blue-500" />
+                <Image className="w-8 h-8 text-[#1D7A6C]" />
               )}
             </div>
             <div>
-              <p className="font-semibold text-[#1E3A5F] dark:text-white text-lg">
+              <p className="font-bold text-slate-900 text-base">
                 {selectedFile.name}
               </p>
-              <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
+              <p className="text-slate-500 text-xs mt-0.5">
                 {formatBytes(selectedFile.size)} ·{" "}
                 {selectedFile.type === "application/pdf" ? "PDF Document" : "Image File"}
               </p>
-              <p className="text-green-600 dark:text-green-400 text-sm font-medium mt-2">
+              <p className="text-[#1D7A6C] text-xs font-mono font-medium mt-2 uppercase tracking-wider">
                 ✓ Ready to upload
               </p>
             </div>
             <button
               onClick={handleRemoveFile}
-              className="absolute top-4 right-4 w-8 h-8 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center shadow-md border border-gray-200 dark:border-gray-700 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+              className="absolute top-4 right-4 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-xs border border-slate-200 hover:bg-red-50 transition-colors"
             >
-              <X className="w-4 h-4 text-gray-500 hover:text-red-500" />
+              <X className="w-4 h-4 text-slate-500 hover:text-red-500" />
             </button>
           </div>
         ) : isDragActive && !isDragReject ? (
           /* Drag Over State */
           <div className="space-y-4">
-            <div className="w-20 h-20 bg-[#1E3A5F] rounded-2xl flex items-center justify-center mx-auto animate-bounce">
-              <Upload className="w-10 h-10 text-white" />
+            <div className="w-16 h-16 bg-[#1D7A6C] rounded-xl flex items-center justify-center mx-auto animate-bounce">
+              <Upload className="w-8 h-8 text-white" />
             </div>
-            <p className="text-[#1E3A5F] dark:text-blue-300 font-semibold text-xl">
+            <p className="text-slate-900 font-bold text-lg">
               Drop it here!
             </p>
-            <p className="text-blue-400 font-hindi">यहाँ छोड़ें!</p>
+            <p className="text-[#1D7A6C] font-hindi text-sm">यहाँ छोड़ें!</p>
           </div>
         ) : isDragReject ? (
           /* Drag Reject State */
           <div className="space-y-4">
-            <div className="w-20 h-20 bg-red-100 dark:bg-red-900/30 rounded-2xl flex items-center justify-center mx-auto">
-              <AlertCircle className="w-10 h-10 text-red-500" />
+            <div className="w-16 h-16 bg-red-100 rounded-xl flex items-center justify-center mx-auto">
+              <AlertCircle className="w-8 h-8 text-red-500" />
             </div>
-            <p className="text-red-600 dark:text-red-400 font-semibold text-xl">
+            <p className="text-red-600 font-bold text-lg">
               File not supported
             </p>
           </div>
         ) : (
           /* Default Idle State */
-          <div className="space-y-6">
-            <div className="w-24 h-24 bg-gradient-to-br from-[#1E3A5F] to-[#2d5986] rounded-3xl flex items-center justify-center mx-auto shadow-xl">
-              <Upload className="w-12 h-12 text-white" />
+          <div className="space-y-5">
+            <div className="w-16 h-16 bg-[#1D7A6C] rounded-xl flex items-center justify-center mx-auto shadow-xs">
+              <Upload className="w-8 h-8 text-white" />
             </div>
 
             <div>
-              <p className="text-xl font-bold text-[#1E3A5F] dark:text-white">
+              <p className="text-lg font-bold text-slate-900">
                 Drop your policy here
               </p>
-              <p className="text-[#FF6B35] font-hindi text-base mt-1">
+              <p className="text-[#1D7A6C] font-hindi text-xs mt-0.5 font-medium">
                 पॉलिसी यहाँ छोड़ें
               </p>
-              <p className="text-gray-500 dark:text-gray-400 text-sm mt-3">
+              <p className="text-slate-500 text-xs mt-2">
                 or{" "}
-                <span className="text-[#1E3A5F] dark:text-blue-400 font-semibold underline underline-offset-2">
+                <span className="text-[#1D7A6C] font-semibold underline underline-offset-2">
                   browse to choose a file
                 </span>
               </p>
@@ -168,12 +168,12 @@ export default function FileDropzone({ onFilesAccepted }: FileDropzoneProps) {
               {["PDF", "JPG", "PNG", "WebP"].map((fmt) => (
                 <span
                   key={fmt}
-                  className="px-3 py-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full text-xs font-semibold text-gray-600 dark:text-gray-300"
+                  className="px-2.5 py-0.5 bg-white border border-slate-200 rounded text-xs font-mono font-medium text-slate-600 uppercase"
                 >
                   {fmt}
                 </span>
               ))}
-              <span className="px-3 py-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-full text-xs font-semibold text-gray-500 dark:text-gray-400">
+              <span className="px-2.5 py-0.5 bg-white border border-slate-200 rounded text-xs font-mono font-medium text-slate-500">
                 Max 10MB
               </span>
             </div>
@@ -183,9 +183,9 @@ export default function FileDropzone({ onFilesAccepted }: FileDropzoneProps) {
 
       {/* File Error */}
       {fileError && (
-        <div className="flex items-center gap-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-3">
+        <div className="flex items-center gap-2 bg-red-50 border border-red-200 rounded-lg p-3">
           <AlertCircle className="w-4 h-4 text-red-500 shrink-0" />
-          <p className="text-red-600 dark:text-red-400 text-sm">{fileError}</p>
+          <p className="text-red-600 text-xs">{fileError}</p>
         </div>
       )}
 
@@ -193,19 +193,19 @@ export default function FileDropzone({ onFilesAccepted }: FileDropzoneProps) {
       {selectedFile && !fileError && (
         <Button
           onClick={handleUpload}
-          className="w-full bg-[#1E3A5F] hover:bg-[#152A46] text-white rounded-2xl h-14 text-base font-semibold shadow-xl hover:shadow-2xl transition-all hover:-translate-y-0.5 gap-3"
+          className="w-full bg-[#1D7A6C] hover:bg-[#165E53] text-white rounded-lg h-11 text-sm font-medium shadow-xs transition-colors gap-2"
         >
-          <Upload className="w-5 h-5" />
+          <Upload className="w-4 h-4" />
           Analyze This Policy with AI
         </Button>
       )}
 
       {/* Supported Insurers */}
-      <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-5">
-        <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+      <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-xs">
+        <p className="text-xs font-bold text-slate-900 mb-2">
           Supported Insurers (and more)
         </p>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-1.5">
           {[
             "LIC", "HDFC Life", "ICICI Prudential", "SBI Life",
             "Max Life", "Bajaj Allianz", "Tata AIA", "Star Health",
@@ -213,7 +213,7 @@ export default function FileDropzone({ onFilesAccepted }: FileDropzoneProps) {
           ].map((insurer) => (
             <span
               key={insurer}
-              className="px-2.5 py-1 bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 text-xs rounded-lg border border-gray-100 dark:border-gray-700"
+              className="px-2 py-0.5 bg-slate-50 text-slate-700 text-xs rounded border border-slate-200 font-mono"
             >
               {insurer}
             </span>

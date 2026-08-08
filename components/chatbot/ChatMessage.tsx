@@ -1,13 +1,16 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Shield, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 import RecommendationCards from "./RecommendationCards";
 import type { Message } from "@/hooks/useChatStore";
 import ReactMarkdown from "react-markdown";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface ChatMessageProps {
   message: Message;
+  userAvatar?: string;
 }
 
 function TypingIndicator() {
@@ -24,9 +27,20 @@ function TypingIndicator() {
   );
 }
 
-export default function ChatMessage({ message }: ChatMessageProps) {
+export default function ChatMessage({ message, userAvatar }: ChatMessageProps) {
   const isUser = message.role === "user";
   const isLoading = message.isLoading;
+
+  const [avatarUrl, setAvatarUrl] = useState<string>(userAvatar || "");
+
+  useEffect(() => {
+    if (userAvatar) {
+      setAvatarUrl(userAvatar);
+    } else if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("suraksha_user_avatar");
+      if (saved) setAvatarUrl(saved);
+    }
+  }, [userAvatar]);
 
   return (
     <div
@@ -36,53 +50,64 @@ export default function ChatMessage({ message }: ChatMessageProps) {
       )}
     >
       {/* Avatar */}
-      <div
-        className={cn(
-          "w-8 h-8 rounded-xl flex items-center justify-center shrink-0 mt-1",
-          isUser
-            ? "bg-[#1E3A5F]"
-            : "bg-gradient-to-br from-[#FF6B35] to-[#f59e0b]",
-        )}
-      >
-        {isUser ? (
-          <User className="w-4 h-4 text-white" />
-        ) : (
+      {isUser ? (
+        <Avatar className="w-8 h-8 rounded-lg shrink-0 mt-1 shadow-xs border border-slate-200 bg-slate-100 overflow-hidden">
+          {avatarUrl ? (
+            <AvatarImage src={avatarUrl} alt="User Avatar" className="object-contain p-0.5" />
+          ) : null}
+          <AvatarFallback className="bg-slate-900 text-white rounded-lg">
+            <User className="w-4 h-4 text-white" />
+          </AvatarFallback>
+        </Avatar>
+      ) : (
+        <div className="w-8 h-8 rounded-lg bg-[#1D7A6C] flex items-center justify-center shrink-0 mt-1 shadow-xs">
           <Shield className="w-4 h-4 text-white" />
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Bubble */}
       <div
         className={cn(
-          "max-w-[80%] space-y-2",
+          "max-w-[85%] sm:max-w-[80%] min-w-0 space-y-2 break-words overflow-hidden",
           isUser ? "items-end" : "items-start",
         )}
       >
         <div
           className={cn(
-            "rounded-2xl px-4 py-3 text-sm leading-relaxed",
+            "rounded-xl px-4 py-3 text-sm leading-relaxed break-words overflow-hidden max-w-full",
             isUser
-              ? "bg-[#1E3A5F] text-white rounded-tr-sm"
-              : "bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 text-gray-800 dark:text-gray-200 rounded-tl-sm shadow-sm",
+              ? "bg-[#1D7A6C] text-white rounded-tr-xs shadow-xs font-medium"
+              : "bg-white border border-slate-200 text-slate-800 rounded-tl-xs shadow-xs",
           )}
         >
           {isLoading ? (
             <TypingIndicator />
           ) : isUser ? (
             // User message — plain white text, no prose
-            <div className="text-white text-sm leading-relaxed whitespace-pre-wrap">
+            <div className="text-white text-sm leading-relaxed whitespace-pre-wrap break-words">
               {message.content}
             </div>
           ) : (
             // Assistant message — markdown rendered
-            <div className="prose prose-sm max-w-none
-              prose-p:my-1 prose-p:leading-relaxed
+            <div className="prose prose-sm max-w-none break-words overflow-hidden
+              prose-p:my-1 prose-p:leading-relaxed prose-p:break-words
               prose-ul:my-1 prose-ul:pl-4
               prose-li:my-0.5
-              prose-strong:text-[#1E3A5F] prose-strong:font-semibold
-              prose-headings:text-[#1E3A5F]
+              prose-strong:text-slate-900 prose-strong:font-bold
+              prose-headings:text-slate-900
+              prose-pre:whitespace-pre-wrap prose-pre:break-words prose-pre:bg-slate-900 prose-pre:text-slate-100 prose-pre:p-3.5 prose-pre:rounded-lg prose-pre:text-xs prose-pre:font-mono prose-pre:max-w-full prose-pre:overflow-x-auto
+              prose-code:break-words prose-code:whitespace-pre-wrap
               [&>*:first-child]:mt-0 [&>*:last-child]:mb-0">
-              <ReactMarkdown>
+              <ReactMarkdown
+                components={{
+                  pre: ({ node, ...props }) => (
+                    <pre className="whitespace-pre-wrap break-words overflow-x-auto bg-slate-900 text-slate-100 p-3.5 rounded-lg text-xs font-mono max-w-full" {...props} />
+                  ),
+                  code: ({ node, ...props }) => (
+                    <code className="whitespace-pre-wrap break-words text-xs font-mono" {...props} />
+                  ),
+                }}
+              >
                 {message.content
                   .replace(/```(?:json)?\s*[\s\S]*?```/gi, "")
                   .replace(/\n{3,}/g, "\n\n")

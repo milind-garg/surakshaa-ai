@@ -25,7 +25,9 @@
 ml/venv/
 ml/__pycache__/
 *.pyc
+*.zip
 ml/models/*.pkl
+ml/data/*.csv
 
 # debug
 npm-debug.log*

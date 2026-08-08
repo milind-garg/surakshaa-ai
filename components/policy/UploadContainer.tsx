@@ -169,16 +169,16 @@ export default function UploadContainer() {
       )}
 
       {stage === "error" && (
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl p-6 text-center">
-          <p className="text-red-600 dark:text-red-400 font-semibold mb-2">
+        <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center shadow-xs">
+          <p className="text-red-700 font-bold mb-1 text-sm">
             Upload Failed
           </p>
-          <p className="text-red-500 dark:text-red-400 text-sm mb-4">
+          <p className="text-red-600 text-xs mb-4">
             {errorMessage}
           </p>
           <button
             onClick={handleReset}
-            className="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-xl text-sm font-medium transition-colors"
+            className="bg-red-600 hover:bg-red-700 text-white px-5 py-2 rounded-lg text-xs font-medium transition-colors"
           >
             Try Again
           </button>
@@ -210,16 +210,16 @@ export default function UploadContainer() {
           ].map((tip) => (
             <div
               key={tip.title}
-              className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-4 text-center"
+              className="bg-white border border-slate-200 rounded-xl p-4 text-center shadow-xs"
             >
-              <div className="text-3xl mb-2">{tip.emoji}</div>
-              <p className="font-semibold text-[#1E3A5F] dark:text-white text-sm">
+              <div className="text-2xl mb-2">{tip.emoji}</div>
+              <p className="font-bold text-slate-900 text-xs sm:text-sm">
                 {tip.title}
               </p>
-              <p className="text-xs font-hindi text-gray-400 mb-1">
+              <p className="text-xs font-hindi text-[#1D7A6C] mb-1 font-medium">
                 {tip.titleHindi}
               </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
+              <p className="text-xs text-slate-500">
                 {tip.desc}
               </p>
             </div>

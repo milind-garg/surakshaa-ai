@@ -2,23 +2,29 @@
 # SURAKSHA AI — Recommender (Updated for actual dataset columns)
 # ============================================================
 
+import os
 import numpy as np
+import pandas as pd
 import joblib
 import json
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODELS_DIR = os.path.join(BASE_DIR, 'models')
+
 # ── Load Models ───────────────────────────────────────────────
 try:
-    rf_model = joblib.load('models/rf_model.pkl')
-    gb_model = joblib.load('models/gb_model.pkl')
-    scaler   = joblib.load('models/scaler.pkl')
-    kmeans   = joblib.load('models/kmeans.pkl')
-    with open('models/metadata.json') as f:
+    rf_model = joblib.load(os.path.join(MODELS_DIR, 'rf_model.pkl'))
+    gb_model = joblib.load(os.path.join(MODELS_DIR, 'gb_model.pkl'))
+    scaler   = joblib.load(os.path.join(MODELS_DIR, 'scaler.pkl'))
+    kmeans   = joblib.load(os.path.join(MODELS_DIR, 'kmeans.pkl'))
+    with open(os.path.join(MODELS_DIR, 'metadata.json')) as f:
         metadata = json.load(f)
     POLICY_CATALOG = metadata['policy_catalog']
     ENCODERS       = metadata['encoders']
-    print("✅ Models loaded successfully")
+    FEATURES       = metadata['features']
+    print("[ML Engine] Models loaded successfully")
 except Exception as e:
-    print(f"❌ Model load error: {e}")
+    print(f"[ML Engine] Model load error: {e}")
     raise
 
 
@@ -149,7 +155,8 @@ def encode_user_profile(profile: dict) -> list:
 def predict_charge(profile: dict) -> float:
     """Predict insurance charge for a user profile."""
     features = encode_user_profile(profile)
-    scaled   = scaler.transform([features])
+    features_df = pd.DataFrame([features], columns=FEATURES)
+    scaled   = scaler.transform(features_df)
     rf_pred  = rf_model.predict(scaled)[0]
     gb_pred  = gb_model.predict(scaled)[0]
     return float(rf_pred * 0.6 + gb_pred * 0.4)
@@ -158,7 +165,8 @@ def predict_charge(profile: dict) -> float:
 def get_user_segment(profile: dict) -> int:
     """Assign user to a customer segment."""
     features = encode_user_profile(profile)
-    scaled   = scaler.transform([features])
+    features_df = pd.DataFrame([features], columns=FEATURES)
+    scaled   = scaler.transform(features_df)
     return int(kmeans.predict(scaled)[0])
 
 
@@ -371,9 +379,9 @@ if __name__ == '__main__':
     }
 
     print("\nTest Profile:", test_profile)
-    print("\nPredicted Charge: ₹", predict_charge(test_profile))
+    print("\nPredicted Charge: Rs.", predict_charge(test_profile))
     print("\nTop 5 Recommendations:")
     recs = get_recommendations(test_profile)
     for r in recs:
-        print(f"  #{r['rank']} {r['policy_name']} ({r['insurer']}) "
-              f"— {r['match_score']}% match — {r['premium_estimate']}")
+        prem = str(r['premium_estimate']).replace('₹', 'Rs.')
+        print(f"  #{r['rank']} {r['policy_name']} ({r['insurer']}) — {r['match_score']}% match — {prem}")

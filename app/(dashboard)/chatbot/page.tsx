@@ -20,7 +20,7 @@ interface ChatSession {
 const makeWelcomeMessage = () => ({
   id: "welcome",
   role: "assistant" as const,
-  content: `Namaste! 🙏 I'm Suraksha AI, your personal insurance advisor.
+  content: `Namaste! 🙏 I'm OREVA, your personal Suraksha AI insurance advisor.
 
 I can help you:
 - 📋 **Understand** your existing policies
@@ -187,20 +187,20 @@ export default function ChatbotPage() {
       )}
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col min-w-0 bg-gray-50 dark:bg-gray-950">
+      <div className="flex-1 flex flex-col min-w-0 bg-slate-50">
         {/* Chat Header */}
-        <div className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-6 py-4 flex items-center justify-between">
+        <div className="bg-white border-b border-slate-200 px-6 py-3.5 flex items-center justify-between shadow-xs">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-[#FF6B35] to-[#f59e0b] rounded-xl flex items-center justify-center shadow-md">
+            <div className="w-9 h-9 bg-[#1D7A6C] rounded-lg flex items-center justify-center shadow-xs">
               <Shield className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="font-bold text-[#1E3A5F] dark:text-white">
-                Suraksha AI Assistant
+              <h1 className="font-bold text-slate-900 text-sm sm:text-base">
+                OREVA - Suraksha AI Assistant
               </h1>
               <div className="flex items-center gap-1.5">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                <p className="text-xs text-gray-500 dark:text-gray-400">
+                <div className="w-2 h-2 bg-[#1D7A6C] rounded-full animate-pulse" />
+                <p className="text-xs text-slate-500 font-mono">
                   Online · Powered by Google Gemini
                 </p>
               </div>
@@ -208,17 +208,17 @@ export default function ChatbotPage() {
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="hidden sm:flex items-center gap-1.5 bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-full">
-              <Sparkles className="w-3 h-3 text-[#1E3A5F] dark:text-blue-400" />
-              <span className="text-xs font-medium text-[#1E3A5F] dark:text-blue-400">
-                Profile-aware recommendations
+            <div className="hidden sm:flex items-center gap-1.5 bg-teal-50 border border-teal-100 px-3 py-1 rounded-md">
+              <Sparkles className="w-3 h-3 text-[#1D7A6C]" />
+              <span className="text-xs font-mono uppercase tracking-wider font-semibold text-[#1D7A6C]">
+                Profile-aware
               </span>
             </div>
           </div>
         </div>
 
         {/* Messages Area */}
-        <div className="flex-1 overflow-y-auto px-6 py-6 space-y-6">
+        <div className="flex-1 overflow-y-auto overflow-x-hidden min-w-0 max-w-full px-6 py-6 space-y-6">
           {displayMessages.map((message) => (
             <ChatMessage key={message.id} message={message} />
           ))}

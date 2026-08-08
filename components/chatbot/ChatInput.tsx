@@ -60,15 +60,15 @@ export default function ChatInput({ onSend, isLoading, disabled }: ChatInputProp
   };
 
   return (
-    <div className="border-t border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 space-y-3">
+    <div className="border-t border-slate-200 bg-white p-4 space-y-3">
       {/* Quick Prompts */}
       {showQuickPrompts && (
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-1.5">
           {quickPrompts.map((prompt) => (
             <button
               key={prompt}
               onClick={() => handleQuickPrompt(prompt)}
-              className="text-xs px-3 py-1.5 bg-gray-50 dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-900/20 border border-gray-200 dark:border-gray-700 hover:border-[#1E3A5F] text-gray-600 dark:text-gray-400 hover:text-[#1E3A5F] rounded-full transition-colors"
+              className="text-xs font-mono px-3 py-1 bg-slate-50 hover:bg-teal-50 border border-slate-200 hover:border-[#1D7A6C] text-slate-600 hover:text-[#1D7A6C] rounded-md transition-colors"
             >
               {prompt}
             </button>
@@ -78,7 +78,7 @@ export default function ChatInput({ onSend, isLoading, disabled }: ChatInputProp
 
       {/* Input Row */}
       <div className="flex items-end gap-2">
-        <div className="flex-1 relative bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-2xl focus-within:border-[#1E3A5F] focus-within:ring-2 focus-within:ring-[#1E3A5F]/10 transition-all">
+        <div className="flex-1 relative bg-slate-50 border border-slate-200 rounded-xl focus-within:border-[#1D7A6C] focus-within:ring-2 focus-within:ring-[#1D7A6C]/10 transition-all">
           <textarea
             ref={textareaRef}
             value={input}
@@ -88,7 +88,7 @@ export default function ChatInput({ onSend, isLoading, disabled }: ChatInputProp
             placeholder="Ask about insurance, get recommendations... (Press Enter to send)"
             disabled={disabled || isLoading}
             rows={1}
-            className="w-full bg-transparent px-4 py-3 pr-10 text-sm text-gray-800 dark:text-gray-200 placeholder-gray-400 resize-none outline-none max-h-32"
+            className="w-full bg-transparent px-4 py-3 pr-10 text-sm text-slate-900 placeholder-slate-400 resize-none outline-none max-h-32"
           />
         </div>
 
@@ -97,23 +97,23 @@ export default function ChatInput({ onSend, isLoading, disabled }: ChatInputProp
           onClick={handleSend}
           disabled={!input.trim() || isLoading || disabled}
           className={cn(
-            "w-11 h-11 rounded-xl p-0 shrink-0 transition-all",
+            "w-10 h-10 rounded-lg p-0 shrink-0 transition-all",
             input.trim() && !isLoading
-              ? "bg-[#1E3A5F] hover:bg-[#152A46] text-white shadow-lg"
-              : "bg-gray-100 dark:bg-gray-800 text-gray-400"
+              ? "bg-[#1D7A6C] hover:bg-[#165E53] text-white shadow-xs"
+              : "bg-slate-100 text-slate-400"
           )}
         >
           {isLoading ? (
-            <div className="w-4 h-4 border-2 border-gray-300 border-t-[#1E3A5F] rounded-full animate-spin" />
+            <div className="w-4 h-4 border-2 border-slate-300 border-t-[#1D7A6C] rounded-full animate-spin" />
           ) : (
             <Send className="w-4 h-4" />
           )}
         </Button>
       </div>
 
-      <p className="text-xs text-gray-400 text-center">
-        Suraksha AI may make mistakes. Verify recommendations with the insurer.
-        <span className="font-hindi"> · AI गलतियाँ कर सकता है।</span>
+      <p className="text-xs text-slate-400 text-center font-mono">
+        OREVA may make mistakes. Verify recommendations with the insurer.
+        <span className="font-hindi text-[#1D7A6C]"> · OREVA गलतियाँ कर सकता है।</span>
       </p>
     </div>
   );

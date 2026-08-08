@@ -14,25 +14,25 @@ const statusConfig = {
   analyzed: {
     label: "Analyzed",
     icon: CheckCircle,
-    className: "bg-green-50 text-green-700 border-green-200",
-    iconClass: "text-green-500",
+    className: "bg-teal-50 text-[#1D7A6C] border-teal-100 font-mono text-[10px] uppercase",
+    iconClass: "text-[#1D7A6C]",
   },
   processing: {
     label: "Processing",
     icon: Clock,
-    className: "bg-yellow-50 text-yellow-700 border-yellow-200",
-    iconClass: "text-yellow-500",
+    className: "bg-amber-50 text-amber-700 border-amber-200 font-mono text-[10px] uppercase",
+    iconClass: "text-amber-500",
   },
   uploading: {
     label: "Uploading",
     icon: Clock,
-    className: "bg-blue-50 text-blue-700 border-blue-200",
-    iconClass: "text-blue-500",
+    className: "bg-slate-50 text-slate-700 border-slate-200 font-mono text-[10px] uppercase",
+    iconClass: "text-slate-500",
   },
   error: {
     label: "Error",
     icon: AlertCircle,
-    className: "bg-red-50 text-red-700 border-red-200",
+    className: "bg-red-50 text-red-700 border-red-200 font-mono text-[10px] uppercase",
     iconClass: "text-red-500",
   },
 };
@@ -52,22 +52,22 @@ export default async function PoliciesPage() {
   const analyzedCount = policies?.filter((p) => p.status === "analyzed").length ?? 0;
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6">
 
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-[#1E3A5F] dark:text-white">
+          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
             My Policies
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-slate-500 text-sm mt-0.5">
             {totalPolicies} {totalPolicies === 1 ? "policy" : "policies"} uploaded ·{" "}
             {analyzedCount} analyzed
           </p>
-          <p className="text-sm font-hindi text-gray-400">मेरी बीमा पॉलिसी</p>
+          <p className="text-xs font-hindi text-[#1D7A6C] font-medium">मेरी बीमा पॉलिसी</p>
         </div>
         <Link href="/upload">
-          <Button className="bg-[#1E3A5F] hover:bg-[#152A46] text-white rounded-xl gap-2 shadow-md">
+          <Button className="bg-[#1D7A6C] hover:bg-[#165E53] text-white rounded-lg gap-2 shadow-xs text-sm font-medium">
             <Upload className="w-4 h-4" />
             Upload New Policy
           </Button>
@@ -77,42 +77,40 @@ export default async function PoliciesPage() {
       {/* Stats Row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
-          { label: "Total Uploaded", value: totalPolicies, color: "text-blue-600" },
-          { label: "Analyzed", value: analyzedCount, color: "text-green-600" },
+          { label: "Total Uploaded", value: totalPolicies },
+          { label: "Analyzed", value: analyzedCount },
           {
             label: "Pending",
             value: policies?.filter((p) => p.status === "processing" || p.status === "uploading").length ?? 0,
-            color: "text-yellow-600",
           },
           {
             label: "Errors",
             value: policies?.filter((p) => p.status === "error").length ?? 0,
-            color: "text-red-600",
           },
         ].map((stat) => (
-          <Card key={stat.label} className="p-4 border-gray-100 dark:border-gray-800 text-center">
-            <p className={`text-2xl font-bold ${stat.color}`}>{stat.value}</p>
-            <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{stat.label}</p>
+          <Card key={stat.label} className="p-4 border-slate-200 bg-white rounded-xl text-center shadow-xs">
+            <p className="text-2xl font-bold text-slate-900">{stat.value}</p>
+            <p className="text-xs text-slate-500 mt-1 font-mono uppercase tracking-wider">{stat.label}</p>
           </Card>
         ))}
       </div>
 
       {/* Policies List */}
       {totalPolicies === 0 ? (
-        <Card className="p-16 text-center border-dashed border-2 border-gray-200 dark:border-gray-700">
-          <FileText className="w-16 h-16 text-gray-200 mx-auto mb-4" />
-          <h2 className="text-xl font-bold text-gray-500 dark:text-gray-400 mb-2">
+        <Card className="p-12 text-center border-dashed border-2 border-slate-200 rounded-xl">
+          <FileText className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+          <h2 className="text-lg font-bold text-slate-700 mb-1">
             No policies yet
           </h2>
-          <p className="text-gray-400 font-hindi mb-6">अभी तक कोई पॉलिसी नहीं</p>
+          <p className="text-slate-400 font-hindi text-xs mb-4">अभी तक कोई पॉलिसी नहीं</p>
           <Link href="/upload">
-            <Button className="bg-[#1E3A5F] text-white rounded-xl px-8">
+            <Button className="bg-[#1D7A6C] hover:bg-[#165E53] text-white rounded-lg px-6 text-xs font-medium">
               Upload Your First Policy
             </Button>
           </Link>
         </Card>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {policies?.map((policy) => {
             const analysis = (policy as any).policy_analyses?.[0];
             const status = statusConfig[policy.status as keyof typeof statusConfig] ?? statusConfig.error;
@@ -121,28 +119,28 @@ export default async function PoliciesPage() {
             return (
               <Card
                 key={policy.id}
-                className="p-5 border-gray-100 dark:border-gray-800 hover:shadow-md transition-all"
+                className="p-5 border-slate-200 rounded-xl bg-white hover:border-slate-300 transition-all shadow-xs"
               >
                 <div className="flex items-start gap-4 flex-wrap">
 
                   {/* File Icon */}
-                  <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/20 rounded-2xl flex items-center justify-center shrink-0">
-                    <FileText className="w-6 h-6 text-blue-600" />
+                  <div className="w-10 h-10 bg-teal-50 border border-teal-100 rounded-lg flex items-center justify-center shrink-0">
+                    <FileText className="w-5 h-5 text-[#1D7A6C]" />
                   </div>
 
                   {/* Main Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-3 flex-wrap">
                       <div>
-                        <h3 className="font-bold text-[#1E3A5F] dark:text-white truncate max-w-sm">
+                        <h3 className="font-bold text-slate-900 truncate max-w-sm text-sm sm:text-base">
                           {analysis?.policy_name ?? policy.file_name}
                         </h3>
                         {analysis && (
-                          <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+                          <p className="text-xs text-slate-500 mt-0.5 font-mono">
                             {analysis.insurer} · {analysis.policy_type}
                           </p>
                         )}
-                        <p className="text-xs text-gray-400 mt-1">
+                        <p className="text-[11px] text-slate-400 mt-0.5">
                           Uploaded {new Date(policy.created_at).toLocaleDateString("en-IN", {
                             day: "numeric", month: "short", year: "numeric",
                           })}
@@ -159,29 +157,23 @@ export default async function PoliciesPage() {
 
                     {/* Analysis Stats */}
                     {analysis && (
-                      <div className="flex items-center gap-4 mt-3 flex-wrap">
+                      <div className="flex items-center gap-4 mt-3 flex-wrap font-mono text-xs">
                         <div className="flex items-center gap-1.5">
-                          <span className="text-xs text-gray-500">Sum Insured:</span>
-                          <span className="text-xs font-semibold text-[#1E3A5F] dark:text-white">
+                          <span className="text-slate-500">Sum Insured:</span>
+                          <span className="font-bold text-slate-900">
                             ₹{((analysis.sum_insured ?? 0) / 100000).toFixed(1)}L
                           </span>
                         </div>
                         <div className="flex items-center gap-1.5">
-                          <span className="text-xs text-gray-500">Claim Success:</span>
-                          <span className={`text-xs font-semibold ${
-                            (analysis.claim_success_probability ?? 0) >= 75
-                              ? "text-green-600"
-                              : (analysis.claim_success_probability ?? 0) >= 50
-                              ? "text-yellow-600"
-                              : "text-red-600"
-                          }`}>
+                          <span className="text-slate-500">Claim Success:</span>
+                          <span className="font-bold text-[#1D7A6C]">
                             {analysis.claim_success_probability ?? 0}%
                           </span>
                         </div>
                         {analysis.coverage_gaps?.length > 0 && (
                           <div className="flex items-center gap-1.5">
-                            <AlertCircle className="w-3 h-3 text-red-500" />
-                            <span className="text-xs text-red-600">
+                            <AlertCircle className="w-3.5 h-3.5 text-amber-500" />
+                            <span className="text-amber-700 font-semibold">
                               {analysis.coverage_gaps.length} gap{analysis.coverage_gaps.length !== 1 ? "s" : ""} found
                             </span>
                           </div>
@@ -192,7 +184,6 @@ export default async function PoliciesPage() {
 
                   {/* Actions — Delete + View */}
                   <div className="flex items-center gap-2 shrink-0">
-                    {/* ✅ Delete button — always visible */}
                     <DeletePolicyButton
                       policyId={policy.id}
                       fileName={policy.file_name ?? "this policy"}
@@ -203,10 +194,10 @@ export default async function PoliciesPage() {
                       <Link href={`/policies/${policy.id}`}>
                         <Button
                           size="sm"
-                          className="bg-[#1E3A5F] hover:bg-[#152A46] text-white rounded-xl gap-1.5 text-xs"
+                          className="bg-[#1D7A6C] hover:bg-[#165E53] text-white rounded-lg gap-1.5 text-xs font-medium"
                         >
                           View Analysis
-                          <ArrowRight className="w-3 h-3" />
+                          <ArrowRight className="w-3.5 h-3.5" />
                         </Button>
                       </Link>
                     )}
@@ -215,7 +206,7 @@ export default async function PoliciesPage() {
                         <Button
                           size="sm"
                           variant="outline"
-                          className="rounded-xl text-xs border-red-200 text-red-600 hover:bg-red-50"
+                          className="rounded-lg text-xs border-red-200 text-red-600 hover:bg-red-50"
                         >
                           Re-upload
                         </Button>

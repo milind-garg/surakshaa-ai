@@ -26,35 +26,35 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative z-10 space-y-6 animate-fade-in">
+    <div className="relative z-10 space-y-6">
       {/* Card */}
-      <div className="bg-white/95 dark:bg-gray-900/95 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/20">
+      <div className="bg-white rounded-xl shadow-xs p-8 border border-slate-200">
 
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-14 h-14 bg-gradient-to-br from-[#1E3A5F] to-[#FF6B35] rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <Shield className="w-7 h-7 text-white" />
+          <div className="w-12 h-12 bg-[#1D7A6C] rounded-lg flex items-center justify-center mx-auto mb-4 shadow-xs">
+            <Shield className="w-6 h-6 text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-[#1E3A5F] dark:text-white">
+          <h1 className="text-xl font-bold text-slate-900">
             Welcome Back!
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">
+          <p className="text-slate-500 text-xs mt-1">
             Log in to your Suraksha AI account
           </p>
-          <p className="text-[#FF6B35] font-hindi text-sm mt-1">
+          <p className="text-[#1D7A6C] font-hindi text-xs mt-1 font-medium">
             वापस स्वागत है!
           </p>
         </div>
 
         {/* Form */}
-        <form action={handleSubmit} className="space-y-5">
+        <form action={handleSubmit} className="space-y-4">
           {/* Email */}
           <div className="space-y-1.5">
-            <Label htmlFor="email" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+            <Label htmlFor="email" className="text-xs font-medium text-slate-700">
               Email Address
             </Label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <Input
                 id="email"
                 name="email"
@@ -62,7 +62,7 @@ export default function LoginPage() {
                 placeholder="rahul@example.com"
                 required
                 autoComplete="email"
-                className="pl-9 rounded-xl border-gray-200 dark:border-gray-700 focus:border-[#1E3A5F] h-11"
+                className="pl-9 rounded-lg border-slate-200 focus:border-[#1D7A6C] h-10 text-sm"
               />
             </div>
           </div>
@@ -70,18 +70,18 @@ export default function LoginPage() {
           {/* Password */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <Label htmlFor="password" className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              <Label htmlFor="password" className="text-xs font-medium text-slate-700">
                 Password
               </Label>
               <Link
                 href="/forgot-password"
-                className="text-xs text-[#1E3A5F] dark:text-blue-400 hover:underline font-medium"
+                className="text-xs text-[#1D7A6C] hover:underline font-medium"
               >
                 Forgot password?
               </Link>
             </div>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <Input
                 id="password"
                 name="password"
@@ -89,12 +89,12 @@ export default function LoginPage() {
                 placeholder="Your password"
                 required
                 autoComplete="current-password"
-                className="pl-9 pr-10 rounded-xl border-gray-200 dark:border-gray-700 focus:border-[#1E3A5F] h-11"
+                className="pl-9 pr-10 rounded-lg border-slate-200 focus:border-[#1D7A6C] h-10 text-sm"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
@@ -103,17 +103,17 @@ export default function LoginPage() {
 
           {/* Error */}
           {error && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-3">
-              <p className="text-red-600 dark:text-red-400 text-sm">{error}</p>
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+              <p className="text-red-600 text-xs">{error}</p>
             </div>
           )}
 
           {/* Demo Credentials Box */}
-          <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-3">
-            <p className="text-amber-800 dark:text-amber-300 text-xs font-semibold mb-1">
+          <div className="bg-slate-50 border border-slate-200 rounded-lg p-3">
+            <p className="text-slate-800 text-xs font-semibold mb-1">
               🧪 For Testing / Demo
             </p>
-            <p className="text-amber-700 dark:text-amber-400 text-xs">
+            <p className="text-slate-600 text-xs">
               Sign up first with any email, then log in here.
             </p>
           </div>
@@ -122,7 +122,7 @@ export default function LoginPage() {
           <Button
             type="submit"
             disabled={isPending}
-            className="w-full bg-[#1E3A5F] hover:bg-[#152A46] text-white rounded-xl h-11 font-semibold shadow-lg gap-2 transition-all hover:-translate-y-0.5"
+            className="w-full bg-[#1D7A6C] hover:bg-[#165E53] text-white rounded-lg h-10 text-sm font-medium shadow-xs gap-2 transition-colors"
           >
             {isPending ? (
               <div className="flex items-center gap-2">
@@ -140,11 +140,11 @@ export default function LoginPage() {
       </div>
 
       {/* Signup Link */}
-      <p className="text-center text-blue-200 text-sm">
+      <p className="text-center text-slate-600 text-xs">
         Don't have an account?{" "}
         <Link
           href="/signup"
-          className="text-white font-semibold hover:text-[#FF6B35] transition-colors"
+          className="text-[#1D7A6C] font-semibold hover:underline"
         >
           Sign up free
         </Link>
