@@ -26,12 +26,12 @@ export default function ChatSidebar({
   onDeleteSession,
 }: ChatSidebarProps) {
   return (
-    <div className="w-64 bg-gray-50 dark:bg-gray-900 border-r border-gray-100 dark:border-gray-800 flex flex-col h-full">
+    <div className="w-64 bg-white border-r border-slate-200 flex flex-col h-full">
       {/* Header */}
-      <div className="p-4 border-b border-gray-100 dark:border-gray-800">
+      <div className="p-4 border-b border-slate-200">
         <Button
           onClick={onNewSession}
-          className="w-full bg-[#1E3A5F] hover:bg-[#152A46] text-white rounded-xl gap-2 text-sm"
+          className="w-full bg-[#1D7A6C] hover:bg-[#165E53] text-white rounded-lg gap-2 text-xs font-medium shadow-xs"
           size="sm"
         >
           <Plus className="w-4 h-4" />
@@ -43,31 +43,31 @@ export default function ChatSidebar({
       <div className="flex-1 overflow-y-auto p-2 space-y-1">
         {sessions.length === 0 ? (
           <div className="text-center py-8">
-            <MessageSquare className="w-8 h-8 text-gray-300 mx-auto mb-2" />
-            <p className="text-xs text-gray-400">No chats yet</p>
-            <p className="text-xs font-hindi text-gray-400">अभी कोई चैट नहीं</p>
+            <MessageSquare className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+            <p className="text-xs text-slate-400 font-mono">No chats yet</p>
+            <p className="text-xs font-hindi text-[#1D7A6C]">अभी कोई चैट नहीं</p>
           </div>
         ) : (
           sessions.map((session) => (
             <div
               key={session.id}
               className={cn(
-                "group flex items-center gap-2 px-3 py-2.5 rounded-xl cursor-pointer transition-colors",
+                "group flex items-center gap-2 px-3 py-2 rounded-lg cursor-pointer transition-colors text-xs font-mono",
                 activeSessionId === session.id
-                  ? "bg-[#1E3A5F] text-white"
-                  : "hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300"
+                  ? "bg-[#1D7A6C] text-white font-medium"
+                  : "hover:bg-slate-50 text-slate-700"
               )}
               onClick={() => onSelectSession(session.id)}
             >
               <MessageSquare
                 className={cn(
-                  "w-4 h-4 shrink-0",
+                  "w-3.5 h-3.5 shrink-0",
                   activeSessionId === session.id
-                    ? "text-blue-300"
-                    : "text-gray-400"
+                    ? "text-teal-200"
+                    : "text-slate-400"
                 )}
               />
-              <p className="text-xs flex-1 truncate font-medium">
+              <p className="text-xs flex-1 truncate">
                 {session.title}
               </p>
               <button
@@ -76,10 +76,10 @@ export default function ChatSidebar({
                   onDeleteSession(session.id);
                 }}
                 className={cn(
-                  "opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded-lg",
+                  "opacity-0 group-hover:opacity-100 transition-opacity p-1 rounded",
                   activeSessionId === session.id
                     ? "hover:bg-white/20 text-white"
-                    : "hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-500"
+                    : "hover:bg-slate-200 text-slate-500"
                 )}
               >
                 <Trash2 className="w-3 h-3" />
@@ -90,9 +90,9 @@ export default function ChatSidebar({
       </div>
 
       {/* Footer note */}
-      <div className="p-3 border-t border-gray-100 dark:border-gray-800">
-        <p className="text-xs text-gray-400 text-center">
-          Conversations are saved
+      <div className="p-3 border-t border-slate-200">
+        <p className="text-[11px] text-slate-400 text-center font-mono">
+          Conversations saved automatically
         </p>
       </div>
     </div>

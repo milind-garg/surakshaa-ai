@@ -7,16 +7,16 @@ export const metadata: Metadata = {
 
 export default function UploadPage() {
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6">
       {/* Page Header */}
       <div>
-        <h1 className="text-3xl font-bold text-[#1E3A5F] dark:text-white">
+        <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
           Upload Policy
         </h1>
-        <p className="text-gray-500 dark:text-gray-400 mt-1">
+        <p className="text-slate-500 text-sm mt-0.5">
           Upload your insurance document for instant AI analysis
         </p>
-        <p className="text-sm font-hindi text-gray-400 mt-0.5">
+        <p className="text-xs font-hindi text-[#1D7A6C] mt-0.5 font-medium">
           अपनी बीमा पॉलिसी अपलोड करें — AI तुरंत विश्लेषण करेगा
         </p>
       </div>

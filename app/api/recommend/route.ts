@@ -110,7 +110,7 @@ ${mlRecommendations
         : "ML model unavailable — use your own insurance knowledge for recommendations.";
 
     const prompt = `
-You are Suraksha AI, an expert Indian insurance advisor.
+You are OREVA, an expert Indian insurance advisor for Suraksha AI.
 
 ${profileSummary}
 

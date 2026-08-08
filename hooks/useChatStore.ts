@@ -1,8 +1,11 @@
 "use client";
 
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useMemo, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "./useAuth";
+import type { PolicyRecommendation } from "@/types";
+
+export type { PolicyRecommendation };
 
 export interface Message {
   id: string;
@@ -13,24 +16,20 @@ export interface Message {
   isLoading?: boolean;
 }
 
-export interface PolicyRecommendation {
-  rank: number;
-  policy_name: string;
-  insurer: string;
-  policy_type: string;
-  premium_estimate: string;
-  sum_insured: string;
-  key_features: string[];
-  why_recommended: string;
-  match_score: number;
-}
-
 export function useChatStore(sessionId: string | null) {
   const { user } = useAuth();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-  const isLoadingRef = useRef(false); // ref to avoid stale closure
-  const supabase = createClient();
+  const isLoadingRef = useRef(false); // ref to avoid double sends
+  const messagesRef = useRef<Message[]>(messages); // ref to avoid stale closures
+
+  // Sync ref with state
+  useEffect(() => {
+    messagesRef.current = messages;
+  }, [messages]);
+
+  // Memoize client — prevents creating new instances on every render
+  const supabase = useMemo(() => createClient(), []);
 
   const addMessage = useCallback((message: Message) => {
     setMessages((prev) => [...prev, message]);
@@ -46,7 +45,7 @@ export function useChatStore(sessionId: string | null) {
 
   const sendMessage = useCallback(
     async (content: string, currentSessionId: string) => {
-      // Use ref to prevent double sends, don't block on user check here
+      // Prevent double sends
       if (isLoadingRef.current) return;
       if (!user) {
         console.warn("sendMessage called before user loaded");
@@ -71,21 +70,25 @@ export function useChatStore(sessionId: string | null) {
         isLoading: true,
       };
 
+      // Add user message & loading indicator
       setMessages((prev) => [...prev, userMessage, loadingMessage]);
 
       try {
-        // Save user message to DB (non-blocking — don't await before API call)
-        supabase.from("chat_messages").insert({
-          session_id: currentSessionId,
-          user_id: user.id,
-          role: "user",
-          content,
-        }).then(({ error }) => {
-          if (error) console.warn("Failed to save user message:", error);
-        });
+        // Save user message to DB (non-blocking)
+        supabase
+          .from("chat_messages")
+          .insert({
+            session_id: currentSessionId,
+            user_id: user.id,
+            role: "user",
+            content,
+          })
+          .then(({ error }) => {
+            if (error) console.warn("Failed to save user message:", error);
+          });
 
-        // Build history from current messages (exclude loading + welcome)
-        const history = messages
+        // Build history from latest messages ref (exclude loading + welcome)
+        const history = messagesRef.current
           .filter((m) => !m.isLoading && m.id !== "welcome")
           .slice(-10)
           .map((m) => ({ role: m.role, content: m.content }));
@@ -97,7 +100,7 @@ export function useChatStore(sessionId: string | null) {
           body: JSON.stringify({
             message: content,
             sessionId: currentSessionId,
-            history, // clean history, no welcome message
+            history,
           }),
         });
 
@@ -128,17 +131,20 @@ export function useChatStore(sessionId: string | null) {
         );
 
         // Save assistant message to DB
-        supabase.from("chat_messages").insert({
-          session_id: currentSessionId,
-          user_id: user.id,
-          role: "assistant",
-          content: data.response,
-          metadata: data.recommendations
-            ? { recommendations: data.recommendations }
-            : {},
-        }).then(({ error }) => {
-          if (error) console.warn("Failed to save assistant message:", error);
-        });
+        supabase
+          .from("chat_messages")
+          .insert({
+            session_id: currentSessionId,
+            user_id: user.id,
+            role: "assistant",
+            content: data.response,
+            metadata: data.recommendations
+              ? { recommendations: data.recommendations }
+              : {},
+          })
+          .then(({ error }) => {
+            if (error) console.warn("Failed to save assistant message:", error);
+          });
 
       } catch (err) {
         console.error("Chat send error:", err);
@@ -151,17 +157,21 @@ export function useChatStore(sessionId: string | null) {
         setIsLoading(false);
       }
     },
-    // Remove isLoading from deps — use ref instead to avoid stale closures
-    [user, messages, supabase, updateLastMessage],
+    [user, supabase, updateLastMessage],
   );
 
   const loadMessages = useCallback(
     async (sid: string) => {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("chat_messages")
         .select("*")
         .eq("session_id", sid)
         .order("created_at", { ascending: true });
+
+      if (error) {
+        console.warn("Failed to load chat messages:", error);
+        return;
+      }
 
       if (data) {
         setMessages(
@@ -170,7 +180,7 @@ export function useChatStore(sessionId: string | null) {
             role: m.role as "user" | "assistant",
             content: m.content,
             timestamp: new Date(m.created_at),
-            recommendations: (m.metadata as any)?.recommendations,
+            recommendations: (m.metadata as Record<string, unknown>)?.recommendations as PolicyRecommendation[] | undefined,
           })),
         );
       }

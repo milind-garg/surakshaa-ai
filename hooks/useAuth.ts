@@ -8,19 +8,28 @@ export function useAuth() {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   
-  // ✅ Memoize client — prevents creating new instances on every render
+  // Memoize client to prevent creating new instances on every render
   const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
     let mounted = true;
 
     // Get initial session
-    supabase.auth.getUser().then(({ data: { user } }) => {
-      if (mounted) {
-        setUser(user);
-        setLoading(false);
-      }
-    });
+    supabase.auth
+      .getUser()
+      .then(({ data: { user } }) => {
+        if (mounted) {
+          setUser(user);
+          setLoading(false);
+        }
+      })
+      .catch((err) => {
+        console.warn("useAuth: Failed to get user session:", err);
+        if (mounted) {
+          setUser(null);
+          setLoading(false);
+        }
+      });
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(

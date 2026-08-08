@@ -54,14 +54,14 @@ export default async function DashboardPage() {
       icon: Upload,
       label: "Upload Policy",
       labelHindi: "पॉलिसी अपलोड करें",
-      color: "bg-blue-50 text-blue-600 hover:bg-blue-100",
+      color: "bg-white text-slate-900 border border-slate-200 hover:border-slate-300",
     },
     {
       href: "/chatbot",
       icon: MessageSquare,
       label: "AI Chatbot",
       labelHindi: "AI से पूछें",
-      color: "bg-purple-50 text-purple-600 hover:bg-purple-100",
+      color: "bg-white text-slate-900 border border-slate-200 hover:border-slate-300",
       badge: "Recommended",
     },
     {
@@ -69,34 +69,34 @@ export default async function DashboardPage() {
       icon: FileText,
       label: "View Policies",
       labelHindi: "पॉलिसी देखें",
-      color: "bg-green-50 text-green-600 hover:bg-green-100",
+      color: "bg-white text-slate-900 border border-slate-200 hover:border-slate-300",
     },
     {
       href: "/profile",
       icon: Shield,
       label: "Complete Profile",
       labelHindi: "प्रोफाइल भरें",
-      color: "bg-orange-50 text-orange-600 hover:bg-orange-100",
+      color: "bg-white text-slate-900 border border-slate-200 hover:border-slate-300",
     },
   ];
 
   return (
-    <div className="space-y-8 animate-fade-in">
+    <div className="space-y-8">
       {/* Welcome Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-[#1E3A5F] dark:text-white">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
             Namaste, {firstName}! 🙏
           </h1>
-          <p className="text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-slate-500 text-sm mt-0.5">
             Here's your insurance intelligence overview
           </p>
-          <p className="text-sm font-hindi text-gray-400 mt-0.5">
+          <p className="text-xs font-hindi text-slate-400 mt-0.5">
             आपका बीमा डैशबोर्ड
           </p>
         </div>
         <Link href="/upload">
-          <Button className="bg-[#1E3A5F] hover:bg-[#152A46] text-white rounded-xl gap-2 shadow-md">
+          <Button className="bg-[#1D7A6C] hover:bg-[#165E53] text-white rounded-lg gap-2 shadow-xs text-sm font-medium">
             <Plus className="w-4 h-4" />
             Upload New Policy
           </Button>
@@ -110,42 +110,36 @@ export default async function DashboardPage() {
             label: "Policies Uploaded",
             value: totalPolicies,
             icon: FileText,
-            color: "text-blue-600",
           },
           {
             label: "Analyses Complete",
             value: policies?.filter((p) => p.status === "analyzed").length ?? 0,
             icon: TrendingUp,
-            color: "text-green-600",
           },
           {
             label: "Coverage Gaps Found",
             value: "—",
             icon: Shield,
-            color: "text-red-500",
           },
           {
             label: "AI Chats",
             value: 0,
             icon: MessageSquare,
-            color: "text-purple-600",
           },
         ].map((stat) => (
           <Card
             key={stat.label}
-            className="p-4 border-gray-100 dark:border-gray-800"
+            className="p-4 border-slate-200 rounded-xl shadow-xs bg-white"
           >
             <div className="flex items-center gap-3">
-              <div
-                className={`w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 flex items-center justify-center`}
-              >
-                <stat.icon className={`w-5 h-5 ${stat.color}`} />
+              <div className="w-10 h-10 rounded-lg bg-teal-50 border border-teal-100 flex items-center justify-center text-[#1D7A6C]">
+                <stat.icon className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-[#1E3A5F] dark:text-white">
+                <p className="text-2xl font-bold text-slate-900">
                   {stat.value}
                 </p>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
+                <p className="text-xs text-slate-500">
                   {stat.label}
                 </p>
               </div>
@@ -156,17 +150,17 @@ export default async function DashboardPage() {
 
       {/* Profile Incomplete Warning */}
       {!profile?.is_profile_complete && (
-        <Card className="p-5 border-orange-200 bg-orange-50 dark:bg-orange-900/20 dark:border-orange-800">
+        <Card className="p-4 border-amber-200 bg-amber-50/60 rounded-xl shadow-xs">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-orange-100 dark:bg-orange-900/40 rounded-xl flex items-center justify-center">
-                <Shield className="w-5 h-5 text-orange-600" />
+              <div className="w-9 h-9 bg-amber-100 rounded-lg flex items-center justify-center">
+                <Shield className="w-4 h-4 text-amber-700" />
               </div>
               <div>
-                <p className="font-semibold text-orange-800 dark:text-orange-300">
+                <p className="font-semibold text-amber-900 text-xs sm:text-sm">
                   Complete your profile for better recommendations
                 </p>
-                <p className="text-sm text-orange-600 dark:text-orange-400 font-hindi">
+                <p className="text-xs text-amber-700 font-hindi">
                   बेहतर सुझावों के लिए प्रोफाइल पूरी करें
                 </p>
               </div>
@@ -174,7 +168,7 @@ export default async function DashboardPage() {
             <Link href="/profile">
               <Button
                 size="sm"
-                className="bg-orange-600 hover:bg-orange-700 text-white rounded-lg"
+                className="bg-amber-700 hover:bg-amber-800 text-white rounded-lg text-xs"
               >
                 Complete Now
               </Button>
@@ -187,16 +181,16 @@ export default async function DashboardPage() {
       {latestRecommendations && (
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-[#1E3A5F]">
+            <h2 className="text-base font-bold text-slate-900">
               Latest AI Recommendations
             </h2>
             <Link href="/chatbot">
               <Button
                 variant="ghost"
                 size="sm"
-                className="gap-1 text-[#1E3A5F]"
+                className="gap-1 text-[#1D7A6C] hover:text-[#165E53] text-xs"
               >
-                View All <ArrowRight className="w-3 h-3" />
+                View All <ArrowRight className="w-3.5 h-3.5" />
               </Button>
             </Link>
           </div>
@@ -206,28 +200,28 @@ export default async function DashboardPage() {
               .map((rec: any) => (
                 <Card
                   key={rec.rank}
-                  className="p-4 border-gray-100 hover:shadow-md transition-all"
+                  className="p-4 border-slate-200 rounded-xl bg-white shadow-xs hover:border-slate-300 transition-all"
                 >
                   <div className="flex items-start justify-between mb-2">
-                    <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center text-xs font-bold text-[#1E3A5F]">
+                    <div className="w-7 h-7 bg-slate-100 rounded flex items-center justify-center text-xs font-mono font-bold text-slate-800">
                       #{rec.rank}
                     </div>
-                    <span className="text-xs bg-green-50 text-green-700 px-2 py-0.5 rounded-full font-medium">
+                    <span className="text-[11px] bg-teal-50 text-[#1D7A6C] border border-teal-100 px-2 py-0.5 rounded font-mono font-semibold">
                       {rec.match_score}% match
                     </span>
                   </div>
-                  <p className="font-semibold text-[#1E3A5F] text-sm mt-2">
+                  <p className="font-bold text-slate-900 text-sm mt-2">
                     {rec.policy_name}
                   </p>
-                  <p className="text-xs text-gray-500 mt-0.5">{rec.insurer}</p>
-                  <p className="text-xs text-[#FF6B35] font-medium mt-2">
+                  <p className="text-xs text-slate-500 mt-0.5">{rec.insurer}</p>
+                  <p className="text-xs text-[#1D7A6C] font-semibold mt-2">
                     {rec.premium_estimate}
                   </p>
                   <Link href="/chatbot">
                     <Button
                       size="sm"
                       variant="outline"
-                      className="w-full mt-3 rounded-lg text-xs h-8"
+                      className="w-full mt-3 rounded-lg text-xs h-8 border-slate-200 hover:bg-slate-50"
                     >
                       Ask AI for Details
                     </Button>
@@ -237,12 +231,12 @@ export default async function DashboardPage() {
           </div>
           {((latestRecommendations.recommendations as any[]) ?? []).length ===
             0 && (
-            <Card className="p-6 text-center border-dashed border-2 border-gray-200">
-              <p className="text-gray-500 text-sm">No recommendations yet</p>
+            <Card className="p-6 text-center border-dashed border-2 border-slate-200 rounded-xl">
+              <p className="text-slate-500 text-sm">No recommendations yet</p>
               <Link href="/chatbot">
                 <Button
                   size="sm"
-                  className="mt-3 bg-[#1E3A5F] text-white rounded-xl"
+                  className="mt-3 bg-[#1D7A6C] hover:bg-[#165E53] text-white rounded-lg text-xs"
                 >
                   Get Recommendations
                 </Button>
@@ -254,23 +248,23 @@ export default async function DashboardPage() {
 
       {/* No recommendations prompt */}
       {!latestRecommendations && (
-        <Card className="p-5 border-blue-100 bg-blue-50/50">
+        <Card className="p-5 border-slate-200 bg-white rounded-xl shadow-xs">
           <div className="flex items-center justify-between flex-wrap gap-3">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
-                <MessageSquare className="w-5 h-5 text-[#1E3A5F]" />
+              <div className="w-9 h-9 bg-teal-50 border border-teal-100 rounded-lg flex items-center justify-center">
+                <MessageSquare className="w-4 h-4 text-[#1D7A6C]" />
               </div>
               <div>
-                <p className="font-semibold text-[#1E3A5F] text-sm">
+                <p className="font-semibold text-slate-900 text-xs sm:text-sm">
                   Get personalized policy recommendations
                 </p>
-                <p className="text-xs text-gray-500 font-hindi">
+                <p className="text-xs text-slate-500 font-hindi">
                   AI आपके लिए बेस्ट पॉलिसी सुझाएगा
                 </p>
               </div>
             </div>
             <Link href="/chatbot">
-              <Button size="sm" className="bg-[#1E3A5F] text-white rounded-xl">
+              <Button size="sm" className="bg-[#1D7A6C] hover:bg-[#165E53] text-white rounded-lg text-xs">
                 Chat with AI
               </Button>
             </Link>
@@ -280,23 +274,23 @@ export default async function DashboardPage() {
 
       {/* Quick Actions */}
       <div>
-        <h2 className="text-lg font-semibold text-[#1E3A5F] dark:text-white mb-4">
+        <h2 className="text-base font-bold text-slate-900 mb-4">
           Quick Actions
         </h2>
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
           {quickActions.map((action) => (
             <Link key={action.href} href={action.href}>
               <div
-                className={`${action.color} rounded-2xl p-5 transition-all hover:-translate-y-1 hover:shadow-md cursor-pointer relative`}
+                className={`${action.color} rounded-xl p-4 transition-all hover:shadow-sm cursor-pointer relative`}
               >
                 {action.badge && (
-                  <Badge className="absolute top-2 right-2 text-[10px] bg-[#FF6B35] text-white border-0 px-1.5">
+                  <Badge className="absolute top-2 right-2 text-[9px] font-mono bg-[#1D7A6C] text-white border-0 px-1.5 uppercase">
                     {action.badge}
                   </Badge>
                 )}
-                <action.icon className="w-7 h-7 mb-3" />
-                <p className="font-semibold text-sm">{action.label}</p>
-                <p className="text-xs font-hindi opacity-70 mt-0.5">
+                <action.icon className="w-6 h-6 mb-2 text-[#1D7A6C]" />
+                <p className="font-bold text-xs text-slate-900">{action.label}</p>
+                <p className="text-[10px] font-hindi text-slate-500 mt-0.5">
                   {action.labelHindi}
                 </p>
               </div>
@@ -309,29 +303,29 @@ export default async function DashboardPage() {
       <div>
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-lg font-semibold text-[#1E3A5F] dark:text-white">
+            <h2 className="text-base font-bold text-slate-900">
               Recent Policies
             </h2>
-            <p className="text-xs text-gray-400 font-hindi">हाल की पॉलिसियां</p>
+            <p className="text-xs text-slate-400 font-hindi">हाल की पॉलिसियां</p>
           </div>
           <Link href="/policies">
-            <Button variant="ghost" size="sm" className="gap-1 text-[#1E3A5F]">
-              View All <ArrowRight className="w-3 h-3" />
+            <Button variant="ghost" size="sm" className="gap-1 text-[#1D7A6C] hover:text-[#165E53] text-xs">
+              View All <ArrowRight className="w-3.5 h-3.5" />
             </Button>
           </Link>
         </div>
 
         {totalPolicies === 0 ? (
-          <Card className="p-12 text-center border-dashed border-2 border-gray-200 dark:border-gray-700">
-            <Upload className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-            <p className="font-semibold text-gray-500 dark:text-gray-400 mb-2">
+          <Card className="p-10 text-center border-dashed border-2 border-slate-200 rounded-xl">
+            <Upload className="w-10 h-10 text-slate-300 mx-auto mb-3" />
+            <p className="font-bold text-slate-700 text-sm mb-1">
               No policies uploaded yet
             </p>
-            <p className="text-sm text-gray-400 font-hindi mb-6">
+            <p className="text-xs text-slate-400 font-hindi mb-4">
               अभी तक कोई पॉलिसी अपलोड नहीं की
             </p>
             <Link href="/upload">
-              <Button className="bg-[#1E3A5F] text-white rounded-xl">
+              <Button className="bg-[#1D7A6C] hover:bg-[#165E53] text-white rounded-lg text-xs font-medium">
                 Upload Your First Policy
               </Button>
             </Link>
@@ -340,25 +334,25 @@ export default async function DashboardPage() {
           <div className="space-y-3">
             {policies?.map((policy, index) => (
               <Link key={policy.id} href={`/policies/${policy.id}`}>
-                <Card className="p-4 border-gray-100 dark:border-gray-800 hover:shadow-md hover:border-[#1E3A5F]/20 transition-all cursor-pointer group">
+                <Card className="p-4 border-slate-200 rounded-xl bg-white hover:border-slate-300 transition-all cursor-pointer group shadow-xs">
                   <div className="flex items-center gap-4">
                     {/* Index + Icon */}
                     <div className="relative shrink-0">
-                      <div className="w-11 h-11 bg-blue-50 dark:bg-blue-900/20 rounded-xl flex items-center justify-center group-hover:bg-blue-100 transition-colors">
-                        <FileText className="w-5 h-5 text-blue-600" />
+                      <div className="w-10 h-10 bg-teal-50 border border-teal-100 rounded-lg flex items-center justify-center">
+                        <FileText className="w-4 h-4 text-[#1D7A6C]" />
                       </div>
-                      <span className="absolute -top-1.5 -left-1.5 w-4 h-4 bg-[#1E3A5F] text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                      <span className="absolute -top-1 -left-1 w-4 h-4 bg-slate-900 text-white text-[9px] font-mono font-bold rounded-full flex items-center justify-center">
                         {index + 1}
                       </span>
                     </div>
 
                     {/* File Info */}
                     <div className="flex-1 min-w-0 text-left">
-                      <p className="font-semibold text-[#1E3A5F] dark:text-white truncate text-sm">
+                      <p className="font-bold text-slate-900 truncate text-xs sm:text-sm">
                         {policy.file_name}
                       </p>
                       <div className="flex items-center gap-2 mt-0.5">
-                        <p className="text-xs text-gray-400">
+                        <p className="text-[11px] text-slate-400">
                           Uploaded{" "}
                           {new Date(policy.created_at).toLocaleDateString(
                             "en-IN",
@@ -371,8 +365,8 @@ export default async function DashboardPage() {
                         </p>
                         {policy.policy_type && (
                           <>
-                            <span className="text-gray-300">·</span>
-                            <p className="text-xs text-gray-400 capitalize">
+                            <span className="text-slate-300">·</span>
+                            <p className="text-[11px] text-slate-400 capitalize font-mono">
                               {policy.policy_type}
                             </p>
                           </>
@@ -385,10 +379,10 @@ export default async function DashboardPage() {
                       <Badge
                         className={
                           policy.status === "analyzed"
-                            ? "bg-green-50 text-green-700 border-green-200 capitalize"
+                            ? "bg-teal-50 text-[#1D7A6C] border border-teal-100 font-mono text-[10px] uppercase"
                             : policy.status === "processing"
-                              ? "bg-yellow-50 text-yellow-700 border-yellow-200 capitalize"
-                              : "bg-gray-50 text-gray-600 border-gray-200 capitalize"
+                              ? "bg-amber-50 text-amber-700 border border-amber-200 font-mono text-[10px] uppercase"
+                              : "bg-slate-50 text-slate-600 border border-slate-200 font-mono text-[10px] uppercase"
                         }
                       >
                         {policy.status === "analyzed"
@@ -400,7 +394,7 @@ export default async function DashboardPage() {
                     </div>
 
                     {/* Arrow */}
-                    <ArrowRight className="w-4 h-4 text-gray-300 group-hover:text-[#1E3A5F] group-hover:translate-x-0.5 transition-all shrink-0" />
+                    <ArrowRight className="w-4 h-4 text-slate-400 group-hover:text-[#1D7A6C] group-hover:translate-x-0.5 transition-all shrink-0" />
                   </div>
                 </Card>
               </Link>

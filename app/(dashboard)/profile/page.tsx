@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
+import { useState, useEffect, useTransition, useRef } from "react";
 import {
   User,
   Briefcase,
@@ -12,6 +12,9 @@ import {
   CheckCircle,
   AlertCircle,
   Edit2,
+  Camera,
+  Upload,
+  Check,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -19,6 +22,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import {
+  Avatar,
+  AvatarImage,
+  AvatarFallback,
+} from "@/components/ui/avatar";
 import {
   Select,
   SelectContent,
@@ -68,6 +76,193 @@ function calcCompletion(data: any, family: FamilyMember[]): number {
   return Math.round(((filled + familyBonus) / (fields.length + 1)) * 100);
 }
 
+// ── Profile Picture Component ──────────────────────────────────
+function ProfilePictureCard({
+  fullName,
+  email,
+  avatarUrl,
+  onAvatarChange,
+}: {
+  fullName?: string;
+  email?: string;
+  avatarUrl?: string;
+  onAvatarChange: (url: string) => void;
+}) {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const initials = fullName
+    ? fullName
+        .split(" ")
+        .map((n) => n[0])
+        .join("")
+        .toUpperCase()
+        .slice(0, 2)
+    : email?.slice(0, 2).toUpperCase() ?? "SA";
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image size should be less than 5MB");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const result = event.target?.result as string;
+      if (result) {
+        onAvatarChange(result);
+        toast.success("Profile picture updated! 📸");
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const AVATAR_PRESETS = [
+    {
+      label: "Cool Sunglasses Sticker",
+      url: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Smiling%20Face%20with%20Sunglasses.png",
+    },
+    {
+      label: "AI Advisor Robot",
+      url: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Robot.png",
+    },
+    {
+      label: "Health Specialist Sticker",
+      url: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Man%20Health%20Worker.png",
+    },
+    {
+      label: "Technologist Sticker",
+      url: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Technologist.png",
+    },
+    {
+      label: "Star-Struck Sticker",
+      url: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Star-Struck.png",
+    },
+    {
+      label: "Party Face Sticker",
+      url: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Partying%20Face.png",
+    },
+    {
+      label: "Aegis Shield Sticker",
+      url: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Symbols/Shield.png",
+    },
+  ];
+
+  return (
+    <Card className="p-6 border-slate-200 bg-white rounded-xl shadow-xs overflow-hidden">
+      <div className="flex flex-col sm:flex-row items-center sm:items-start gap-6">
+        
+        {/* Avatar Circle with Camera Badge */}
+        <div className="relative group shrink-0">
+          <Avatar className="w-24 h-24 sm:w-28 sm:h-28 border-4 border-slate-100 shadow-md ring-2 ring-[#1D7A6C]/20 bg-slate-50">
+            {avatarUrl ? (
+              <AvatarImage src={avatarUrl} alt={fullName || "User"} className="object-contain p-1" />
+            ) : null}
+            <AvatarFallback className="bg-[#1D7A6C] text-white text-2xl sm:text-3xl font-bold font-sans">
+              {initials}
+            </AvatarFallback>
+          </Avatar>
+
+          {/* Hidden File Input */}
+          <input
+            type="file"
+            ref={fileInputRef}
+            onChange={handleFileSelect}
+            accept="image/*"
+            className="hidden"
+          />
+
+          {/* Camera Button Badge */}
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            type="button"
+            className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-[#1D7A6C] hover:bg-[#165E53] text-white flex items-center justify-center shadow-md transition-transform hover:scale-110 border-2 border-white"
+            title="Upload Profile Picture"
+          >
+            <Camera className="w-4 h-4" />
+          </button>
+        </div>
+
+        {/* User Details & Quick Controls */}
+        <div className="flex-1 text-center sm:text-left space-y-3">
+          <div>
+            <div className="flex items-center justify-center sm:justify-start gap-2.5 flex-wrap">
+              <h2 className="text-xl font-extrabold text-slate-900 tracking-tight">
+                {fullName || "Valued Policyholder"}
+              </h2>
+              <Badge className="bg-teal-50 text-[#1D7A6C] border-teal-100 font-mono text-[10px] uppercase tracking-wider">
+                ✓ VERIFIED PROFILE
+              </Badge>
+            </div>
+            <p className="text-xs text-slate-500 font-mono mt-1">
+              {email || "user@suraksha.ai"}
+            </p>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="pt-2 border-t border-slate-100 flex flex-wrap items-center justify-center sm:justify-start gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => fileInputRef.current?.click()}
+              className="h-8 text-xs gap-1.5 border-slate-200 text-slate-700 hover:bg-slate-50 font-medium"
+            >
+              <Upload className="w-3.5 h-3.5 text-[#1D7A6C]" />
+              Upload Photo
+            </Button>
+
+            {avatarUrl && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={() => {
+                  onAvatarChange("");
+                  toast.success("Profile picture reset to initials");
+                }}
+                className="h-8 text-xs gap-1 text-red-600 hover:text-red-700 hover:bg-red-50"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                Remove
+              </Button>
+            )}
+          </div>
+
+          {/* Preset Avatar Selection */}
+          <div className="space-y-2 pt-1">
+            <p className="text-[11px] text-slate-400 font-mono uppercase tracking-wider">
+              Or pick an animated sticker face:
+            </p>
+            <div className="flex items-center justify-center sm:justify-start gap-2.5 flex-wrap">
+              {AVATAR_PRESETS.map((preset, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => {
+                    onAvatarChange(preset.url);
+                    toast.success(`Selected ${preset.label}`);
+                  }}
+                  className={cn(
+                    "w-10 h-10 rounded-xl overflow-hidden border-2 transition-all duration-200 hover:scale-110 bg-slate-50 p-1 flex items-center justify-center shadow-xs",
+                    avatarUrl === preset.url
+                      ? "border-[#1D7A6C] bg-teal-50 ring-2 ring-[#1D7A6C]/30"
+                      : "border-slate-200 hover:border-[#1D7A6C] hover:bg-white"
+                  )}
+                  title={preset.label}
+                >
+                  <img src={preset.url} alt={preset.label} className="w-full h-full object-contain" />
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </Card>
+  );
+}
+
 // ── View Mode Component ────────────────────────────────────────
 function ProfileView({
   profile,
@@ -78,6 +273,22 @@ function ProfileView({
   family: FamilyMember[];
   onEdit: () => void;
 }) {
+  const { user } = useAuth();
+  const [avatarUrl, setAvatarUrl] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("suraksha_user_avatar") || profile?.avatar_url || "";
+    }
+    return profile?.avatar_url || "";
+  });
+
+  const handleAvatarChange = (url: string) => {
+    setAvatarUrl(url);
+    if (typeof window !== "undefined") {
+      if (url) localStorage.setItem("suraksha_user_avatar", url);
+      else localStorage.removeItem("suraksha_user_avatar");
+    }
+  };
+
   const completion = calcCompletion(
     {
       fullName: profile?.full_name,
@@ -90,51 +301,59 @@ function ProfileView({
   );
 
   return (
-    <div className="space-y-6 animate-fade-in">
+    <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-[#1E3A5F]">My Profile</h1>
-          <p className="text-gray-500 mt-1 text-sm">
+          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">My Profile</h1>
+          <p className="text-slate-500 mt-0.5 text-sm">
             Your insurance intelligence profile
           </p>
-          <p className="text-xs font-hindi text-gray-400 mt-0.5">
+          <p className="text-xs font-hindi text-[#1D7A6C] font-medium">
             मेरी बीमा प्रोफाइल
           </p>
         </div>
         <Button
           onClick={onEdit}
-          className="bg-[#1E3A5F] hover:bg-[#152A46] text-white rounded-xl gap-2 shadow-md"
+          className="bg-[#1D7A6C] hover:bg-[#165E53] text-white rounded-lg gap-2 shadow-xs text-sm font-medium"
         >
           <Edit2 className="w-4 h-4" />
           Edit Profile
         </Button>
       </div>
 
+      {/* Profile Picture Card */}
+      <ProfilePictureCard
+        fullName={profile?.full_name}
+        email={user?.email}
+        avatarUrl={avatarUrl}
+        onAvatarChange={handleAvatarChange}
+      />
+
       {/* Completion Bar */}
-      <Card className="p-5 border-gray-100">
-        <div className="flex items-center justify-between mb-3">
-          <p className="font-semibold text-[#1E3A5F] text-sm">
+      <Card className="p-5 border-slate-200 bg-white rounded-xl shadow-xs">
+        <div className="flex items-center justify-between mb-2.5">
+          <p className="font-bold text-slate-900 text-sm">
             Profile Completion
           </p>
           <div className="flex items-center gap-2">
             {completion >= 80 ? (
-              <CheckCircle className="w-4 h-4 text-green-500" />
+              <CheckCircle className="w-4 h-4 text-[#1D7A6C]" />
             ) : (
-              <AlertCircle className="w-4 h-4 text-yellow-500" />
+              <AlertCircle className="w-4 h-4 text-amber-500" />
             )}
             <span
               className={cn(
-                "font-bold text-sm",
-                completion >= 80 ? "text-green-600" : "text-yellow-600",
+                "font-mono font-bold text-sm",
+                completion >= 80 ? "text-[#1D7A6C]" : "text-amber-600",
               )}
             >
               {completion}%
             </span>
           </div>
         </div>
-        <Progress value={completion} className="h-2.5 rounded-full" />
-        <p className="text-xs text-gray-400 mt-2">
+        <Progress value={completion} className="h-2 rounded-full bg-slate-100" />
+        <p className="text-xs text-slate-400 font-mono mt-2">
           {completion < 80
             ? "Complete your profile for better AI recommendations"
             : "Your profile is complete ✓"}
@@ -143,22 +362,22 @@ function ProfileView({
 
       {/* Profile incomplete prompt */}
       {completion < 80 && (
-        <Card className="p-5 border-orange-200 bg-orange-50">
+        <Card className="p-4 border-amber-200 bg-amber-50 rounded-xl">
           <div className="flex items-center justify-between flex-wrap gap-3">
             <div className="flex items-center gap-3">
-              <AlertCircle className="w-8 h-8 text-orange-500" />
+              <AlertCircle className="w-6 h-6 text-amber-600 shrink-0" />
               <div>
-                <p className="font-semibold text-orange-800">
+                <p className="font-bold text-amber-900 text-sm">
                   Your profile is incomplete
                 </p>
-                <p className="text-sm text-orange-600 font-hindi">
+                <p className="text-xs text-amber-700 font-hindi">
                   बेहतर सुझावों के लिए प्रोफाइल पूरी करें
                 </p>
               </div>
             </div>
             <Button
               onClick={onEdit}
-              className="bg-orange-600 hover:bg-orange-700 text-white rounded-xl"
+              className="bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-medium"
             >
               Complete Profile
             </Button>
@@ -167,21 +386,21 @@ function ProfileView({
       )}
 
       {/* Personal Info */}
-      <Card className="p-6 border-gray-100">
-        <div className="flex items-center gap-3 mb-5">
-          <div className="w-9 h-9 bg-[#1E3A5F] rounded-xl flex items-center justify-center">
+      <Card className="p-6 border-slate-200 bg-white rounded-xl shadow-xs">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-8 h-8 bg-[#1D7A6C] rounded-lg flex items-center justify-center shadow-xs">
             <User className="w-4 h-4 text-white" />
           </div>
           <div>
-            <h2 className="font-bold text-[#1E3A5F] text-lg leading-none">
+            <h2 className="font-bold text-slate-900 text-base leading-none">
               Personal Information
             </h2>
-            <p className="text-xs font-hindi text-gray-400">
+            <p className="text-[11px] font-hindi text-[#1D7A6C] mt-0.5">
               व्यक्तिगत जानकारी
             </p>
           </div>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 font-mono">
           {[
             { label: "Full Name", value: profile?.full_name || "—" },
             {
@@ -192,9 +411,9 @@ function ProfileView({
             { label: "Language", value: profile?.preferred_language || "—" },
             { label: "Risk Appetite", value: profile?.risk_appetite || "—" },
           ].map((item) => (
-            <div key={item.label} className="bg-gray-50 rounded-xl p-3">
-              <p className="text-xs text-gray-500 mb-1">{item.label}</p>
-              <p className="font-semibold text-[#1E3A5F] text-sm capitalize">
+            <div key={item.label} className="bg-slate-50 border border-slate-200/80 rounded-lg p-3">
+              <p className="text-[11px] text-slate-400 uppercase mb-0.5">{item.label}</p>
+              <p className="font-bold text-slate-900 text-xs sm:text-sm capitalize font-sans">
                 {item.value}
               </p>
             </div>
@@ -203,19 +422,19 @@ function ProfileView({
       </Card>
 
       {/* Financial Info */}
-      <Card className="p-6 border-gray-100">
-        <div className="flex items-center gap-3 mb-5">
-          <div className="w-9 h-9 bg-[#1E3A5F] rounded-xl flex items-center justify-center">
+      <Card className="p-6 border-slate-200 bg-white rounded-xl shadow-xs">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-8 h-8 bg-[#1D7A6C] rounded-lg flex items-center justify-center shadow-xs">
             <Briefcase className="w-4 h-4 text-white" />
           </div>
           <div>
-            <h2 className="font-bold text-[#1E3A5F] text-lg leading-none">
+            <h2 className="font-bold text-slate-900 text-base leading-none">
               Financial Details
             </h2>
-            <p className="text-xs font-hindi text-gray-400">वित्तीय जानकारी</p>
+            <p className="text-[11px] font-hindi text-[#1D7A6C] mt-0.5">वित्तीय जानकारी</p>
           </div>
         </div>
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 font-mono">
           {[
             { label: "Occupation", value: profile?.occupation || "—" },
             {
@@ -232,9 +451,9 @@ function ProfileView({
                   : "None",
             },
           ].map((item) => (
-            <div key={item.label} className="bg-gray-50 rounded-xl p-3">
-              <p className="text-xs text-gray-500 mb-1">{item.label}</p>
-              <p className="font-semibold text-[#1E3A5F] text-sm">
+            <div key={item.label} className="bg-slate-50 border border-slate-200/80 rounded-lg p-3">
+              <p className="text-[11px] text-slate-400 uppercase mb-0.5">{item.label}</p>
+              <p className="font-bold text-slate-900 text-xs sm:text-sm font-sans">
                 {item.value}
               </p>
             </div>
@@ -243,32 +462,32 @@ function ProfileView({
       </Card>
 
       {/* Health Info */}
-      <Card className="p-6 border-gray-100">
-        <div className="flex items-center gap-3 mb-5">
-          <div className="w-9 h-9 bg-[#1E3A5F] rounded-xl flex items-center justify-center">
+      <Card className="p-6 border-slate-200 bg-white rounded-xl shadow-xs">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-8 h-8 bg-[#1D7A6C] rounded-lg flex items-center justify-center shadow-xs">
             <Heart className="w-4 h-4 text-white" />
           </div>
           <div>
-            <h2 className="font-bold text-[#1E3A5F] text-lg leading-none">
+            <h2 className="font-bold text-slate-900 text-base leading-none">
               Health Information
             </h2>
-            <p className="text-xs font-hindi text-gray-400">
+            <p className="text-[11px] font-hindi text-[#1D7A6C] mt-0.5">
               स्वास्थ्य जानकारी
             </p>
           </div>
         </div>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-1.5">
           {profile?.health_conditions?.length > 0 ? (
             profile.health_conditions.map((c: string) => (
               <Badge
                 key={c}
-                className="bg-blue-50 text-[#1E3A5F] border-blue-200"
+                className="bg-teal-50 text-[#1D7A6C] border-teal-100 font-mono text-xs"
               >
                 {c}
               </Badge>
             ))
           ) : (
-            <p className="text-gray-500 text-sm">
+            <p className="text-slate-500 text-xs font-mono">
               No health conditions recorded
             </p>
           )}
@@ -276,48 +495,48 @@ function ProfileView({
       </Card>
 
       {/* Family Members */}
-      <Card className="p-6 border-gray-100">
-        <div className="flex items-center gap-3 mb-5">
-          <div className="w-9 h-9 bg-[#1E3A5F] rounded-xl flex items-center justify-center">
+      <Card className="p-6 border-slate-200 bg-white rounded-xl shadow-xs">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-8 h-8 bg-[#1D7A6C] rounded-lg flex items-center justify-center shadow-xs">
             <Shield className="w-4 h-4 text-white" />
           </div>
           <div>
-            <h2 className="font-bold text-[#1E3A5F] text-lg leading-none">
+            <h2 className="font-bold text-slate-900 text-base leading-none">
               Family Members
             </h2>
-            <p className="text-xs font-hindi text-gray-400">परिवार के सदस्य</p>
+            <p className="text-[11px] font-hindi text-[#1D7A6C] mt-0.5">परिवार के सदस्य</p>
           </div>
         </div>
         {family.length === 0 ? (
-          <div className="text-center py-6 border-2 border-dashed border-gray-200 rounded-2xl">
-            <p className="text-gray-500 text-sm">No family members added</p>
-            <p className="text-xs font-hindi text-gray-400 mt-1">
+          <div className="text-center py-6 border-2 border-dashed border-slate-200 rounded-xl">
+            <p className="text-slate-500 text-xs font-mono">No family members added</p>
+            <p className="text-xs font-hindi text-[#1D7A6C] mt-0.5">
               कोई परिवार सदस्य नहीं जोड़ा गया
             </p>
             <Button
               onClick={onEdit}
               variant="outline"
               size="sm"
-              className="mt-3 rounded-xl"
+              className="mt-3 rounded-lg border-slate-200 text-xs font-medium"
             >
               Add Family Members
             </Button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {family.map((member, i) => (
-              <div key={i} className="bg-gray-50 rounded-xl p-4">
-                <div className="flex items-center justify-between mb-2">
-                  <p className="font-semibold text-[#1E3A5F]">{member.name}</p>
-                  <Badge className="bg-blue-50 text-[#1E3A5F] border-blue-200 capitalize text-xs">
+              <div key={i} className="bg-slate-50 border border-slate-200/80 rounded-lg p-3.5">
+                <div className="flex items-center justify-between mb-1.5">
+                  <p className="font-bold text-slate-900 text-sm">{member.name}</p>
+                  <Badge className="bg-teal-50 text-[#1D7A6C] border-teal-100 font-mono capitalize text-[10px] uppercase">
                     {member.relation}
                   </Badge>
                 </div>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-slate-500 font-mono">
                   {member.gender} · {member.age} years
                 </p>
                 {member.health_conditions.length > 0 && (
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-slate-600 mt-1 font-mono">
                     Conditions: {member.health_conditions.join(", ")}
                   </p>
                 )}
@@ -367,6 +586,21 @@ function ProfileEdit({
   );
   const [familyMembers, setFamilyMembers] =
     useState<FamilyMember[]>(initialFamily);
+
+  const [avatarUrl, setAvatarUrl] = useState<string>(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("suraksha_user_avatar") || profile?.avatar_url || "";
+    }
+    return profile?.avatar_url || "";
+  });
+
+  const handleAvatarChange = (url: string) => {
+    setAvatarUrl(url);
+    if (typeof window !== "undefined") {
+      if (url) localStorage.setItem("suraksha_user_avatar", url);
+      else localStorage.removeItem("suraksha_user_avatar");
+    }
+  };
 
   const toggleHealth = (c: string) => {
     setHealthConditions((prev) =>
@@ -455,12 +689,12 @@ function ProfileEdit({
   };
 
   return (
-    <div className="space-y-6 animate-fade-in max-w-3xl">
+    <div className="space-y-6 max-w-3xl">
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-[#1E3A5F]">Edit Profile</h1>
-          <p className="text-gray-500 mt-1 text-sm">
+          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">Edit Profile</h1>
+          <p className="text-slate-500 mt-0.5 text-sm">
             Update your insurance profile
           </p>
         </div>
@@ -468,7 +702,7 @@ function ProfileEdit({
           <Button
             variant="outline"
             onClick={onCancel}
-            className="rounded-xl"
+            className="rounded-lg text-xs font-medium border-slate-200 text-slate-700 hover:bg-slate-50"
             disabled={isPending}
           >
             Cancel
@@ -476,7 +710,7 @@ function ProfileEdit({
           <Button
             onClick={handleSave}
             disabled={isPending}
-            className="bg-[#1E3A5F] hover:bg-[#152A46] text-white rounded-xl gap-2"
+            className="bg-[#1D7A6C] hover:bg-[#165E53] text-white rounded-lg gap-2 text-xs font-medium shadow-xs"
           >
             {isPending ? (
               <>
@@ -492,30 +726,38 @@ function ProfileEdit({
         </div>
       </div>
 
+      {/* Profile Picture Card */}
+      <ProfilePictureCard
+        fullName={fullName}
+        email={user?.email}
+        avatarUrl={avatarUrl}
+        onAvatarChange={handleAvatarChange}
+      />
+
       {/* Personal Info */}
-      <Card className="p-6 border-gray-100">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-9 h-9 bg-[#1E3A5F] rounded-xl flex items-center justify-center">
+      <Card className="p-6 border-slate-200 bg-white rounded-xl shadow-xs">
+        <div className="flex items-center gap-3 mb-5">
+          <div className="w-8 h-8 bg-[#1D7A6C] rounded-lg flex items-center justify-center shadow-xs">
             <User className="w-4 h-4 text-white" />
           </div>
-          <h2 className="font-bold text-[#1E3A5F] text-lg">
+          <h2 className="font-bold text-slate-900 text-base">
             Personal Information
           </h2>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          <div className="sm:col-span-2 space-y-1.5">
-            <Label className="text-sm font-medium text-gray-700">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="sm:col-span-2 space-y-1">
+            <Label className="text-xs font-bold text-slate-700">
               Full Name
             </Label>
             <Input
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               placeholder="Rahul Sharma"
-              className="rounded-xl h-11"
+              className="rounded-lg h-10 border-slate-200 text-sm focus:border-[#1D7A6C]"
             />
           </div>
-          <div className="space-y-1.5">
-            <Label className="text-sm font-medium text-gray-700">Age</Label>
+          <div className="space-y-1">
+            <Label className="text-xs font-bold text-slate-700">Age</Label>
             <Input
               type="number"
               value={age}
@@ -525,13 +767,13 @@ function ProfileEdit({
               placeholder="30"
               min={18}
               max={100}
-              className="rounded-xl h-11"
+              className="rounded-lg h-10 border-slate-200 text-sm focus:border-[#1D7A6C]"
             />
           </div>
-          <div className="space-y-1.5">
-            <Label className="text-sm font-medium text-gray-700">Gender</Label>
+          <div className="space-y-1">
+            <Label className="text-xs font-bold text-slate-700">Gender</Label>
             <Select value={gender} onValueChange={setGender}>
-              <SelectTrigger className="rounded-xl h-11">
+              <SelectTrigger className="rounded-lg h-10 border-slate-200 text-sm">
                 <SelectValue placeholder="Select" />
               </SelectTrigger>
               <SelectContent>
@@ -541,12 +783,12 @@ function ProfileEdit({
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-1.5">
-            <Label className="text-sm font-medium text-gray-700">
+          <div className="space-y-1">
+            <Label className="text-xs font-bold text-slate-700">
               Preferred Language
             </Label>
             <Select value={preferredLang} onValueChange={setPreferredLang}>
-              <SelectTrigger className="rounded-xl h-11">
+              <SelectTrigger className="rounded-lg h-10 border-slate-200 text-sm">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -556,12 +798,12 @@ function ProfileEdit({
               </SelectContent>
             </Select>
           </div>
-          <div className="space-y-1.5">
-            <Label className="text-sm font-medium text-gray-700">
+          <div className="space-y-1">
+            <Label className="text-xs font-bold text-slate-700">
               Risk Appetite
             </Label>
             <Select value={riskAppetite} onValueChange={setRiskAppetite}>
-              <SelectTrigger className="rounded-xl h-11">
+              <SelectTrigger className="rounded-lg h-10 border-slate-200 text-sm">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -575,29 +817,29 @@ function ProfileEdit({
       </Card>
 
       {/* Financial Info */}
-      <Card className="p-6 border-gray-100">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-9 h-9 bg-[#1E3A5F] rounded-xl flex items-center justify-center">
+      <Card className="p-6 border-slate-200 bg-white rounded-xl shadow-xs">
+        <div className="flex items-center gap-3 mb-5">
+          <div className="w-8 h-8 bg-[#1D7A6C] rounded-lg flex items-center justify-center shadow-xs">
             <Briefcase className="w-4 h-4 text-white" />
           </div>
-          <h2 className="font-bold text-[#1E3A5F] text-lg">
+          <h2 className="font-bold text-slate-900 text-base">
             Financial Details
           </h2>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-          <div className="space-y-1.5">
-            <Label className="text-sm font-medium text-gray-700">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-1">
+            <Label className="text-xs font-bold text-slate-700">
               Occupation
             </Label>
             <Input
               value={occupation}
               onChange={(e) => setOccupation(e.target.value)}
               placeholder="Software Engineer"
-              className="rounded-xl h-11"
+              className="rounded-lg h-10 border-slate-200 text-sm"
             />
           </div>
-          <div className="space-y-1.5">
-            <Label className="text-sm font-medium text-gray-700">
+          <div className="space-y-1">
+            <Label className="text-xs font-bold text-slate-700">
               Annual Income (₹)
             </Label>
             <Input
@@ -607,18 +849,18 @@ function ProfileEdit({
                 setAnnualIncome(e.target.value ? Number(e.target.value) : "")
               }
               placeholder="600000"
-              className="rounded-xl h-11"
+              className="rounded-lg h-10 border-slate-200 text-sm"
             />
             {annualIncome && (
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-slate-400 font-mono">
                 ≈ ₹{(Number(annualIncome) / 100000).toFixed(1)} Lakh/year
               </p>
             )}
           </div>
-          <div className="sm:col-span-2 space-y-1.5">
-            <Label className="text-sm font-medium text-gray-700">
+          <div className="sm:col-span-2 space-y-1">
+            <Label className="text-xs font-bold text-slate-700">
               Existing Policies{" "}
-              <span className="text-gray-400 font-normal">
+              <span className="text-slate-400 font-normal">
                 (comma separated)
               </span>
             </Label>
@@ -626,29 +868,29 @@ function ProfileEdit({
               value={existingPolicies}
               onChange={(e) => setExistingPolicies(e.target.value)}
               placeholder="LIC Jeevan Anand, HDFC Ergo Health..."
-              className="rounded-xl h-11"
+              className="rounded-lg h-10 border-slate-200 text-sm"
             />
           </div>
         </div>
       </Card>
 
       {/* Health Conditions */}
-      <Card className="p-6 border-gray-100">
-        <div className="flex items-center gap-3 mb-6">
-          <div className="w-9 h-9 bg-[#1E3A5F] rounded-xl flex items-center justify-center">
+      <Card className="p-6 border-slate-200 bg-white rounded-xl shadow-xs">
+        <div className="flex items-center gap-3 mb-5">
+          <div className="w-8 h-8 bg-[#1D7A6C] rounded-lg flex items-center justify-center shadow-xs">
             <Heart className="w-4 h-4 text-white" />
           </div>
-          <h2 className="font-bold text-[#1E3A5F] text-lg">
+          <h2 className="font-bold text-slate-900 text-base">
             Health Information
           </h2>
         </div>
-        <Label className="text-sm font-medium text-gray-700 mb-3 block">
+        <Label className="text-xs font-bold text-slate-700 mb-2.5 block">
           Pre-existing Conditions{" "}
-          <span className="text-gray-400 font-normal">
+          <span className="text-slate-400 font-normal">
             (select all that apply)
           </span>
         </Label>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-1.5">
           {HEALTH_CONDITIONS.map((condition) => {
             const selected = healthConditions.includes(condition);
             return (
@@ -657,10 +899,10 @@ function ProfileEdit({
                 type="button"
                 onClick={() => toggleHealth(condition)}
                 className={cn(
-                  "px-4 py-2 rounded-xl text-sm font-medium border-2 transition-all",
+                  "px-3 py-1.5 rounded-lg text-xs font-mono transition-all border",
                   selected
-                    ? "bg-[#1E3A5F] text-white border-[#1E3A5F]"
-                    : "bg-white text-gray-600 border-gray-200 hover:border-[#1E3A5F]",
+                    ? "bg-[#1D7A6C] text-white border-[#1D7A6C] font-bold"
+                    : "bg-slate-50 text-slate-700 border-slate-200 hover:border-[#1D7A6C]",
                 )}
               >
                 {selected && "✓ "}
@@ -672,83 +914,83 @@ function ProfileEdit({
       </Card>
 
       {/* Family Members */}
-      <Card className="p-6 border-gray-100">
-        <div className="flex items-center justify-between mb-6">
+      <Card className="p-6 border-slate-200 bg-white rounded-xl shadow-xs">
+        <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-[#1E3A5F] rounded-xl flex items-center justify-center">
+            <div className="w-8 h-8 bg-[#1D7A6C] rounded-lg flex items-center justify-center shadow-xs">
               <Shield className="w-4 h-4 text-white" />
             </div>
-            <h2 className="font-bold text-[#1E3A5F] text-lg">Family Members</h2>
+            <h2 className="font-bold text-slate-900 text-base">Family Members</h2>
           </div>
           <Button
             type="button"
             variant="outline"
             size="sm"
             onClick={addFamilyMember}
-            className="rounded-xl gap-1.5 border-[#1E3A5F] text-[#1E3A5F] hover:bg-blue-50"
+            className="rounded-lg gap-1.5 border-slate-200 text-[#1D7A6C] hover:bg-teal-50 text-xs font-medium"
           >
             <Plus className="w-4 h-4" /> Add Member
           </Button>
         </div>
 
         {familyMembers.length === 0 ? (
-          <div className="text-center py-8 border-2 border-dashed border-gray-200 rounded-2xl">
-            <p className="text-sm text-gray-500">No family members added yet</p>
+          <div className="text-center py-6 border-2 border-dashed border-slate-200 rounded-xl">
+            <p className="text-xs text-slate-500 font-mono">No family members added yet</p>
             <Button
               type="button"
               size="sm"
               variant="outline"
               onClick={addFamilyMember}
-              className="mt-3 rounded-xl gap-1.5"
+              className="mt-3 rounded-lg gap-1.5 text-xs font-medium"
             >
               <Plus className="w-4 h-4" /> Add Family Member
             </Button>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-3">
             {familyMembers.map((member, index) => (
               <div
                 key={index}
-                className="border border-gray-100 rounded-2xl p-4 space-y-4 bg-gray-50/50"
+                className="border border-slate-200 rounded-xl p-4 space-y-3 bg-slate-50/50"
               >
                 <div className="flex items-center justify-between">
-                  <Badge className="bg-[#1E3A5F]/10 text-[#1E3A5F] border-0">
+                  <Badge className="bg-teal-50 text-[#1D7A6C] border-teal-100 font-mono text-[10px] uppercase">
                     Member {index + 1}
                   </Badge>
                   <button
                     type="button"
                     onClick={() => removeMember(index)}
-                    className="p-1.5 hover:bg-red-50 rounded-lg transition-colors"
+                    className="p-1 hover:bg-red-50 rounded transition-colors"
                   >
-                    <Trash2 className="w-4 h-4 text-red-500" />
+                    <Trash2 className="w-3.5 h-3.5 text-red-500" />
                   </button>
                 </div>
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                   <div className="col-span-2 sm:col-span-1 space-y-1">
-                    <Label className="text-xs text-gray-600">Name</Label>
+                    <Label className="text-xs text-slate-600">Name</Label>
                     <Input
                       value={member.name}
                       onChange={(e) =>
                         updateMember(index, { name: e.target.value })
                       }
                       placeholder="Name"
-                      className="rounded-lg h-9 text-sm"
+                      className="rounded-lg h-9 text-xs"
                     />
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-xs text-gray-600">Relation</Label>
+                    <Label className="text-xs text-slate-600">Relation</Label>
                     <Select
                       value={member.relation}
                       onValueChange={(v) =>
                         updateMember(index, { relation: v })
                       }
                     >
-                      <SelectTrigger className="rounded-lg h-9 text-sm">
+                      <SelectTrigger className="rounded-lg h-9 text-xs">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
                         {RELATIONS.map((r) => (
-                          <SelectItem key={r} value={r} className="capitalize">
+                          <SelectItem key={r} value={r} className="capitalize text-xs">
                             {r}
                           </SelectItem>
                         ))}
@@ -756,7 +998,7 @@ function ProfileEdit({
                     </Select>
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-xs text-gray-600">Age</Label>
+                    <Label className="text-xs text-slate-600">Age</Label>
                     <Input
                       type="number"
                       value={member.age}
@@ -768,31 +1010,31 @@ function ProfileEdit({
                       placeholder="Age"
                       min={0}
                       max={120}
-                      className="rounded-lg h-9 text-sm"
+                      className="rounded-lg h-9 text-xs"
                     />
                   </div>
                   <div className="space-y-1">
-                    <Label className="text-xs text-gray-600">Gender</Label>
+                    <Label className="text-xs text-slate-600">Gender</Label>
                     <Select
                       value={member.gender}
                       onValueChange={(v) => updateMember(index, { gender: v })}
                     >
-                      <SelectTrigger className="rounded-lg h-9 text-sm">
+                      <SelectTrigger className="rounded-lg h-9 text-xs">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="male">Male</SelectItem>
-                        <SelectItem value="female">Female</SelectItem>
-                        <SelectItem value="other">Other</SelectItem>
+                        <SelectItem value="male" className="text-xs">Male</SelectItem>
+                        <SelectItem value="female" className="text-xs">Female</SelectItem>
+                        <SelectItem value="other" className="text-xs">Other</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
                 <div>
-                  <Label className="text-xs text-gray-600 mb-2 block">
+                  <Label className="text-xs text-slate-600 mb-1.5 block">
                     Health Conditions
                   </Label>
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="flex flex-wrap gap-1">
                     {HEALTH_CONDITIONS.map((condition) => {
                       const selected =
                         member.health_conditions.includes(condition);
@@ -810,10 +1052,10 @@ function ProfileEdit({
                             })
                           }
                           className={cn(
-                            "px-2.5 py-1 rounded-lg text-xs font-medium border transition-all",
+                            "px-2 py-0.5 rounded text-xs font-mono transition-all border",
                             selected
-                              ? "bg-[#1E3A5F] text-white border-[#1E3A5F]"
-                              : "bg-white text-gray-600 border-gray-200 hover:border-[#1E3A5F]",
+                              ? "bg-[#1D7A6C] text-white border-[#1D7A6C] font-bold"
+                              : "bg-white text-slate-600 border-slate-200 hover:border-[#1D7A6C]",
                           )}
                         >
                           {selected && "✓ "}
@@ -834,7 +1076,7 @@ function ProfileEdit({
         <Button
           variant="outline"
           onClick={onCancel}
-          className="rounded-xl px-8"
+          className="rounded-lg px-6 text-xs font-medium border-slate-200 text-slate-700"
           disabled={isPending}
         >
           Cancel
@@ -842,8 +1084,7 @@ function ProfileEdit({
         <Button
           onClick={handleSave}
           disabled={isPending}
-          size="lg"
-          className="bg-[#1E3A5F] hover:bg-[#152A46] text-white rounded-xl gap-2 shadow-xl px-10"
+          className="bg-[#1D7A6C] hover:bg-[#165E53] text-white rounded-lg gap-2 shadow-xs px-8 text-xs font-medium"
         >
           {isPending ? (
             <>
@@ -852,7 +1093,7 @@ function ProfileEdit({
             </>
           ) : (
             <>
-              <Save className="w-5 h-5" />
+              <Save className="w-4 h-4" />
               Save Profile
             </>
           )}

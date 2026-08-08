@@ -262,7 +262,7 @@ Provide ALL 5 recommendations fully — do not use "..." placeholders:
 
     // ── System prompt ─────────────────────────────────────────────
     const systemPrompt = `
-You are Suraksha AI, a warm and expert Indian insurance advisor chatbot helping Indian families.
+You are OREVA, a warm and expert Indian insurance advisor chatbot for Suraksha AI, helping Indian families.
 
 ${userContext}
 ${policiesContext}
@@ -306,7 +306,7 @@ ${recommendationBlock}`;
           role: "model",
           parts: [
             {
-              text: `Namaste! I'm Suraksha AI, your personal insurance advisor. I'm here to help you understand your policies, find coverage gaps, and recommend the best insurance plans. How can I help you today?`,
+              text: `Namaste! I'm OREVA, your personal Suraksha AI insurance advisor. I'm here to help you understand your policies, find coverage gaps, and recommend the best insurance plans. How can I help you today?`,
             },
           ],
         },

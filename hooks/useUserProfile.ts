@@ -1,64 +1,82 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useAuth } from "./useAuth";
 
-export interface UserProfile {
-  id: string;
-  user_id: string;
-  full_name: string | null;
-  age: number | null;
-  gender: string | null;
-  occupation: string | null;
-  annual_income: number | null;
-  family_size: number | null;
-  health_conditions: string[] | null;
-  existing_policies: string[] | null;
-  risk_appetite: string | null;
-  preferred_language: string | null;
-  avatar_url: string | null;
-  is_profile_complete: boolean | null;
-}
+import type { UserProfile } from "@/types";
+
+export type { UserProfile };
 
 export function useUserProfile() {
   const { user } = useAuth();
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const supabase = createClient();
+
+  // Memoize client — prevents creating new instances on every render
+  const supabase = useMemo(() => createClient(), []);
 
   useEffect(() => {
+    let mounted = true;
+
     if (!user) {
       setLoading(false);
+      setProfile(null);
       return;
     }
 
-    supabase
-      .from("user_profiles")
-      .select("*")
-      .eq("user_id", user.id)
-      .single()
-      .then(({ data }) => {
-        setProfile(data);
-        setLoading(false);
-      });
-  }, [user]);
+    const userId = user.id;
+
+    async function fetchProfile() {
+      try {
+        const { data, error } = await supabase
+          .from("user_profiles")
+          .select("*")
+          .eq("user_id", userId)
+          .single();
+
+        if (mounted) {
+          if (error && error.code !== "PGRST116") {
+            console.warn("useUserProfile: Error fetching profile:", error);
+          }
+          setProfile(data ?? null);
+          setLoading(false);
+        }
+      } catch (err) {
+        console.warn("useUserProfile: Failed to fetch profile:", err);
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    }
+
+    fetchProfile();
+
+    return () => {
+      mounted = false;
+    };
+  }, [user, supabase]);
 
   const updateProfile = async (updates: Partial<UserProfile>) => {
     if (!user) return { error: "Not authenticated" };
 
-    const { data, error } = await supabase
-      .from("user_profiles")
-      .update(updates)
-      .eq("user_id", user.id)
-      .select()
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from("user_profiles")
+        .update(updates)
+        .eq("user_id", user.id)
+        .select()
+        .single();
 
-    if (!error && data) {
-      setProfile(data);
+      if (!error && data) {
+        setProfile(data);
+      }
+
+      return { data, error };
+    } catch (err) {
+      console.error("useUserProfile: Update profile failed:", err);
+      return { data: null, error: err };
     }
-
-    return { data, error };
   };
 
   return { profile, loading, updateProfile };

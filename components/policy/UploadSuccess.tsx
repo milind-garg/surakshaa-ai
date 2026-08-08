@@ -12,48 +12,48 @@ interface UploadSuccessProps {
 
 export default function UploadSuccess({ policy, onUploadAnother }: UploadSuccessProps) {
   return (
-    <div className="bg-white dark:bg-gray-900 border border-green-200 dark:border-green-900 rounded-3xl p-10 text-center space-y-6 shadow-lg">
+    <div className="bg-white border border-slate-200 rounded-xl p-8 text-center space-y-6 shadow-xs">
 
       {/* Success Icon */}
       <div className="relative inline-flex">
-        <div className="w-24 h-24 bg-gradient-to-br from-green-400 to-emerald-500 rounded-3xl flex items-center justify-center shadow-xl mx-auto">
-          <CheckCircle className="w-12 h-12 text-white" />
+        <div className="w-16 h-16 bg-[#1D7A6C] rounded-xl flex items-center justify-center shadow-xs mx-auto">
+          <CheckCircle className="w-8 h-8 text-white" />
         </div>
-        <div className="absolute -top-2 -right-2 w-8 h-8 bg-[#FF6B35] rounded-full flex items-center justify-center text-white text-xs font-bold shadow-lg">
+        <div className="absolute -top-1.5 -right-1.5 w-6 h-6 bg-slate-900 rounded-full flex items-center justify-center text-white text-[10px] font-mono font-bold shadow-xs">
           AI
         </div>
       </div>
 
       {/* Success Message */}
       <div>
-        <h2 className="text-2xl font-bold text-[#1E3A5F] dark:text-white">
+        <h2 className="text-xl font-bold text-slate-900">
           Analysis Complete!
         </h2>
-        <p className="text-green-600 dark:text-green-400 font-hindi text-lg mt-1">
+        <p className="text-[#1D7A6C] font-hindi text-sm mt-1 font-medium">
           विश्लेषण पूरा हुआ! 🎉
         </p>
-        <p className="text-gray-500 dark:text-gray-400 text-sm mt-3 max-w-sm mx-auto">
+        <p className="text-slate-500 text-xs mt-2 max-w-sm mx-auto">
           Your policy has been uploaded and analyzed by AI. View the full report now.
         </p>
       </div>
 
       {/* File Info */}
-      <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-4 flex items-center gap-3 max-w-sm mx-auto">
-        <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center">
-          <FileText className="w-5 h-5 text-blue-600" />
+      <div className="bg-slate-50 border border-slate-200 rounded-lg p-3 flex items-center gap-3 max-w-sm mx-auto">
+        <div className="w-8 h-8 bg-teal-50 border border-teal-100 rounded-lg flex items-center justify-center">
+          <FileText className="w-4 h-4 text-[#1D7A6C]" />
         </div>
         <div className="text-left flex-1 min-w-0">
-          <p className="font-medium text-[#1E3A5F] dark:text-white text-sm truncate">
+          <p className="font-bold text-slate-900 text-xs truncate">
             {policy.fileName}
           </p>
-          <p className="text-xs text-green-600 dark:text-green-400 font-medium">
+          <p className="text-[11px] text-[#1D7A6C] font-mono font-medium">
             ✓ Analyzed successfully
           </p>
         </div>
       </div>
 
       {/* What was analyzed */}
-      <div className="grid grid-cols-2 gap-3 max-w-sm mx-auto w-full text-left">
+      <div className="grid grid-cols-2 gap-2.5 max-w-sm mx-auto w-full text-left">
         {[
           "Coverage details extracted",
           "Exclusions identified",
@@ -62,10 +62,10 @@ export default function UploadSuccess({ policy, onUploadAnother }: UploadSuccess
         ].map((item) => (
           <div
             key={item}
-            className="flex items-center gap-2 bg-green-50 dark:bg-green-900/20 rounded-xl p-2.5"
+            className="flex items-center gap-2 bg-teal-50/50 border border-teal-100/80 rounded-lg p-2"
           >
-            <CheckCircle className="w-3.5 h-3.5 text-green-500 shrink-0" />
-            <span className="text-xs text-gray-700 dark:text-gray-300">{item}</span>
+            <CheckCircle className="w-3.5 h-3.5 text-[#1D7A6C] shrink-0" />
+            <span className="text-[11px] text-slate-700">{item}</span>
           </div>
         ))}
       </div>
@@ -73,7 +73,7 @@ export default function UploadSuccess({ policy, onUploadAnother }: UploadSuccess
       {/* Action Buttons */}
       <div className="flex flex-col sm:flex-row gap-3 justify-center">
         <Link href={`/policies/${policy.id}`}>
-          <Button className="bg-[#1E3A5F] hover:bg-[#152A46] text-white rounded-xl px-6 gap-2 shadow-lg">
+          <Button className="bg-[#1D7A6C] hover:bg-[#165E53] text-white rounded-lg px-5 gap-2 shadow-xs text-xs font-medium">
             <Eye className="w-4 h-4" />
             View Full Analysis
             <ArrowRight className="w-4 h-4" />
@@ -83,7 +83,7 @@ export default function UploadSuccess({ policy, onUploadAnother }: UploadSuccess
         <Button
           variant="outline"
           onClick={onUploadAnother}
-          className="rounded-xl px-6 gap-2 border-gray-200 dark:border-gray-700"
+          className="rounded-lg px-5 gap-2 border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-medium"
         >
           <Upload className="w-4 h-4" />
           Upload Another
