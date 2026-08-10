@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion } from "framer-motion";
 import { Shield, Menu, X, Globe, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -30,13 +31,18 @@ export default function Navbar() {
   ];
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80">
+    <motion.header
+      initial={{ y: -15, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.45, ease: "easeOut" }}
+      className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         
         {/* Clean AegisFlow Style Logo */}
         <Link href="/" className="flex items-center group">
           <div className="w-12 h-12 rounded-2xl overflow-hidden border border-slate-200/80 bg-white flex items-center justify-center shadow-xs transition-transform duration-200 group-hover:scale-105 shrink-0">
-            <img src="/logo.png" alt="Suraksha.ai Shield Logo" className="w-full h-full object-cover" />
+            <img src="/logo_option4.png" alt="Surakshaa.ai" className="w-full h-full object-contain scale-115" />
           </div>
         </Link>
 
@@ -123,6 +129,6 @@ export default function Navbar() {
           </div>
         </div>
       )}
-    </header>
+    </motion.header>
   );
 }

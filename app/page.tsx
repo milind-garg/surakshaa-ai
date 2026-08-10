@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { motion, Variants } from "framer-motion";
 import {
   Shield,
   Upload,
@@ -24,6 +25,47 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
+
+// ── Animation Variants ────────────────────────────────────────────────────────
+
+const fadeInUp: Variants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.55, ease: [0.21, 0.47, 0.32, 0.98] },
+  },
+};
+
+const staggerContainer: Variants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.12,
+      delayChildren: 0.05,
+    },
+  },
+};
+
+const cardVariant: Variants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: [0.21, 0.47, 0.32, 0.98] },
+  },
+};
+
+const heroLogoVariant: Variants = {
+  hidden: { opacity: 0, scale: 0.95, y: 15 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: { duration: 0.65, ease: [0.21, 0.47, 0.32, 0.98], delay: 0.15 },
+  },
+};
 
 // ── Data ──────────────────────────────────────────────────────────────────────
 
@@ -260,56 +302,71 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 selection:bg-teal-100 selection:text-teal-900">
+    <div className="min-h-screen bg-[#F8FAF9] text-slate-900 selection:bg-teal-100 selection:text-teal-900">
       <Navbar />
 
-      <section className="relative pt-28 pb-16 lg:pt-36 lg:pb-24 bg-white">
+      <section className="relative pt-28 pb-16 lg:pt-36 lg:pb-24 bg-[#F8FAF9] overflow-hidden">
+        {/* Subtle background depth elements (radial mint gradient & low-opacity shapes) */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1200px] h-[700px] bg-[radial-gradient(ellipse_at_top,rgba(29,122,108,0.07),transparent_70%)] pointer-events-none -z-10" />
+        <div className="absolute -top-32 -left-32 w-96 h-96 bg-[#1D7A6C]/5 rounded-full filter blur-3xl pointer-events-none -z-10" />
+        <div className="absolute top-1/4 -right-20 w-[450px] h-[450px] bg-emerald-600/5 rounded-full filter blur-3xl pointer-events-none -z-10" />
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#00000003_1px,transparent_1px),linear-gradient(to_bottom,#00000003_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none -z-10" />
+
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            <div className="lg:col-span-7 space-y-6">
-              <div className="inline-flex items-center gap-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-mono text-slate-600 uppercase tracking-widest">
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={staggerContainer}
+              className="lg:col-span-7 space-y-6"
+            >
+              <motion.div variants={fadeInUp} className="inline-flex items-center gap-2 rounded-md border border-slate-200 bg-white/80 backdrop-blur-xs px-3 py-1 text-xs font-mono text-slate-600 uppercase tracking-widest shadow-2xs">
                 <span className="flex h-2 w-2 rounded-full bg-[#1D7A6C]" />
                 <Sparkles className="w-3.5 h-3.5 text-[#1D7A6C]" />
                 <span>{t("SOC 2 TYPE II • INSURANCE AI READY", "एसओसी 2 टाइप II • बीमा एआई तैयार")}</span>
-              </div>
+              </motion.div>
 
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.12]">
+              <motion.h1 variants={fadeInUp} className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.12]">
                 {t(
                   "Autonomous insurance intelligence for Indian families.",
                   "भारतीय परिवारों के लिए स्वायत्त बीमा इंटेलिजेंस।"
                 )}
-              </h1>
+              </motion.h1>
 
-              <p className="text-base sm:text-lg text-slate-600 max-w-2xl leading-relaxed font-sans">
+              <motion.p variants={fadeInUp} className="text-base sm:text-lg text-slate-600 max-w-2xl leading-relaxed font-sans">
                 {t(
                   "Upload your health or life policy. Google Gemini AI & Scikit-learn ML analyze fine print, identify hidden gaps, and predict claim success rates — 100% free.",
                   "अपनी स्वास्थ्य या जीवन नीति अपलोड करें। गूगल जेमिनी एआई और मशीन लर्निंग बारीक शर्तों का विश्लेषण करते हैं और दावा सफलता दर का अनुमान लगाते हैं — 100% मुफ़्त।"
                 )}
-              </p>
+              </motion.p>
 
-              <div className="flex flex-wrap gap-4 pt-2">
+              <motion.div variants={fadeInUp} className="flex flex-wrap gap-4 pt-2">
                 <Link href="/signup">
-                  <Button
-                    size="lg"
-                    className="bg-[#1D7A6C] hover:bg-[#165E53] text-white rounded-xl px-6 py-3.5 text-sm font-semibold shadow-xs transition-colors flex items-center gap-2 h-12"
-                  >
-                    <span>{t("Start Free Analysis", "मुफ़्त विश्लेषण शुरू करें")}</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </Button>
+                  <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                    <Button
+                      size="lg"
+                      className="bg-[#1D7A6C] hover:bg-[#165E53] text-white rounded-xl px-6 py-3.5 text-sm font-semibold shadow-xs transition-colors flex items-center gap-2 h-12"
+                    >
+                      <span>{t("Start Free Analysis", "मुफ़्त विश्लेषण शुरू करें")}</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </Button>
+                  </motion.div>
                 </Link>
                 <Link href="#how-it-works">
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="border border-slate-200 bg-white hover:bg-slate-50 text-slate-800 rounded-xl px-6 py-3.5 text-sm font-semibold shadow-xs transition-colors flex items-center gap-2 h-12"
-                  >
-                    <FileText className="w-4 h-4 text-slate-500" />
-                    <span>{t("See How It Works", "देखें यह कैसे काम करता है")}</span>
-                  </Button>
+                  <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="border border-slate-200 bg-white hover:bg-slate-50 text-slate-800 rounded-xl px-6 py-3.5 text-sm font-semibold shadow-xs transition-colors flex items-center gap-2 h-12"
+                    >
+                      <FileText className="w-4 h-4 text-slate-500" />
+                      <span>{t("See How It Works", "देखें यह कैसे काम करता है")}</span>
+                    </Button>
+                  </motion.div>
                 </Link>
-              </div>
+              </motion.div>
 
-              <div className="flex items-center gap-6 pt-4 text-xs font-mono text-slate-500 uppercase tracking-wider">
+              <motion.div variants={fadeInUp} className="flex items-center gap-6 pt-4 text-xs font-mono text-slate-500 uppercase tracking-wider">
                 <span className="flex items-center gap-1.5">
                   <CheckCircle className="w-4 h-4 text-[#1D7A6C]" />
                   {t("100% Confidential", "100% गोपनीय")}
@@ -318,76 +375,49 @@ export default function LandingPage() {
                   <Lock className="w-4 h-4 text-[#1D7A6C]" />
                   {t("AES-256 Encryption", "एईएस-256 एन्क्रिप्शन")}
                 </span>
+              </motion.div>
+            </motion.div>
+
+            <motion.div
+              initial="hidden"
+              animate="visible"
+              variants={heroLogoVariant}
+              className="lg:col-span-5 flex items-center justify-center relative"
+            >
+              {/* Soft green glow halo behind logo */}
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-[#1D7A6C]/10 rounded-full blur-3xl pointer-events-none" />
+
+              <div className="relative w-full max-w-[500px] sm:max-w-[530px] lg:max-w-[560px] aspect-square flex items-center justify-center p-2">
+                {/* Ambient halo ring */}
+                <div className="absolute inset-4 bg-gradient-to-tr from-[#1D7A6C]/10 via-emerald-500/5 to-teal-400/5 rounded-full filter blur-2xl -z-10" />
+                <motion.img
+                  whileHover={{ scale: 1.03 }}
+                  transition={{ duration: 0.2 }}
+                  src="/logo_option5.png"
+                  alt="Surakshaa.ai logo"
+                  className="w-full h-full object-contain filter drop-shadow-md cursor-pointer"
+                />
               </div>
-            </div>
-
-            <div className="lg:col-span-5">
-              <div className="bg-[#0A1118] border border-slate-800 rounded-2xl p-6 text-white font-mono shadow-xl relative overflow-hidden">
-                <div className="flex items-center justify-between pb-4 border-b border-slate-800 text-xs">
-                  <div className="flex items-center gap-2 text-slate-400">
-                    <span className="w-2.5 h-2.5 rounded-full bg-red-500/80 inline-block" />
-                    <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80 inline-block" />
-                    <span className="w-2.5 h-2.5 rounded-full bg-green-500/80 inline-block" />
-                    <span className="ml-2 text-slate-500">policy_analyzer.py</span>
-                  </div>
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-teal-500/10 border border-teal-500/20 text-teal-400 font-mono text-[10px] uppercase tracking-wider">
-                    <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
-                    SYSTEM_READY
-                  </span>
-                </div>
-
-                <div className="mt-4 space-y-3 text-xs">
-                  <div className="bg-slate-900/80 border border-slate-800 rounded-lg p-3">
-                    <p className="text-slate-400 text-[11px] mb-1">TARGET_POLICY</p>
-                    <p className="text-white font-bold">Star Health Comprehensive Policy</p>
-                    <p className="text-teal-400 text-[11px]">Sum Insured: ₹10,00,000</p>
-                  </div>
-
-                  <div className="space-y-2 text-[11px]">
-                    <div className="flex justify-between py-1.5 border-b border-slate-800/60">
-                      <span className="text-slate-400">{t("Claim Probability", "दावा संभावना")}</span>
-                      <span className="text-teal-400 font-semibold">94% ({t("High Approval", "उच्च स्वीकृति")})</span>
-                    </div>
-                    <div className="flex justify-between py-1.5 border-b border-slate-800/60">
-                      <span className="text-slate-400">{t("Coverage Gaps", "कवरेज कमियां")}</span>
-                      <span className="text-amber-400 font-semibold">2 {t("Flagged Items", "पहचाने गए बिंदु")}</span>
-                    </div>
-                    <div className="flex justify-between py-1.5 border-b border-slate-800/60">
-                      <span className="text-slate-400">{t("Room Rent Cap", "रूम रेंट कैप")}</span>
-                      <span className="text-slate-300">1% {t("Sum Insured", "बीमा राशि")}</span>
-                    </div>
-                  </div>
-
-                  <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Brain className="w-4 h-4 text-teal-400" />
-                      <span className="font-mono text-[10px] uppercase tracking-widest text-teal-400 font-semibold">
-                        Model: gemini-2.5-flash
-                      </span>
-                    </div>
-                    <p className="text-xs text-slate-300 font-sans leading-relaxed">
-                      {t(
-                        '"Your policy has ₹10 Lakh basic cover. Note: 1% room rent limit applies. OPD and cosmetic treatments are excluded."',
-                        '"आपकी पॉलिसी में ₹10 लाख का बेसिक कवर है। ध्यान दें: रूम रेंट पर 1% की सीमा लागू है। ओपीडी और कॉस्मेटिक इलाज शामिल नहीं हैं।"'
-                      )}
-                    </p>
-                  </div>
-
-                  <div className="mt-4 pt-3 border-t border-slate-800 text-[11px] font-mono text-slate-500 text-center">
-                    {t("Live simulation — document intake running against Indian policy registry.", "लाइव सिमुलेशन — भारतीय नीति रजिस्ट्री के खिलाफ दस्तावेज विश्लेषण।")}
-                  </div>
-                </div>
-              </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
 
       <section className="border-y border-slate-200 bg-white py-8">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 lg:grid-cols-4 divide-y lg:divide-y-0 lg:divide-x divide-slate-200">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-40px" }}
+            variants={staggerContainer}
+            className="grid grid-cols-2 lg:grid-cols-4 divide-y lg:divide-y-0 lg:divide-x divide-slate-200"
+          >
             {stats.map((stat, i) => (
-              <div key={stat.label} className={`px-6 py-4 ${i === 0 ? "lg:pl-0" : ""}`}>
+              <motion.div
+                key={stat.label}
+                variants={cardVariant}
+                className={`px-6 py-4 ${i === 0 ? "lg:pl-0" : ""}`}
+              >
                 <p className="text-xs font-mono uppercase tracking-widest text-slate-500 mb-1">
                   {stat.label}
                 </p>
@@ -395,15 +425,21 @@ export default function LandingPage() {
                   {stat.value}
                 </p>
                 <p className="text-xs text-slate-500">{stat.sub}</p>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
       <section id="features" className="py-20 bg-slate-50/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-16">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+            variants={fadeInUp}
+            className="text-center max-w-3xl mx-auto mb-16"
+          >
             <span className="inline-flex items-center gap-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-mono text-slate-600 uppercase tracking-widest mb-4">
               {t("AI POWERED CAPABILITIES", "एआई संचालित क्षमताएं")}
             </span>
@@ -416,12 +452,20 @@ export default function LandingPage() {
                 "मौजूदा पॉलिसियों का विश्लेषण करने, छिपी हुई शर्तों को उजागर करने और सर्वोत्तम सुझाव प्राप्त करने के लिए सब कुछ।"
               )}
             </p>
-          </div>
+          </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+            variants={staggerContainer}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
             {features.map((feature) => (
-              <div
+              <motion.div
                 key={feature.title}
+                variants={cardVariant}
+                whileHover={{ y: -5, transition: { duration: 0.2 } }}
                 className={`bg-white border border-slate-200 hover:border-[#1D7A6C]/40 hover:shadow-md rounded-2xl p-6 sm:p-8 shadow-xs transition-all duration-200 ${feature.span}`}
               >
                 <div className="w-10 h-10 rounded-xl bg-teal-50 border border-teal-100 flex items-center justify-center mb-5 text-[#1D7A6C]">
@@ -433,15 +477,21 @@ export default function LandingPage() {
                 <p className="text-slate-600 text-xs sm:text-sm leading-relaxed font-sans">
                   {feature.description}
                 </p>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
       <section id="how-it-works" className="py-20 bg-white border-y border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-16">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+            variants={fadeInUp}
+            className="text-center max-w-3xl mx-auto mb-16"
+          >
             <span className="inline-flex items-center gap-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-mono text-slate-600 uppercase tracking-widest mb-4">
               {t("4-STEP PROCESS", "4-चरण प्रक्रिया")}
             </span>
@@ -454,11 +504,22 @@ export default function LandingPage() {
                 "केवल 4 आसान चरणों में अपनी पॉलिसी का पूरा विवरण जानें"
               )}
             </p>
-          </div>
+          </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+            variants={staggerContainer}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+          >
             {steps.map((step) => (
-              <div key={step.step} className="bg-white border border-slate-200 rounded-2xl p-6 hover:border-[#1D7A6C]/40 hover:shadow-md transition-all">
+              <motion.div
+                key={step.step}
+                variants={cardVariant}
+                whileHover={{ y: -5, transition: { duration: 0.2 } }}
+                className="bg-white border border-slate-200 rounded-2xl p-6 hover:border-[#1D7A6C]/40 hover:shadow-md transition-all"
+              >
                 <div className="w-12 h-12 rounded-xl bg-slate-900 text-white font-mono font-bold text-sm flex items-center justify-center mb-4">
                   {step.step}
                 </div>
@@ -468,27 +529,41 @@ export default function LandingPage() {
                 <p className="text-slate-600 text-xs leading-relaxed font-sans">
                   {step.description}
                 </p>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
       <section className="py-20 bg-slate-50/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-16">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+            variants={fadeInUp}
+            className="text-center max-w-3xl mx-auto mb-16"
+          >
             <span className="inline-flex items-center gap-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-mono text-slate-600 uppercase tracking-widest mb-4">
               {t("USER EXPERIENCES", "उपयोगकर्ता अनुभव")}
             </span>
             <h2 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight mb-4">
               {t("Trusted by Families Across India", "पूरे भारत के परिवारों का विश्वास")}
             </h2>
-          </div>
+          </motion.div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+            variants={staggerContainer}
+            className="grid grid-cols-1 md:grid-cols-3 gap-6"
+          >
             {testimonials.map((test) => (
-              <div
+              <motion.div
                 key={test.name}
+                variants={cardVariant}
+                whileHover={{ y: -4, transition: { duration: 0.2 } }}
                 className="bg-white border border-slate-200 rounded-2xl p-6 flex flex-col justify-between shadow-xs hover:border-[#1D7A6C]/40 hover:shadow-md transition-all"
               >
                 <div>
@@ -517,15 +592,21 @@ export default function LandingPage() {
                   </div>
                   <Award className="w-4 h-4 text-amber-500 ml-auto" />
                 </div>
-              </div>
+              </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </section>
 
       <section className="py-20 bg-white">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="rounded-2xl p-8 sm:p-12 bg-slate-900 text-white text-center border border-slate-800 shadow-xl">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-50px" }}
+            variants={fadeInUp}
+            className="rounded-2xl p-8 sm:p-12 bg-slate-900 text-white text-center border border-slate-800 shadow-xl"
+          >
             <div className="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mx-auto mb-5">
               <Shield className="w-6 h-6 text-teal-400" />
             </div>
@@ -538,28 +619,32 @@ export default function LandingPage() {
                 "आज ही स्मार्ट और पारदर्शी बीमा निर्णय लेने वाले हज़ारों भारतीय पॉलिसीधारकों से जुड़ें।"
               )}
             </p>
-            
+
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link href="/signup">
-                <Button
-                  size="lg"
-                  className="bg-[#1D7A6C] hover:bg-[#165E53] text-white rounded-xl px-8 py-3.5 text-sm font-semibold shadow-xs gap-2 h-12"
-                >
-                  <span>{t("Analyze Your Policy Free", "अपनी पॉलिसी का मुफ़्त विश्लेषण करें")}</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Button>
+                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                  <Button
+                    size="lg"
+                    className="bg-[#1D7A6C] hover:bg-[#165E53] text-white rounded-xl px-8 py-3.5 text-sm font-semibold shadow-xs gap-2 h-12"
+                  >
+                    <span>{t("Analyze Your Policy Free", "अपनी पॉलिसी का मुफ़्त विश्लेषण करें")}</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </Button>
+                </motion.div>
               </Link>
               <Link href="/login">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="bg-transparent hover:bg-slate-800 text-white border border-slate-700 rounded-xl px-8 py-3.5 text-sm font-semibold h-12"
-                >
-                  <span>{t("Log In to Dashboard", "डैशबोर्ड में लॉग इन करें")}</span>
-                </Button>
+                <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="bg-transparent hover:bg-slate-800 text-white border border-slate-700 rounded-xl px-8 py-3.5 text-sm font-semibold h-12"
+                  >
+                    <span>{t("Log In to Dashboard", "डैशबोर्ड में लॉग इन करें")}</span>
+                  </Button>
+                </motion.div>
               </Link>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 

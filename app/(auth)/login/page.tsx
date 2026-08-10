@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { Eye, EyeOff, Mail, Lock, ArrowRight, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -57,7 +58,12 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative z-10 space-y-6">
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.45, ease: [0.21, 0.47, 0.32, 0.98] }}
+      className="relative z-10 space-y-6"
+    >
       {/* Card */}
       <div className="bg-white rounded-2xl shadow-xl p-8 border border-slate-200/80">
 
@@ -72,7 +78,7 @@ export default function LoginPage() {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="w-14 h-14 rounded-2xl overflow-hidden border border-slate-200 bg-white flex items-center justify-center mx-auto mb-4 shadow-sm shrink-0">
-            <img src="/logo.png" alt="Suraksha.ai Logo" className="w-full h-full object-cover" />
+            <img src="/logo_option4.png" alt="Surakshaa.ai" className="w-full h-full object-contain" />
           </div>
           <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
             {t("Welcome Back", "वापस स्वागत है")}
@@ -189,6 +195,6 @@ export default function LoginPage() {
           Create free account
         </Link>
       </p>
-    </div>
+    </motion.div>
   );
 }
