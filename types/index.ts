@@ -18,6 +18,11 @@ export interface UserProfile {
   gender: "male" | "female" | "other" | string | null;
   occupation: string | null;
   annual_income: number | null;
+  height_cm?: number | null;
+  weight_kg?: number | null;
+  bmi?: number | null;
+  smoker?: boolean | null;
+  exercise_frequency?: "never" | "occasionally" | "regularly" | "daily" | string | null;
   family_size: number | null;
   family_members?: FamilyMember[] | null;
   health_conditions: string[] | null;

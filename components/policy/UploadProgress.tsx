@@ -25,8 +25,27 @@ const processingMessages = [
   "Almost done...",
 ];
 
+import { useLanguage } from "@/context/LanguageContext";
+
 export default function UploadProgress({ stage, progress }: UploadProgressProps) {
+  const { t } = useLanguage();
   const [messageIndex, setMessageIndex] = useState(0);
+
+  const uploadMessages = [
+    t("Uploading your document securely...", "सुरक्षित रूप से आपका दस्तावेज़ अपलोड हो रहा है..."),
+    t("Storing in encrypted vault...", "एनक्रिप्टेड तिजोरी में सुरक्षित हो रहा है..."),
+    t("Preparing for AI analysis...", "एआई विश्लेषण की तैयारी की जा रही है..."),
+  ];
+
+  const processingMessages = [
+    t("Reading your policy document...", "आपकी पॉलिसी दस्तावेज़ पढ़ी जा रही है..."),
+    t("AI is analyzing coverage details...", "एआई कवरेज विवरण का विश्लेषण कर रहा है..."),
+    t("Identifying coverage gaps...", "कवरेज में कमियों की पहचान की जा रही है..."),
+    t("Calculating claim probability...", "दावा संभावना की गणना की जा रही है..."),
+    t("Generating analysis report...", "विश्लेषण रिपोर्ट तैयार की जा रही है..."),
+    t("Almost done...", "बस पूरा होने वाला है..."),
+  ];
+
   const messages = stage === "uploading" ? uploadMessages : processingMessages;
 
   useEffect(() => {
@@ -47,7 +66,7 @@ export default function UploadProgress({ stage, progress }: UploadProgressProps)
         </div>
         <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-teal-500/10 border border-teal-500/20 text-teal-400 font-mono text-[10px] uppercase tracking-wider">
           <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
-          {stage === "uploading" ? "UPLOADING" : "PARSING CLAUSES"}
+          {stage === "uploading" ? t("UPLOADING", "अपलोडिंग") : t("PARSING CLAUSES", "क्लॉज विश्लेषण")}
         </span>
       </div>
 
@@ -72,7 +91,7 @@ export default function UploadProgress({ stage, progress }: UploadProgressProps)
         <div className="inline-flex items-center gap-2 bg-teal-500/10 border border-teal-500/20 px-3 py-1 rounded-md mb-3">
           <Loader2 className="w-3.5 h-3.5 text-teal-400 animate-spin" />
           <span className="text-xs font-mono uppercase tracking-wider text-teal-300 font-semibold">
-            {stage === "uploading" ? "UPLOADING FILE" : "AI CLAUSE ANALYSIS"}
+            {stage === "uploading" ? t("UPLOADING FILE", "फ़ाइल अपलोड") : t("AI CLAUSE ANALYSIS", "एआई क्लॉज विश्लेषण")}
           </span>
         </div>
 
@@ -80,12 +99,6 @@ export default function UploadProgress({ stage, progress }: UploadProgressProps)
         <p className="text-white font-extrabold text-lg tracking-tight">
           {messages[messageIndex]}
         </p>
-
-        {stage === "processing" && (
-          <p className="text-teal-400 font-hindi text-xs mt-1.5 font-medium">
-            AI आपकी पॉलिसी पढ़ रहा है...
-          </p>
-        )}
       </div>
 
       {/* Progress Bar */}

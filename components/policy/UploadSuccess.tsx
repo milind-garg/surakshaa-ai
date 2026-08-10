@@ -10,13 +10,22 @@ interface UploadSuccessProps {
   onUploadAnother: () => void;
 }
 
+import { useLanguage } from "@/context/LanguageContext";
+
+interface UploadSuccessProps {
+  policy: UploadedPolicy;
+  onUploadAnother: () => void;
+}
+
 export default function UploadSuccess({ policy, onUploadAnother }: UploadSuccessProps) {
+  const { t } = useLanguage();
+
   return (
-    <div className="bg-white border border-slate-200 rounded-xl p-8 text-center space-y-6 shadow-xs">
+    <div className="bg-white border border-slate-200 rounded-2xl p-8 text-center space-y-6 shadow-xs">
 
       {/* Success Icon */}
       <div className="relative inline-flex">
-        <div className="w-16 h-16 bg-[#1D7A6C] rounded-xl flex items-center justify-center shadow-xs mx-auto">
+        <div className="w-16 h-16 bg-[#1D7A6C] rounded-2xl flex items-center justify-center shadow-xs mx-auto">
           <CheckCircle className="w-8 h-8 text-white" />
         </div>
         <div className="absolute -top-1.5 -right-1.5 w-6 h-6 bg-slate-900 rounded-full flex items-center justify-center text-white text-[10px] font-mono font-bold shadow-xs">
@@ -26,14 +35,14 @@ export default function UploadSuccess({ policy, onUploadAnother }: UploadSuccess
 
       {/* Success Message */}
       <div>
-        <h2 className="text-xl font-bold text-slate-900">
-          Analysis Complete!
+        <h2 className="text-xl font-extrabold text-slate-900 tracking-tight">
+          {t("Analysis Complete! 🎉", "विश्लेषण पूरा हुआ! 🎉")}
         </h2>
-        <p className="text-[#1D7A6C] font-hindi text-sm mt-1 font-medium">
-          विश्लेषण पूरा हुआ! 🎉
-        </p>
-        <p className="text-slate-500 text-xs mt-2 max-w-sm mx-auto">
-          Your policy has been uploaded and analyzed by AI. View the full report now.
+        <p className="text-slate-500 text-xs mt-2 max-w-sm mx-auto font-sans">
+          {t(
+            "Your policy has been uploaded and analyzed by AI. View the full report now.",
+            "आपकी पॉलिसी अपलोड और एआई द्वारा विश्लेषित की गई है। पूरी रिपोर्ट अब देखें।"
+          )}
         </p>
       </div>
 

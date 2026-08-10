@@ -39,17 +39,25 @@ export async function POST(request: NextRequest) {
       (profile?.health_conditions ?? []).length > 0 ||
       familyMembers?.some((m) => (m.health_conditions ?? []).length > 0);
 
-    const isSmoker = requirements?.toLowerCase().includes("smok") ?? false;
+    const calculatedBmi =
+      profile?.bmi ??
+      (profile?.weight_kg && profile?.height_cm
+        ? Number((profile.weight_kg / Math.pow(profile.height_cm / 100, 2)).toFixed(1))
+        : 25.0);
+
+    const isSmoker =
+      profile?.smoker ?? (requirements?.toLowerCase().includes("smok") ?? false);
 
     const mlProfile = {
       age: profile?.age ?? 30,
       sex: profile?.gender ?? "male",
-      bmi: 25.0, // default; extend profile form to capture BMI later
+      bmi: calculatedBmi,
       children: totalChildren,
       smoker: isSmoker,
       region: "north",
       annual_income: profile?.annual_income ?? 300000,
       health_conditions: profile?.health_conditions ?? [],
+      exercise_frequency: profile?.exercise_frequency ?? "Occasionally",
     };
 
     // ── Call ML microservice ──────────────────────────────────

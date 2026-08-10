@@ -14,23 +14,30 @@ const navLinks = [
   { href: "#about", label: "About" },
 ];
 
+import LanguageToggle from "./LanguageToggle";
+import { useLanguage } from "@/context/LanguageContext";
+
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
-  const [language, setLanguage] = useState<"en" | "hi">("en");
+  const { t } = useLanguage();
   const pathname = usePathname();
+
+  const navLinks = [
+    { href: "/", label: t("Home", "मुख्य पृष्ठ") },
+    { href: "#features", label: t("Features", "विशेषताएं") },
+    { href: "#how-it-works", label: t("How It Works", "यह कैसे काम करता है") },
+    { href: "#about", label: t("About", "हमारे बारे में") },
+  ];
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-md border-b border-slate-200/80">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
         
         {/* Clean AegisFlow Style Logo */}
-        <Link href="/" className="flex items-center gap-3 group">
-          <div className="w-10 h-10 rounded-xl bg-[#1D7A6C] flex items-center justify-center shadow-xs transition-transform duration-200 group-hover:scale-105">
-            <Shield className="w-5 h-5 text-white" />
+        <Link href="/" className="flex items-center group">
+          <div className="w-12 h-12 rounded-2xl overflow-hidden border border-slate-200/80 bg-white flex items-center justify-center shadow-xs transition-transform duration-200 group-hover:scale-105 shrink-0">
+            <img src="/logo.png" alt="Suraksha.ai Shield Logo" className="w-full h-full object-cover" />
           </div>
-          <span className="text-2xl font-extrabold tracking-tight text-slate-900">
-            Suraksha<span className="text-[#1D7A6C]">.ai</span>
-          </span>
         </Link>
 
         {/* Desktop Nav Links */}
@@ -54,14 +61,7 @@ export default function Navbar() {
         {/* Right Side Actions */}
         <div className="hidden md:flex items-center gap-3.5">
           {/* Language Toggle Pill */}
-          <button
-            onClick={() => setLanguage((prev) => (prev === "en" ? "hi" : "en"))}
-            className="flex items-center gap-2 px-3.5 py-2 rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 text-slate-700 transition-colors text-xs font-mono uppercase tracking-wider font-bold"
-            title="Toggle Language"
-          >
-            <Globe className="w-4 h-4 text-[#1D7A6C]" />
-            <span>{language === "en" ? "EN" : "हिंदी"}</span>
-          </button>
+          <LanguageToggle />
 
           <Link href="/login">
             <Button
@@ -69,7 +69,7 @@ export default function Navbar() {
               size="sm"
               className="text-slate-700 hover:text-slate-900 hover:bg-slate-100 text-base font-medium rounded-lg h-10 px-4"
             >
-              {language === "en" ? "Log In" : "लॉग इन"}
+              {t("Log In", "लॉग इन")}
             </Button>
           </Link>
 
@@ -78,7 +78,7 @@ export default function Navbar() {
               size="sm"
               className="bg-[#1D7A6C] hover:bg-[#165E53] text-white font-medium rounded-lg px-5 h-10 shadow-xs transition-colors gap-2 text-base"
             >
-              <span>{language === "en" ? "Get Started" : "शुरू करें"}</span>
+              <span>{t("Get Started", "शुरू करें")}</span>
               <ArrowRight className="w-4.5 h-4.5" />
             </Button>
           </Link>
@@ -109,7 +109,7 @@ export default function Navbar() {
           <div className="flex gap-2 pt-3 border-t border-slate-200">
             <Link href="/login" className="flex-1">
               <Button variant="outline" className="w-full border-slate-200 text-slate-800 hover:bg-slate-50" size="sm">
-                Log In
+                {t("Log In", "लॉग इन")}
               </Button>
             </Link>
             <Link href="/signup" className="flex-1">
@@ -117,7 +117,7 @@ export default function Navbar() {
                 className="w-full bg-[#1D7A6C] hover:bg-[#165E53] text-white font-medium"
                 size="sm"
               >
-                Get Started
+                {t("Get Started", "शुरू करें")}
               </Button>
             </Link>
           </div>

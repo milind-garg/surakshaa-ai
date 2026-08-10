@@ -2,20 +2,30 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
+import { sanitizeEmail, sanitizeInput, isValidEmail, isValidPassword } from "@/lib/security";
 
 export async function signUp(formData: FormData) {
   const supabase = await createClient();
 
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
-  const fullName = formData.get("fullName") as string;
+  const rawEmail = formData.get("email") as string;
+  const rawPassword = formData.get("password") as string;
+  const rawFullName = formData.get("fullName") as string;
+
+  const email = sanitizeEmail(rawEmail);
+  const fullName = sanitizeInput(rawFullName);
+  const password = rawPassword ? rawPassword.trim() : "";
 
   if (!email || !password || !fullName) {
-    return { error: "Please fill in all fields." };
+    return { error: "Please fill in all required fields." };
   }
 
-  if (password.length < 6) {
-    return { error: "Password must be at least 6 characters." };
+  if (!isValidEmail(email)) {
+    return { error: "Please enter a valid email address format (e.g. name@example.com)." };
+  }
+
+  const passValidation = isValidPassword(password);
+  if (!passValidation.valid) {
+    return { error: passValidation.message };
   }
 
   const { data, error } = await supabase.auth.signUp({
@@ -31,14 +41,13 @@ export async function signUp(formData: FormData) {
     if (error.message.includes("already registered")) {
       return { error: "This email is already registered. Please log in." };
     }
-    return { error: error.message };
+    return { error: sanitizeInput(error.message) };
   }
 
   if (data.user) {
     await supabase
       .from("user_profiles")
-      .update({ full_name: fullName })
-      .eq("user_id", data.user.id);
+      .upsert({ user_id: data.user.id, full_name: fullName }, { onConflict: "user_id" });
   }
 
   redirect("/dashboard");
@@ -47,11 +56,23 @@ export async function signUp(formData: FormData) {
 export async function signIn(formData: FormData) {
   const supabase = await createClient();
 
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
+  const rawEmail = formData.get("email") as string;
+  const rawPassword = formData.get("password") as string;
+
+  const email = sanitizeEmail(rawEmail);
+  const password = rawPassword ? rawPassword.trim() : "";
 
   if (!email || !password) {
     return { error: "Please enter your email and password." };
+  }
+
+  if (!isValidEmail(email)) {
+    return { error: "Please enter a valid email address format." };
+  }
+
+  const passValidation = isValidPassword(password);
+  if (!passValidation.valid) {
+    return { error: passValidation.message };
   }
 
   const { error } = await supabase.auth.signInWithPassword({
@@ -61,12 +82,12 @@ export async function signIn(formData: FormData) {
 
   if (error) {
     if (error.message.includes("Invalid login credentials")) {
-      return { error: "Incorrect email or password. Please try again." };
+      return { error: "Incorrect email or password. Please check your credentials." };
     }
     if (error.message.includes("Email not confirmed")) {
       return { error: "Please verify your email before logging in." };
     }
-    return { error: error.message };
+    return { error: sanitizeInput(error.message) };
   }
 
   redirect("/dashboard");
@@ -80,10 +101,15 @@ export async function signOut() {
 
 export async function resetPassword(formData: FormData) {
   const supabase = await createClient();
-  const email = formData.get("email") as string;
+  const rawEmail = formData.get("email") as string;
+  const email = sanitizeEmail(rawEmail);
 
   if (!email) {
     return { error: "Please enter your email address." };
+  }
+
+  if (!isValidEmail(email)) {
+    return { error: "Please enter a valid email address format." };
   }
 
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -91,7 +117,7 @@ export async function resetPassword(formData: FormData) {
   });
 
   if (error) {
-    return { error: error.message };
+    return { error: sanitizeInput(error.message) };
   }
 
   return { success: "Password reset link sent! Check your email." };
@@ -99,15 +125,19 @@ export async function resetPassword(formData: FormData) {
 
 export async function updatePassword(formData: FormData) {
   const supabase = await createClient();
-  const password = formData.get("password") as string;
-  const confirmPassword = formData.get("confirmPassword") as string;
+  const rawPassword = formData.get("password") as string;
+  const rawConfirmPassword = formData.get("confirmPassword") as string;
+
+  const password = rawPassword ? rawPassword.trim() : "";
+  const confirmPassword = rawConfirmPassword ? rawConfirmPassword.trim() : "";
 
   if (!password || !confirmPassword) {
     return { error: "Please fill in all fields." };
   }
 
-  if (password.length < 6) {
-    return { error: "Password must be at least 6 characters." };
+  const passValidation = isValidPassword(password);
+  if (!passValidation.valid) {
+    return { error: passValidation.message };
   }
 
   if (password !== confirmPassword) {
@@ -117,7 +147,7 @@ export async function updatePassword(formData: FormData) {
   const { error } = await supabase.auth.updateUser({ password });
 
   if (error) {
-    return { error: error.message };
+    return { error: sanitizeInput(error.message) };
   }
 
   return { success: "Password updated successfully! You can now log in." };

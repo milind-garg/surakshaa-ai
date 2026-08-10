@@ -20,10 +20,22 @@ const quickPrompts = [
   "Compare health vs life insurance",
 ];
 
+import { useLanguage } from "@/context/LanguageContext";
+
 export default function ChatInput({ onSend, isLoading, disabled }: ChatInputProps) {
+  const { t } = useLanguage();
   const [input, setInput] = useState("");
   const [showQuickPrompts, setShowQuickPrompts] = useState(true);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const quickPrompts = [
+    t("Recommend policies for my family", "मेरे परिवार के लिए नीतियों का सुझाव दें"),
+    t("What insurance do I need?", "मुझे कौन से बीमा की आवश्यकता है?"),
+    t("Explain health insurance", "स्वास्थ्य बीमा समझाएं"),
+    t("Best term plan for me", "मेरे लिए सबसे अच्छा टर्म प्लान"),
+    t("How to file a claim?", "दावा कैसे दायर करें?"),
+    t("Compare health vs life insurance", "स्वास्थ्य और जीवन बीमा की तुलना करें"),
+  ];
 
   const handleSend = () => {
     const trimmed = input.trim();
@@ -45,7 +57,6 @@ export default function ChatInput({ onSend, isLoading, disabled }: ChatInputProp
 
   const handleInput = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value);
-    // Auto-resize textarea
     const textarea = textareaRef.current;
     if (textarea) {
       textarea.style.height = "auto";
@@ -85,10 +96,10 @@ export default function ChatInput({ onSend, isLoading, disabled }: ChatInputProp
             onChange={handleInput}
             onKeyDown={handleKeyDown}
             onFocus={() => setShowQuickPrompts(false)}
-            placeholder="Ask about insurance, get recommendations... (Press Enter to send)"
+            placeholder={t("Ask OREVA about insurance, coverage, or recommendations...", "ओरेवा से बीमा, कवरेज या सुझावों के बारे में पूछें...")}
             disabled={disabled || isLoading}
             rows={1}
-            className="w-full bg-transparent px-4 py-3 pr-10 text-sm text-slate-900 placeholder-slate-400 resize-none outline-none max-h-32"
+            className="w-full bg-transparent px-4 py-3 pr-10 text-sm text-slate-900 placeholder-slate-400 resize-none outline-none max-h-32 font-sans"
           />
         </div>
 
@@ -97,7 +108,7 @@ export default function ChatInput({ onSend, isLoading, disabled }: ChatInputProp
           onClick={handleSend}
           disabled={!input.trim() || isLoading || disabled}
           className={cn(
-            "w-10 h-10 rounded-lg p-0 shrink-0 transition-all",
+            "w-10 h-10 rounded-xl p-0 shrink-0 transition-all",
             input.trim() && !isLoading
               ? "bg-[#1D7A6C] hover:bg-[#165E53] text-white shadow-xs"
               : "bg-slate-100 text-slate-400"
@@ -112,8 +123,10 @@ export default function ChatInput({ onSend, isLoading, disabled }: ChatInputProp
       </div>
 
       <p className="text-xs text-slate-400 text-center font-mono">
-        OREVA may make mistakes. Verify recommendations with the insurer.
-        <span className="font-hindi text-[#1D7A6C]"> · OREVA गलतियाँ कर सकता है।</span>
+        {t(
+          "OREVA may make mistakes. Verify recommendations with your insurer.",
+          "ओरेवा से त्रुटियां हो सकती हैं। अपने बीमाकर्ता से सुझावों की पुष्टि करें।"
+        )}
       </p>
     </div>
   );

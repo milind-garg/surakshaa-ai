@@ -15,14 +15,10 @@ interface ChatMessageProps {
 
 function TypingIndicator() {
   return (
-    <div className="flex items-center gap-1.5 px-4 py-3">
-      {[0, 1, 2].map((i) => (
-        <div
-          key={i}
-          className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
-          style={{ animationDelay: `${i * 0.15}s` }}
-        />
-      ))}
+    <div className="space-y-2 p-3.5 w-56 sm:w-72 animate-pulse">
+      <div className="h-3.5 bg-slate-200/80 rounded-md w-full" />
+      <div className="h-3.5 bg-slate-200/70 rounded-md w-5/6" />
+      <div className="h-3 bg-slate-100 rounded-md w-4/6" />
     </div>
   );
 }

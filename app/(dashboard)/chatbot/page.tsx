@@ -8,6 +8,7 @@ import ChatSidebar from "@/components/chatbot/ChatSidebar";
 import { useChatStore } from "@/hooks/useChatStore";
 import { useAuth } from "@/hooks/useAuth";
 import { createClient } from "@/lib/supabase/client";
+import { useLanguage } from "@/context/LanguageContext";
 import toast from "react-hot-toast";
 
 interface ChatSession {
@@ -16,26 +17,40 @@ interface ChatSession {
   created_at: string;
 }
 
-// ✅ Add this helper inside the component file, above the component:
-const makeWelcomeMessage = () => ({
+const makeWelcomeMessage = (t: (en: string, hi: string) => string) => ({
   id: "welcome",
   role: "assistant" as const,
-  content: `Namaste! 🙏 I'm OREVA, your personal Suraksha AI insurance advisor.
+  content: t(
+    `Namaste! 🙏 I'm OREVA, your personal Suraksha AI insurance advisor.
 
 I can help you:
 - 📋 **Understand** your existing policies
 - 🔍 **Find gaps** in your current coverage  
 - ⭐ **Recommend** the top 5 policies for your family
-- 💬 **Answer** any insurance questions in Hindi or English
+- 💬 **Answer** any insurance questions in English or Hindi
 
 To give you the best recommendations, I already have access to your profile and uploaded policies. Just ask me anything!
 
 Try asking: *"Recommend the best health insurance for my family"* 🏥`,
+
+    `नमस्ते! 🙏 मैं ओरेवा हूँ, आपका व्यक्तिगत सुरक्षा एआई बीमा सलाहकार।
+
+मैं आपकी मदद कर सकता हूँ:
+- 📋 आपकी मौजूदा पॉलिसियों को **समझने** में
+- 🔍 आपके कवरेज में **कमियों को खोजने** में
+- ⭐ आपके परिवार के लिए शीर्ष 5 पॉलिसियों का **सुझाव** देने में
+- 💬 आपके बीमा प्रश्नों के **उत्तर** देने में
+
+सर्वश्रेष्ठ सुझाव देने के लिए मेरे पास आपकी प्रोफाइल और पॉलिसियों का विवरण है। मुझसे कुछ भी पूछें!
+
+पूछकर देखें: *"मेरे परिवार के लिए सबसे अच्छा स्वास्थ्य बीमा सुझाएं"* 🏥`
+  ),
   timestamp: new Date(),
 });
 
 export default function ChatbotPage() {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const supabase = createClient();
 
   const [sessions, setSessions] = useState<ChatSession[]>([]);
@@ -61,11 +76,11 @@ export default function ChatbotPage() {
   // Load messages when session changes
   useEffect(() => {
     if (!activeSessionId) {
-      setMessages([makeWelcomeMessage()]);
+      setMessages([makeWelcomeMessage(t)]);
       return;
     }
     loadMessages(activeSessionId);
-  }, [activeSessionId]);
+  }, [activeSessionId, t]);
 
   const loadSessions = async () => {
     if (!user) return;
@@ -99,8 +114,8 @@ export default function ChatbotPage() {
 
     setSessions((prev) => [data, ...prev]);
     setActiveSessionId(data.id);
-    setMessages([makeWelcomeMessage()]);
-  }, [user, supabase]);
+    setMessages([makeWelcomeMessage(t)]);
+  }, [user, supabase, t]);
 
   const handleSendMessage = useCallback(
     async (content: string) => {
@@ -159,7 +174,7 @@ export default function ChatbotPage() {
 
     if (activeSessionId === sessionId) {
       setActiveSessionId(null);
-      setMessages([makeWelcomeMessage()]);
+      setMessages([makeWelcomeMessage(t)]);
     }
 
     toast.success("Chat deleted");
@@ -169,10 +184,10 @@ export default function ChatbotPage() {
     setActiveSessionId(sessionId);
   };
 
-  const displayMessages = messages.length === 0 ? [makeWelcomeMessage()] : messages;
+  const displayMessages = messages.length === 0 ? [makeWelcomeMessage(t)] : messages;
 
   return (
-    <div className="-m-6 h-[calc(100vh-4rem)] flex overflow-hidden">
+    <div className="h-[calc(100vh-6rem)] flex rounded-2xl border border-slate-200 bg-white overflow-hidden shadow-xs relative">
       {/* Sidebar */}
       {sidebarOpen && (
         <div className="hidden lg:flex h-full">
@@ -197,15 +212,18 @@ export default function ChatbotPage() {
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="font-extrabold text-slate-900 text-base sm:text-lg tracking-tight">
-                  OREVA AI Advisor
+                  {t("OREVA AI Advisor", "ओरेवा एआई सलाहकार")}
                 </h1>
                 <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-teal-50 border border-teal-100 text-[#1D7A6C] font-mono text-[10px] font-semibold uppercase tracking-wider">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#1D7A6C] animate-pulse" />
-                  OREVA ONLINE · GEMINI 2.5
+                  {t("OREVA ONLINE · GEMINI 2.5", "ओरेवा ऑनलाइन · जेमिनी 2.5")}
                 </span>
               </div>
               <p className="text-xs text-slate-500 font-sans">
-                Real-time policy recommendations & clause clarification in English / हिंदी
+                {t(
+                  "Real-time policy recommendations & clause clarification in English / Hindi",
+                  "वास्तविक समय नीति सुझाव और अंग्रेजी / हिंदी में खंड स्पष्टीकरण"
+                )}
               </p>
             </div>
           </div>

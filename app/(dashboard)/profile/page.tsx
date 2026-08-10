@@ -15,6 +15,7 @@ import {
   Camera,
   Upload,
   Check,
+  Activity,
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import ProfileLoading from "./loading";
 import {
   Avatar,
   AvatarImage,
@@ -35,6 +37,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useAuth } from "@/hooks/useAuth";
+import { useLanguage } from "@/context/LanguageContext";
 import { useUserProfile } from "@/hooks/useUserProfile";
 import { createClient } from "@/lib/supabase/client";
 import toast from "react-hot-toast";
@@ -119,32 +122,32 @@ function ProfilePictureCard({
 
   const AVATAR_PRESETS = [
     {
-      label: "Cool Sunglasses Sticker",
-      url: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Smiling%20Face%20with%20Sunglasses.png",
+      label: "Ponytail & Thumbs Up",
+      url: "/avatars/avatar_1.png",
     },
     {
-      label: "AI Advisor Robot",
-      url: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Robot.png",
+      label: "Man with Glasses",
+      url: "/avatars/avatar_2.png",
     },
     {
-      label: "Health Specialist Sticker",
-      url: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Man%20Health%20Worker.png",
+      label: "Indian Woman Memoji",
+      url: "/avatars/avatar_3.png",
     },
     {
-      label: "Technologist Sticker",
-      url: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/People/Technologist.png",
+      label: "Curly Hair & Headphones",
+      url: "/avatars/avatar_4.png",
     },
     {
-      label: "Star-Struck Sticker",
-      url: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Star-Struck.png",
+      label: "Chic Glasses & Bob",
+      url: "/avatars/avatar_5.png",
     },
     {
-      label: "Party Face Sticker",
-      url: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Smilies/Partying%20Face.png",
+      label: "Bearded Man Waving",
+      url: "/avatars/avatar_6.png",
     },
     {
-      label: "Aegis Shield Sticker",
-      url: "https://raw.githubusercontent.com/Tarikul-Islam-Anik/Animated-Fluent-Emojis/master/Emojis/Symbols/Shield.png",
+      label: "Braided Hair & Headband",
+      url: "/avatars/avatar_7.png",
     },
   ];
 
@@ -274,6 +277,7 @@ function ProfileView({
   onEdit: () => void;
 }) {
   const { user } = useAuth();
+  const { t } = useLanguage();
   const [avatarUrl, setAvatarUrl] = useState<string>(() => {
     if (typeof window !== "undefined") {
       return localStorage.getItem("suraksha_user_avatar") || profile?.avatar_url || "";
@@ -307,14 +311,16 @@ function ProfileView({
         <div>
           <div className="inline-flex items-center gap-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-mono text-slate-600 uppercase tracking-widest mb-3">
             <span className="flex h-2 w-2 rounded-full bg-[#1D7A6C]" />
-            <span>INSURANCE INTELLIGENCE PROFILE</span>
+            <span>{t("INSURANCE INTELLIGENCE PROFILE", "बीमा इंटेलिजेंस प्रोफाइल")}</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">My Profile</h1>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            {t("My Profile", "मेरी प्रोफाइल")}
+          </h1>
           <p className="text-slate-500 mt-1 text-sm">
-            Manage your personal details, financial parameters, and family coverage preferences
-          </p>
-          <p className="text-xs font-hindi text-[#1D7A6C] font-semibold mt-0.5">
-            आपकी व्यक्तिगत और पारिवारिक बीमा प्रोफाइल
+            {t(
+              "Manage your personal details, financial parameters, and family coverage preferences",
+              "अपनी व्यक्तिगत जानकारी, वित्तीय पैरामीटर और पारिवारिक कवरेज प्राथमिकताओं का प्रबंधन करें"
+            )}
           </p>
         </div>
         <Button
@@ -322,7 +328,7 @@ function ProfileView({
           className="bg-[#1D7A6C] hover:bg-[#165E53] text-white rounded-xl gap-2 shadow-xs text-sm font-semibold h-11 px-5 transition-colors"
         >
           <Edit2 className="w-4 h-4" />
-          Edit Profile
+          {t("Edit Profile", "प्रोफाइल संपादित करें")}
         </Button>
       </div>
 
@@ -335,10 +341,10 @@ function ProfileView({
       />
 
       {/* Completion Bar */}
-      <Card className="p-5 border-slate-200 bg-white rounded-xl shadow-xs">
+      <Card className="p-5 border-slate-200 bg-white rounded-2xl shadow-xs">
         <div className="flex items-center justify-between mb-2.5">
           <p className="font-bold text-slate-900 text-sm">
-            Profile Completion
+            {t("Profile Completion", "प्रोफाइल पूर्णता")}
           </p>
           <div className="flex items-center gap-2">
             {completion >= 80 ? (
@@ -357,65 +363,57 @@ function ProfileView({
           </div>
         </div>
         <Progress value={completion} className="h-2 rounded-full bg-slate-100" />
-        <p className="text-xs text-slate-400 font-mono mt-2">
-          {completion < 80
-            ? "Complete your profile for better AI recommendations"
-            : "Your profile is complete ✓"}
-        </p>
       </Card>
 
-      {/* Profile incomplete prompt */}
+      {/* Profile Incomplete Banner */}
       {completion < 80 && (
-        <Card className="p-4 border-amber-200 bg-amber-50 rounded-xl">
+        <Card className="p-4 border-amber-200 bg-amber-50/60 rounded-2xl shadow-xs">
           <div className="flex items-center justify-between flex-wrap gap-3">
             <div className="flex items-center gap-3">
               <AlertCircle className="w-6 h-6 text-amber-600 shrink-0" />
               <div>
                 <p className="font-bold text-amber-900 text-sm">
-                  Your profile is incomplete
-                </p>
-                <p className="text-xs text-amber-700 font-hindi">
-                  बेहतर सुझावों के लिए प्रोफाइल पूरी करें
+                  {t(
+                    "Your profile is incomplete for optimal AI recommendations",
+                    "सटीक एआई सुझावों के लिए आपकी प्रोफाइल अधूरी है"
+                  )}
                 </p>
               </div>
             </div>
             <Button
               onClick={onEdit}
-              className="bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-medium"
+              className="bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-semibold px-4"
             >
-              Complete Profile
+              {t("Complete Profile", "प्रोफाइल पूरी करें")}
             </Button>
           </div>
         </Card>
       )}
 
       {/* Personal Info */}
-      <Card className="p-6 border-slate-200 bg-white rounded-xl shadow-xs">
+      <Card className="p-6 border-slate-200 bg-white rounded-2xl shadow-xs">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-8 h-8 bg-[#1D7A6C] rounded-lg flex items-center justify-center shadow-xs">
+          <div className="w-8 h-8 bg-[#1D7A6C] rounded-xl flex items-center justify-center shadow-xs">
             <User className="w-4 h-4 text-white" />
           </div>
           <div>
             <h2 className="font-bold text-slate-900 text-base leading-none">
-              Personal Information
+              {t("Personal Information", "व्यक्तिगत जानकारी")}
             </h2>
-            <p className="text-[11px] font-hindi text-[#1D7A6C] mt-0.5">
-              व्यक्तिगत जानकारी
-            </p>
           </div>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 font-mono">
           {[
-            { label: "Full Name", value: profile?.full_name || "—" },
+            { label: t("Full Name", "पूरा नाम"), value: profile?.full_name || "—" },
             {
-              label: "Age",
-              value: profile?.age ? `${profile.age} years` : "—",
+              label: t("Age", "आयु"),
+              value: profile?.age ? `${profile.age} ${t("years", "वर्ष")}` : "—",
             },
-            { label: "Gender", value: profile?.gender || "—" },
-            { label: "Language", value: profile?.preferred_language || "—" },
-            { label: "Risk Appetite", value: profile?.risk_appetite || "—" },
+            { label: t("Gender", "लिंग"), value: profile?.gender || "—" },
+            { label: t("Language", "भाषा"), value: profile?.preferred_language || "—" },
+            { label: t("Risk Appetite", "जोखिम क्षमता"), value: profile?.risk_appetite || "—" },
           ].map((item) => (
-            <div key={item.label} className="bg-slate-50 border border-slate-200/80 rounded-lg p-3">
+            <div key={item.label} className="bg-slate-50 border border-slate-200/80 rounded-xl p-3">
               <p className="text-[11px] text-slate-400 uppercase mb-0.5">{item.label}</p>
               <p className="font-bold text-slate-900 text-xs sm:text-sm capitalize font-sans">
                 {item.value}
@@ -425,37 +423,87 @@ function ProfileView({
         </div>
       </Card>
 
-      {/* Financial Info */}
-      <Card className="p-6 border-slate-200 bg-white rounded-xl shadow-xs">
+      {/* Physical Metrics & Lifestyle (ML Features) */}
+      <Card className="p-6 border-slate-200 bg-white rounded-2xl shadow-xs">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-8 h-8 bg-[#1D7A6C] rounded-lg flex items-center justify-center shadow-xs">
+          <div className="w-8 h-8 bg-[#1D7A6C] rounded-xl flex items-center justify-center shadow-xs">
+            <Activity className="w-4 h-4 text-white" />
+          </div>
+          <div>
+            <h2 className="font-bold text-slate-900 text-base leading-none">
+              {t("Physical Metrics & Lifestyle (ML Features)", "शारीरिक माप और जीवनशैली (ML फीचर्स)")}
+            </h2>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 font-mono">
+          {[
+            {
+              label: t("Height", "ऊंचाई"),
+              value: profile?.height_cm ? `${profile.height_cm} cm` : "—",
+            },
+            {
+              label: t("Weight", "वजन"),
+              value: profile?.weight_kg ? `${profile.weight_kg} kg` : "—",
+            },
+            {
+              label: t("BMI", "बीएमआई"),
+              value: profile?.bmi
+                ? `${profile.bmi}`
+                : profile?.weight_kg && profile?.height_cm
+                ? `${(profile.weight_kg / Math.pow(profile.height_cm / 100, 2)).toFixed(1)}`
+                : "—",
+            },
+            {
+              label: t("Smoker Status", "धूम्रपान की स्थिति"),
+              value: profile?.smoker === true ? "🚬 Smoker" : profile?.smoker === false ? "🚭 Non-Smoker" : "—",
+            },
+            {
+              label: t("Exercise", "व्यायाम"),
+              value: profile?.exercise_frequency
+                ? `🏃 ${profile.exercise_frequency}`
+                : "—",
+            },
+          ].map((item) => (
+            <div key={item.label} className="bg-slate-50 border border-slate-200/80 rounded-xl p-3">
+              <p className="text-[11px] text-slate-400 uppercase mb-0.5">{item.label}</p>
+              <p className="font-bold text-slate-900 text-xs sm:text-sm capitalize font-sans">
+                {item.value}
+              </p>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      {/* Financial Details */}
+      <Card className="p-6 border-slate-200 bg-white rounded-2xl shadow-xs">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-8 h-8 bg-[#1D7A6C] rounded-xl flex items-center justify-center shadow-xs">
             <Briefcase className="w-4 h-4 text-white" />
           </div>
           <div>
             <h2 className="font-bold text-slate-900 text-base leading-none">
-              Financial Details
+              {t("Financial Details", "वित्तीय जानकारी")}
             </h2>
-            <p className="text-[11px] font-hindi text-[#1D7A6C] mt-0.5">वित्तीय जानकारी</p>
           </div>
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 font-mono">
           {[
-            { label: "Occupation", value: profile?.occupation || "—" },
+            { label: t("Occupation", "व्यवसाय"), value: profile?.occupation || "—" },
             {
-              label: "Annual Income",
+              label: t("Annual Income", "वार्षिक आय"),
               value: profile?.annual_income
                 ? `₹${(profile.annual_income / 100000).toFixed(1)} Lakh`
                 : "—",
             },
             {
-              label: "Existing Policies",
+              label: t("Existing Policies", "मौजूदा पॉलिसियां"),
               value:
                 profile?.existing_policies?.length > 0
                   ? profile.existing_policies.join(", ")
-                  : "None",
+                  : t("None", "कोई नहीं"),
             },
           ].map((item) => (
-            <div key={item.label} className="bg-slate-50 border border-slate-200/80 rounded-lg p-3">
+            <div key={item.label} className="bg-slate-50 border border-slate-200/80 rounded-xl p-3">
               <p className="text-[11px] text-slate-400 uppercase mb-0.5">{item.label}</p>
               <p className="font-bold text-slate-900 text-xs sm:text-sm font-sans">
                 {item.value}
@@ -466,18 +514,15 @@ function ProfileView({
       </Card>
 
       {/* Health Info */}
-      <Card className="p-6 border-slate-200 bg-white rounded-xl shadow-xs">
+      <Card className="p-6 border-slate-200 bg-white rounded-2xl shadow-xs">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-8 h-8 bg-[#1D7A6C] rounded-lg flex items-center justify-center shadow-xs">
+          <div className="w-8 h-8 bg-[#1D7A6C] rounded-xl flex items-center justify-center shadow-xs">
             <Heart className="w-4 h-4 text-white" />
           </div>
           <div>
             <h2 className="font-bold text-slate-900 text-base leading-none">
-              Health Information
+              {t("Health Information", "स्वास्थ्य जानकारी")}
             </h2>
-            <p className="text-[11px] font-hindi text-[#1D7A6C] mt-0.5">
-              स्वास्थ्य जानकारी
-            </p>
           </div>
         </div>
         <div className="flex flex-wrap gap-1.5">
@@ -492,38 +537,36 @@ function ProfileView({
             ))
           ) : (
             <p className="text-slate-500 text-xs font-mono">
-              No health conditions recorded
+              {t("No health conditions recorded", "कोई स्वास्थ्य स्थिति दर्ज नहीं है")}
             </p>
           )}
         </div>
       </Card>
 
       {/* Family Members */}
-      <Card className="p-6 border-slate-200 bg-white rounded-xl shadow-xs">
+      <Card className="p-6 border-slate-200 bg-white rounded-2xl shadow-xs">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-8 h-8 bg-[#1D7A6C] rounded-lg flex items-center justify-center shadow-xs">
+          <div className="w-8 h-8 bg-[#1D7A6C] rounded-xl flex items-center justify-center shadow-xs">
             <Shield className="w-4 h-4 text-white" />
           </div>
           <div>
             <h2 className="font-bold text-slate-900 text-base leading-none">
-              Family Members
+              {t("Family Members", "परिवार के सदस्य")}
             </h2>
-            <p className="text-[11px] font-hindi text-[#1D7A6C] mt-0.5">परिवार के सदस्य</p>
           </div>
         </div>
         {family.length === 0 ? (
-          <div className="text-center py-6 border-2 border-dashed border-slate-200 rounded-xl">
-            <p className="text-slate-500 text-xs font-mono">No family members added</p>
-            <p className="text-xs font-hindi text-[#1D7A6C] mt-0.5">
-              कोई परिवार सदस्य नहीं जोड़ा गया
+          <div className="text-center py-6 border-2 border-dashed border-slate-200 rounded-2xl">
+            <p className="text-slate-500 text-xs font-sans">
+              {t("No family members added yet", "अभी तक कोई परिवार सदस्य नहीं जोड़ा गया")}
             </p>
             <Button
               onClick={onEdit}
               variant="outline"
               size="sm"
-              className="mt-3 rounded-lg border-slate-200 text-xs font-medium"
+              className="mt-3 rounded-xl border-slate-200 text-xs font-semibold"
             >
-              Add Family Members
+              {t("Add Family Members", "परिवार के सदस्य जोड़ें")}
             </Button>
           </div>
         ) : (
@@ -582,6 +625,12 @@ function ProfileEdit({
   const [preferredLang, setPreferredLang] = useState(
     profile?.preferred_language ?? "english",
   );
+  const [heightCm, setHeightCm] = useState<number | "">(profile?.height_cm ?? "");
+  const [weightKg, setWeightKg] = useState<number | "">(profile?.weight_kg ?? "");
+  const [smoker, setSmoker] = useState<boolean>(profile?.smoker ?? false);
+  const [exerciseFreq, setExerciseFreq] = useState<string>(
+    profile?.exercise_frequency ?? "occasionally",
+  );
   const [healthConditions, setHealthConditions] = useState<string[]>(
     profile?.health_conditions ?? [],
   );
@@ -605,6 +654,11 @@ function ProfileEdit({
       else localStorage.removeItem("suraksha_user_avatar");
     }
   };
+
+  const calculatedBmi =
+    heightCm && weightKg
+      ? Number((Number(weightKg) / Math.pow(Number(heightCm) / 100, 2)).toFixed(1))
+      : null;
 
   const toggleHealth = (c: string) => {
     setHealthConditions((prev) =>
@@ -652,12 +706,17 @@ function ProfileEdit({
           .map((s: string) => s.trim())
           .filter(Boolean);
 
-        await updateProfile({
+        const { error } = await updateProfile({
           full_name: fullName,
           age: age === "" ? null : Number(age),
           gender,
           occupation,
           annual_income: annualIncome === "" ? null : Number(annualIncome),
+          height_cm: heightCm === "" ? null : Number(heightCm),
+          weight_kg: weightKg === "" ? null : Number(weightKg),
+          bmi: calculatedBmi,
+          smoker,
+          exercise_frequency: exerciseFreq,
           risk_appetite: riskAppetite,
           preferred_language: preferredLang,
           health_conditions: healthConditions,
@@ -665,21 +724,31 @@ function ProfileEdit({
           is_profile_complete: isComplete,
         } as any);
 
-        // Save family members
+        if (error) {
+          toast.error("Failed to save profile. Please try again.");
+          console.error("Profile update error:", error);
+          return;
+        }
+
+        // Save family members safely
         if (user) {
-          await supabase.from("family_members").delete().eq("user_id", user.id);
-          const toInsert = familyMembers
-            .filter((m) => m.name)
-            .map((m) => ({
-              user_id: user.id,
-              name: m.name,
-              relation: m.relation,
-              age: m.age === "" ? null : Number(m.age),
-              gender: m.gender,
-              health_conditions: m.health_conditions,
-            }));
-          if (toInsert.length > 0) {
-            await supabase.from("family_members").insert(toInsert);
+          try {
+            await supabase.from("family_members").delete().eq("user_id", user.id);
+            const toInsert = familyMembers
+              .filter((m) => m.name)
+              .map((m) => ({
+                user_id: user.id,
+                name: m.name,
+                relation: m.relation,
+                age: m.age === "" ? null : Number(m.age),
+                gender: m.gender,
+                health_conditions: m.health_conditions,
+              }));
+            if (toInsert.length > 0) {
+              await supabase.from("family_members").insert(toInsert);
+            }
+          } catch (famErr) {
+            console.warn("Family members save skipped:", famErr);
           }
         }
 
@@ -814,6 +883,80 @@ function ProfileEdit({
                 <SelectItem value="low">Low Risk 🛡️</SelectItem>
                 <SelectItem value="medium">Medium Risk ⚖️</SelectItem>
                 <SelectItem value="high">High Risk 🚀</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+      </Card>
+
+      {/* Physical Metrics & Lifestyle (ML Features) */}
+      <Card className="p-6 border-slate-200 bg-white rounded-xl shadow-xs">
+        <div className="flex items-center justify-between flex-wrap gap-3 mb-5">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 bg-[#1D7A6C] rounded-lg flex items-center justify-center shadow-xs">
+              <Activity className="w-4 h-4 text-white" />
+            </div>
+            <div>
+              <h2 className="font-bold text-slate-900 text-base">
+                Physical Metrics & Lifestyle (ML Features)
+              </h2>
+              <p className="text-xs text-slate-500">Used by AI ML engine to calculate risk score & policy recommendations</p>
+            </div>
+          </div>
+          {calculatedBmi && (
+            <Badge className="bg-teal-50 text-[#1D7A6C] border-teal-200 font-mono text-xs px-3 py-1">
+              BMI: {calculatedBmi} ({calculatedBmi < 18.5 ? "Underweight" : calculatedBmi < 25 ? "Normal Weight" : calculatedBmi < 30 ? "Overweight" : "Obese"})
+            </Badge>
+          )}
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="space-y-1">
+            <Label className="text-xs font-bold text-slate-700">Height (cm)</Label>
+            <Input
+              type="number"
+              value={heightCm}
+              onChange={(e) => setHeightCm(e.target.value ? Number(e.target.value) : "")}
+              placeholder="175"
+              min={100}
+              max={250}
+              className="rounded-lg h-10 border-slate-200 text-sm focus:border-[#1D7A6C]"
+            />
+          </div>
+          <div className="space-y-1">
+            <Label className="text-xs font-bold text-slate-700">Weight (kg)</Label>
+            <Input
+              type="number"
+              value={weightKg}
+              onChange={(e) => setWeightKg(e.target.value ? Number(e.target.value) : "")}
+              placeholder="70"
+              min={30}
+              max={200}
+              className="rounded-lg h-10 border-slate-200 text-sm focus:border-[#1D7A6C]"
+            />
+          </div>
+          <div className="space-y-1">
+            <Label className="text-xs font-bold text-slate-700">Smoking Status</Label>
+            <Select value={smoker ? "yes" : "no"} onValueChange={(val) => setSmoker(val === "yes")}>
+              <SelectTrigger className="rounded-lg h-10 border-slate-200 text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="no">Non-Smoker 🚭</SelectItem>
+                <SelectItem value="yes">Smoker 🚬</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-1">
+            <Label className="text-xs font-bold text-slate-700">Exercise Frequency</Label>
+            <Select value={exerciseFreq} onValueChange={setExerciseFreq}>
+              <SelectTrigger className="rounded-lg h-10 border-slate-200 text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="never">Never 🛋️</SelectItem>
+                <SelectItem value="occasionally">Occasionally 🚶</SelectItem>
+                <SelectItem value="regularly">Regularly 🏃</SelectItem>
+                <SelectItem value="daily">Daily 🏋️</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -1110,7 +1253,7 @@ function ProfileEdit({
 // ── Main Page ──────────────────────────────────────────────────
 export default function ProfilePage() {
   const { user } = useAuth();
-  const { profile, loading } = useUserProfile();
+  const { profile, loading, refetchProfile } = useUserProfile();
   const [isEditing, setIsEditing] = useState(false);
   const [familyMembers, setFamilyMembers] = useState<FamilyMember[]>([]);
   const [familyLoading, setFamilyLoading] = useState(true);
@@ -1128,16 +1271,13 @@ export default function ProfilePage() {
       });
   }, [user, isEditing]);
 
-  const handleSaved = () => {
+  const handleSaved = async () => {
+    await refetchProfile();
     setIsEditing(false);
   };
 
   if (loading || familyLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-96">
-        <div className="w-8 h-8 border-4 border-[#1E3A5F]/20 border-t-[#1E3A5F] rounded-full animate-spin" />
-      </div>
-    );
+    return <ProfileLoading />;
   }
 
   // If profile is completely empty, go directly to edit mode

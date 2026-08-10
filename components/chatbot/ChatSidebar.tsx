@@ -18,6 +18,8 @@ interface ChatSidebarProps {
   onDeleteSession: (id: string) => void;
 }
 
+import { useLanguage } from "@/context/LanguageContext";
+
 export default function ChatSidebar({
   sessions,
   activeSessionId,
@@ -25,17 +27,19 @@ export default function ChatSidebar({
   onNewSession,
   onDeleteSession,
 }: ChatSidebarProps) {
+  const { t } = useLanguage();
+
   return (
     <div className="w-64 bg-white border-r border-slate-200 flex flex-col h-full">
       {/* Header */}
       <div className="p-4 border-b border-slate-200">
         <Button
           onClick={onNewSession}
-          className="w-full bg-[#1D7A6C] hover:bg-[#165E53] text-white rounded-lg gap-2 text-xs font-medium shadow-xs"
+          className="w-full bg-[#1D7A6C] hover:bg-[#165E53] text-white rounded-xl gap-2 text-xs font-semibold shadow-xs"
           size="sm"
         >
           <Plus className="w-4 h-4" />
-          New Chat
+          {t("New Chat", "नई चैट शुरू करें")}
         </Button>
       </div>
 
@@ -44,8 +48,9 @@ export default function ChatSidebar({
         {sessions.length === 0 ? (
           <div className="text-center py-8">
             <MessageSquare className="w-8 h-8 text-slate-300 mx-auto mb-2" />
-            <p className="text-xs text-slate-400 font-mono">No chats yet</p>
-            <p className="text-xs font-hindi text-[#1D7A6C]">अभी कोई चैट नहीं</p>
+            <p className="text-xs text-slate-500 font-sans">
+              {t("No chats yet", "अभी कोई चैट नहीं")}
+            </p>
           </div>
         ) : (
           sessions.map((session) => (
