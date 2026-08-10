@@ -68,8 +68,8 @@ export default function DashboardSidebar() {
         )}
       >
         <div className="h-16 px-6 border-b border-slate-200 flex items-center justify-between">
-          <div className="w-9 h-9 rounded-xl overflow-hidden border border-slate-200 bg-white flex items-center justify-center shrink-0">
-            <img src="/logo.png" alt="Suraksha.ai Shield Logo" className="w-full h-full object-cover" />
+          <div className="w-12 h-12 rounded-xl overflow-hidden border border-slate-200 bg-white flex items-center justify-center shrink-0">
+            <img src="/logo_option4.png" alt="Surakshaa.ai" className="w-full h-full object-contain scale-115" />
           </div>
           <button
             onClick={() => setIsMobileOpen(false)}
