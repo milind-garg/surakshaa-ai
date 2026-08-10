@@ -88,11 +88,15 @@ export default function DashboardSidebar() {
 
       {/* Bottom section */}
       <div className="p-4 border-t border-slate-200">
-        <div className="bg-slate-900 border border-slate-800 rounded-lg p-4 text-white">
-          <TrendingUp className="w-5 h-5 mb-2 text-teal-400" />
-          <p className="text-xs font-semibold mb-1 text-white">Pro Tip</p>
-          <p className="text-[11px] text-slate-300 leading-relaxed">
-            Upload your policy to get an instant AI analysis in Hindi or English.
+        <div className="bg-[#0A1118] border border-slate-800 rounded-xl p-4 text-white font-mono text-xs shadow-xs">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-teal-400 font-bold uppercase tracking-wider text-[10px] flex items-center gap-1">
+              <TrendingUp className="w-3.5 h-3.5" /> AI ENGINE ONLINE
+            </span>
+            <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
+          </div>
+          <p className="text-[11px] text-slate-300 font-sans leading-relaxed">
+            Upload your health or life policy for instant clause extraction in Hindi & English.
           </p>
         </div>
       </div>

@@ -57,17 +57,21 @@ export default async function PoliciesPage() {
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
-            My Policies
+          <div className="inline-flex items-center gap-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-mono text-slate-600 uppercase tracking-widest mb-3">
+            <span className="flex h-2 w-2 rounded-full bg-[#1D7A6C]" />
+            <span>VAULT REPOSITORY • {totalPolicies} DOCUMENTS</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+            My Insurance Policies
           </h1>
-          <p className="text-slate-500 text-sm mt-0.5">
-            {totalPolicies} {totalPolicies === 1 ? "policy" : "policies"} uploaded ·{" "}
-            {analyzedCount} analyzed
+          <p className="text-slate-500 text-sm mt-1">
+            {totalPolicies} {totalPolicies === 1 ? "policy" : "policies"} stored in encrypted vault ·{" "}
+            {analyzedCount} fully analyzed by AI
           </p>
-          <p className="text-xs font-hindi text-[#1D7A6C] font-medium">मेरी बीमा पॉलिसी</p>
+          <p className="text-xs font-hindi text-[#1D7A6C] mt-0.5 font-semibold">मेरी सभी बीमा पॉलिसियां</p>
         </div>
         <Link href="/upload">
-          <Button className="bg-[#1D7A6C] hover:bg-[#165E53] text-white rounded-lg gap-2 shadow-xs text-sm font-medium">
+          <Button className="bg-[#1D7A6C] hover:bg-[#165E53] text-white rounded-xl gap-2 shadow-xs text-sm font-semibold h-11 px-5 transition-colors">
             <Upload className="w-4 h-4" />
             Upload New Policy
           </Button>
