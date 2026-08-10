@@ -28,21 +28,29 @@ export default function LoginPage() {
   return (
     <div className="relative z-10 space-y-6">
       {/* Card */}
-      <div className="bg-white rounded-xl shadow-xs p-8 border border-slate-200">
+      <div className="bg-white rounded-2xl shadow-xl p-8 border border-slate-200/80">
+
+        {/* Top Monospaced Pill Badge */}
+        <div className="flex justify-center mb-6">
+          <div className="inline-flex items-center gap-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] font-mono text-slate-600 uppercase tracking-widest">
+            <span className="flex h-2 w-2 rounded-full bg-[#1D7A6C]" />
+            <span>SECURE DASHBOARD ACCESS</span>
+          </div>
+        </div>
 
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-12 h-12 bg-[#1D7A6C] rounded-lg flex items-center justify-center mx-auto mb-4 shadow-xs">
+          <div className="w-12 h-12 bg-[#1D7A6C] rounded-xl flex items-center justify-center mx-auto mb-4 shadow-sm">
             <Shield className="w-6 h-6 text-white" />
           </div>
-          <h1 className="text-xl font-bold text-slate-900">
-            Welcome Back!
+          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
+            Welcome Back
           </h1>
-          <p className="text-slate-500 text-xs mt-1">
-            Log in to your Suraksha AI account
+          <p className="text-slate-500 text-xs mt-1 font-sans">
+            Log in to your Suraksha AI intelligence portal
           </p>
           <p className="text-[#1D7A6C] font-hindi text-xs mt-1 font-medium">
-            वापस स्वागत है!
+            सुरक्षा एआई खाते में प्रवेश करें
           </p>
         </div>
 
@@ -50,19 +58,19 @@ export default function LoginPage() {
         <form action={handleSubmit} className="space-y-4">
           {/* Email */}
           <div className="space-y-1.5">
-            <Label htmlFor="email" className="text-xs font-medium text-slate-700">
+            <Label htmlFor="email" className="text-xs font-semibold text-slate-700 font-mono uppercase tracking-wider">
               Email Address
             </Label>
             <div className="relative">
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <Input
                 id="email"
                 name="email"
                 type="email"
-                placeholder="rahul@example.com"
+                placeholder="name@example.com"
                 required
                 autoComplete="email"
-                className="pl-9 rounded-lg border-slate-200 focus:border-[#1D7A6C] h-10 text-sm"
+                className="pl-10 rounded-xl border-slate-200 focus:border-[#1D7A6C] h-11 text-sm bg-slate-50/50"
               />
             </div>
           </div>
@@ -70,31 +78,31 @@ export default function LoginPage() {
           {/* Password */}
           <div className="space-y-1.5">
             <div className="flex items-center justify-between">
-              <Label htmlFor="password" className="text-xs font-medium text-slate-700">
+              <Label htmlFor="password" className="text-xs font-semibold text-slate-700 font-mono uppercase tracking-wider">
                 Password
               </Label>
               <Link
                 href="/forgot-password"
-                className="text-xs text-[#1D7A6C] hover:underline font-medium"
+                className="text-xs text-[#1D7A6C] hover:underline font-medium font-sans"
               >
                 Forgot password?
               </Link>
             </div>
             <div className="relative">
-              <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+              <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <Input
                 id="password"
                 name="password"
                 type={showPassword ? "text" : "password"}
-                placeholder="Your password"
+                placeholder="••••••••••••"
                 required
                 autoComplete="current-password"
-                className="pl-9 pr-10 rounded-lg border-slate-200 focus:border-[#1D7A6C] h-10 text-sm"
+                className="pl-10 pr-10 rounded-xl border-slate-200 focus:border-[#1D7A6C] h-11 text-sm bg-slate-50/50"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
@@ -103,18 +111,19 @@ export default function LoginPage() {
 
           {/* Error */}
           {error && (
-            <div className="bg-red-50 border border-red-200 rounded-lg p-3">
-              <p className="text-red-600 text-xs">{error}</p>
+            <div className="bg-red-50 border border-red-200 rounded-xl p-3.5">
+              <p className="text-red-600 text-xs font-medium">{error}</p>
             </div>
           )}
 
-          {/* Demo Credentials Box */}
-          <div className="bg-slate-50 border border-slate-200 rounded-lg p-3">
-            <p className="text-slate-800 text-xs font-semibold mb-1">
-              🧪 For Testing / Demo
-            </p>
-            <p className="text-slate-600 text-xs">
-              Sign up first with any email, then log in here.
+          {/* Aegis Dark Slate Demo Credentials Box */}
+          <div className="bg-[#0A1118] border border-slate-800 rounded-xl p-3.5 text-white font-mono text-xs">
+            <div className="flex items-center justify-between mb-1">
+              <span className="text-teal-400 font-bold uppercase tracking-wider text-[10px]">🧪 QUICK DEMO LOGIN</span>
+              <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
+            </div>
+            <p className="text-slate-400 text-[11px]">
+              Sign up first with any email, then log in here to access policy analysis & OREVA AI.
             </p>
           </div>
 
@@ -122,12 +131,12 @@ export default function LoginPage() {
           <Button
             type="submit"
             disabled={isPending}
-            className="w-full bg-[#1D7A6C] hover:bg-[#165E53] text-white rounded-lg h-10 text-sm font-medium shadow-xs gap-2 transition-colors"
+            className="w-full bg-[#1D7A6C] hover:bg-[#165E53] text-white rounded-xl h-11 text-sm font-semibold shadow-xs gap-2 transition-all duration-200 mt-2"
           >
             {isPending ? (
               <div className="flex items-center gap-2">
                 <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                Logging in...
+                Signing In...
               </div>
             ) : (
               <>
@@ -140,13 +149,13 @@ export default function LoginPage() {
       </div>
 
       {/* Signup Link */}
-      <p className="text-center text-slate-600 text-xs">
+      <p className="text-center text-slate-600 text-xs font-sans">
         Don't have an account?{" "}
         <Link
           href="/signup"
           className="text-[#1D7A6C] font-semibold hover:underline"
         >
-          Sign up free
+          Create free account
         </Link>
       </p>
     </div>

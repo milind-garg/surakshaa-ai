@@ -37,11 +37,23 @@ export default function UploadProgress({ stage, progress }: UploadProgressProps)
   }, [messages.length]);
 
   return (
-    <div className="bg-white border border-slate-200 rounded-xl p-8 text-center space-y-6 shadow-xs">
+    <div className="bg-[#0A1118] border border-slate-800 rounded-2xl p-8 text-center space-y-6 shadow-xl text-white font-sans relative overflow-hidden">
+
+      {/* Top Terminal Status Header */}
+      <div className="flex items-center justify-between pb-4 border-b border-slate-800 text-xs font-mono">
+        <div className="flex items-center gap-2 text-slate-400">
+          <Brain className="w-4 h-4 text-teal-400 animate-pulse" />
+          <span>SURAKSHA_OCR_ENGINE_ACTIVE</span>
+        </div>
+        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-teal-500/10 border border-teal-500/20 text-teal-400 font-mono text-[10px] uppercase tracking-wider">
+          <span className="w-1.5 h-1.5 rounded-full bg-teal-400 animate-pulse" />
+          {stage === "uploading" ? "UPLOADING" : "PARSING CLAUSES"}
+        </span>
+      </div>
 
       {/* Animated Icon */}
-      <div className="relative flex items-center justify-center">
-        <div className="w-16 h-16 bg-[#1D7A6C] rounded-xl flex items-center justify-center shadow-xs">
+      <div className="relative flex items-center justify-center pt-2">
+        <div className="w-16 h-16 bg-[#1D7A6C] rounded-2xl flex items-center justify-center shadow-lg">
           {stage === "uploading" ? (
             <Upload className="w-8 h-8 text-white animate-bounce" />
           ) : (
@@ -51,26 +63,26 @@ export default function UploadProgress({ stage, progress }: UploadProgressProps)
 
         {/* Spinning ring */}
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="w-24 h-24 border-2 border-slate-200 border-t-[#1D7A6C] rounded-full animate-spin" />
+          <div className="w-24 h-24 border-2 border-slate-800 border-t-teal-400 rounded-full animate-spin" />
         </div>
       </div>
 
       {/* Stage Label */}
       <div>
-        <div className="inline-flex items-center gap-2 bg-teal-50 border border-teal-100 px-3 py-1 rounded-md mb-3">
-          <Loader2 className="w-3.5 h-3.5 text-[#1D7A6C] animate-spin" />
-          <span className="text-xs font-mono uppercase tracking-wider text-[#1D7A6C] font-semibold">
-            {stage === "uploading" ? "Uploading" : "AI Analyzing"}
+        <div className="inline-flex items-center gap-2 bg-teal-500/10 border border-teal-500/20 px-3 py-1 rounded-md mb-3">
+          <Loader2 className="w-3.5 h-3.5 text-teal-400 animate-spin" />
+          <span className="text-xs font-mono uppercase tracking-wider text-teal-300 font-semibold">
+            {stage === "uploading" ? "UPLOADING FILE" : "AI CLAUSE ANALYSIS"}
           </span>
         </div>
 
         {/* Cycling message */}
-        <p className="text-slate-900 font-bold text-base">
+        <p className="text-white font-extrabold text-lg tracking-tight">
           {messages[messageIndex]}
         </p>
 
         {stage === "processing" && (
-          <p className="text-[#1D7A6C] font-hindi text-xs mt-1 font-medium">
+          <p className="text-teal-400 font-hindi text-xs mt-1.5 font-medium">
             AI आपकी पॉलिसी पढ़ रहा है...
           </p>
         )}
@@ -78,41 +90,41 @@ export default function UploadProgress({ stage, progress }: UploadProgressProps)
 
       {/* Progress Bar */}
       <div className="space-y-2 max-w-sm mx-auto w-full">
-        <Progress value={progress} className="h-2 rounded-full bg-slate-100" />
-        <div className="flex justify-between text-xs text-slate-500 font-mono">
-          <span>Processing</span>
-          <span className="font-bold text-[#1D7A6C]">
+        <Progress value={progress} className="h-2.5 rounded-full bg-slate-800" />
+        <div className="flex justify-between text-xs text-slate-400 font-mono">
+          <span>STATUS: IN_PROGRESS</span>
+          <span className="font-bold text-teal-400">
             {progress}%
           </span>
         </div>
       </div>
 
       {/* Steps indicator */}
-      <div className="flex justify-center gap-6">
+      <div className="flex justify-center gap-8 pt-2">
         {[
-          { label: "Upload", done: progress >= 50 },
-          { label: "AI Read", done: progress >= 75 },
-          { label: "Analyze", done: progress >= 100 },
+          { label: "UPLOAD", done: progress >= 50 },
+          { label: "OCR READ", done: progress >= 75 },
+          { label: "ANALYZE", done: progress >= 100 },
         ].map((step, i) => (
           <div key={step.label} className="flex flex-col items-center gap-1">
             <div
-              className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-mono font-bold transition-colors ${
+              className={`w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-mono font-bold transition-colors ${
                 step.done
-                  ? "bg-[#1D7A6C] text-white"
-                  : "bg-slate-100 text-slate-400"
+                  ? "bg-[#1D7A6C] text-white ring-2 ring-teal-400/30"
+                  : "bg-slate-800 text-slate-500 border border-slate-700"
               }`}
             >
               {step.done ? "✓" : i + 1}
             </div>
-            <span className="text-[11px] font-mono uppercase text-slate-500">
+            <span className="text-[10px] font-mono uppercase tracking-wider text-slate-400">
               {step.label}
             </span>
           </div>
         ))}
       </div>
 
-      <p className="text-xs text-slate-400">
-        Please don't close this tab — this takes about 15–30 seconds
+      <p className="text-xs text-slate-500 font-mono pt-2 border-t border-slate-800/80">
+        Please don't close this tab — clause extraction takes about 15–30 seconds
       </p>
     </div>
   );

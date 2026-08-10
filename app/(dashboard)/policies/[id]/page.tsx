@@ -81,14 +81,19 @@ export default async function PolicyDetailPage({
       </Link>
 
       {/* Policy Header (Aegis Dark Slate Box) */}
-      <div className="bg-[#0A1118] border border-slate-800 rounded-xl p-6 text-white shadow-xl">
+      <div className="bg-[#0A1118] border border-slate-800 rounded-2xl p-6 sm:p-8 text-white shadow-xl relative overflow-hidden">
+        <div className="inline-flex items-center gap-2 rounded-md border border-slate-800 bg-slate-900/90 px-3 py-1 text-xs font-mono text-teal-400 uppercase tracking-widest mb-4">
+          <span className="flex h-2 w-2 rounded-full bg-teal-400 animate-pulse" />
+          <span>POLICY ANALYTICS REPORT • ID #{id.slice(0, 8)}</span>
+        </div>
+
         <div className="flex items-start justify-between flex-wrap gap-4">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-slate-900 border border-slate-800 rounded-lg flex items-center justify-center">
+            <div className="w-12 h-12 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-center">
               <FileText className="w-6 h-6 text-teal-400" />
             </div>
             <div>
-              <h1 className="text-xl font-bold tracking-tight text-white">
+              <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-white">
                 {analysis?.policy_name ?? policy.file_name}
               </h1>
               <p className="text-slate-400 text-xs font-mono mt-0.5">

@@ -82,29 +82,39 @@ export default async function DashboardPage() {
 
   return (
     <div className="space-y-8">
-      {/* Welcome Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-            Namaste, {firstName}! 🙏
-          </h1>
-          <p className="text-slate-500 text-sm mt-0.5">
-            Here's your insurance intelligence overview
-          </p>
-          <p className="text-xs font-hindi text-slate-400 mt-0.5">
-            आपका बीमा डैशबोर्ड
-          </p>
+      {/* Welcome Header Banner */}
+      <div className="bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8 shadow-xs relative overflow-hidden">
+        
+        {/* Monospaced Aegis Pill Badge */}
+        <div className="inline-flex items-center gap-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-mono text-slate-600 uppercase tracking-widest mb-4">
+          <span className="flex h-2 w-2 rounded-full bg-[#1D7A6C] animate-pulse" />
+          <span>AUTONOMOUS INSURANCE PORTAL • OREVA READY</span>
         </div>
-        <Link href="/upload">
-          <Button className="bg-[#1D7A6C] hover:bg-[#165E53] text-white rounded-lg gap-2 shadow-xs text-sm font-medium">
-            <Plus className="w-4 h-4" />
-            Upload New Policy
-          </Button>
-        </Link>
+
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight leading-tight">
+              Namaste, {firstName}! 🙏
+            </h1>
+            <p className="text-slate-600 text-sm sm:text-base mt-1 max-w-xl font-sans">
+              Here is your real-time policy analysis, claim readiness, and AI recommendations.
+            </p>
+            <p className="text-xs font-hindi text-[#1D7A6C] font-semibold mt-1">
+              आपका बीमा डैशबोर्ड — हिंदी और अंग्रेजी में
+            </p>
+          </div>
+          
+          <Link href="/upload" className="shrink-0">
+            <Button className="bg-[#1D7A6C] hover:bg-[#165E53] text-white rounded-xl gap-2 shadow-xs text-sm font-semibold h-11 px-5 transition-colors">
+              <Plus className="w-4.5 h-4.5" />
+              Upload New Policy
+            </Button>
+          </Link>
+        </div>
       </div>
 
-      {/* Stats Row */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Landing-Page Style 4-Column Metric Divide-Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-slate-200 border border-slate-200 bg-white rounded-2xl shadow-xs overflow-hidden">
         {[
           {
             label: "Policies Uploaded",
@@ -118,33 +128,33 @@ export default async function DashboardPage() {
           },
           {
             label: "Coverage Gaps Found",
-            value: "—",
+            value: totalPolicies > 0 ? "Active" : "—",
             icon: Shield,
           },
           {
-            label: "AI Chats",
-            value: 0,
+            label: "OREVA AI Status",
+            value: "Online",
             icon: MessageSquare,
           },
         ].map((stat) => (
-          <Card
+          <div
             key={stat.label}
-            className="p-4 border-slate-200 rounded-xl shadow-xs bg-white"
+            className="p-5 sm:p-6 bg-white hover:bg-slate-50/80 transition-colors"
           >
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-teal-50 border border-teal-100 flex items-center justify-center text-[#1D7A6C]">
+            <div className="flex items-center gap-3.5">
+              <div className="w-10 h-10 rounded-xl bg-teal-50 border border-teal-100 flex items-center justify-center text-[#1D7A6C] shrink-0">
                 <stat.icon className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-2xl font-bold text-slate-900">
+                <p className="text-2xl sm:text-3xl font-extrabold text-slate-900 font-sans tracking-tight">
                   {stat.value}
                 </p>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs font-mono uppercase tracking-wider text-slate-500 mt-0.5">
                   {stat.label}
                 </p>
               </div>
             </div>
-          </Card>
+          </div>
         ))}
       </div>
 

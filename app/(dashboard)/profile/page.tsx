@@ -305,17 +305,21 @@ function ProfileView({
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">My Profile</h1>
-          <p className="text-slate-500 mt-0.5 text-sm">
-            Your insurance intelligence profile
+          <div className="inline-flex items-center gap-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-mono text-slate-600 uppercase tracking-widest mb-3">
+            <span className="flex h-2 w-2 rounded-full bg-[#1D7A6C]" />
+            <span>INSURANCE INTELLIGENCE PROFILE</span>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">My Profile</h1>
+          <p className="text-slate-500 mt-1 text-sm">
+            Manage your personal details, financial parameters, and family coverage preferences
           </p>
-          <p className="text-xs font-hindi text-[#1D7A6C] font-medium">
-            मेरी बीमा प्रोफाइल
+          <p className="text-xs font-hindi text-[#1D7A6C] font-semibold mt-0.5">
+            आपकी व्यक्तिगत और पारिवारिक बीमा प्रोफाइल
           </p>
         </div>
         <Button
           onClick={onEdit}
-          className="bg-[#1D7A6C] hover:bg-[#165E53] text-white rounded-lg gap-2 shadow-xs text-sm font-medium"
+          className="bg-[#1D7A6C] hover:bg-[#165E53] text-white rounded-xl gap-2 shadow-xs text-sm font-semibold h-11 px-5 transition-colors"
         >
           <Edit2 className="w-4 h-4" />
           Edit Profile

@@ -189,21 +189,24 @@ export default function ChatbotPage() {
       {/* Main Chat Area */}
       <div className="flex-1 flex flex-col min-w-0 bg-slate-50">
         {/* Chat Header */}
-        <div className="bg-white border-b border-slate-200 px-6 py-3.5 flex items-center justify-between shadow-xs">
+        <div className="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between shadow-xs">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 bg-[#1D7A6C] rounded-lg flex items-center justify-center shadow-xs">
+            <div className="w-10 h-10 bg-[#1D7A6C] rounded-xl flex items-center justify-center shadow-xs">
               <Shield className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h1 className="font-bold text-slate-900 text-sm sm:text-base">
-                OREVA - Suraksha AI Assistant
-              </h1>
-              <div className="flex items-center gap-1.5">
-                <div className="w-2 h-2 bg-[#1D7A6C] rounded-full animate-pulse" />
-                <p className="text-xs text-slate-500 font-mono">
-                  Online · Powered by Google Gemini
-                </p>
+              <div className="flex items-center gap-2">
+                <h1 className="font-extrabold text-slate-900 text-base sm:text-lg tracking-tight">
+                  OREVA AI Advisor
+                </h1>
+                <span className="hidden sm:inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-teal-50 border border-teal-100 text-[#1D7A6C] font-mono text-[10px] font-semibold uppercase tracking-wider">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#1D7A6C] animate-pulse" />
+                  OREVA ONLINE · GEMINI 2.5
+                </span>
               </div>
+              <p className="text-xs text-slate-500 font-sans">
+                Real-time policy recommendations & clause clarification in English / हिंदी
+              </p>
             </div>
           </div>
 
