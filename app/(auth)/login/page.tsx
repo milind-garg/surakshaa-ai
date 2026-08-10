@@ -9,13 +9,44 @@ import { Label } from "@/components/ui/label";
 import { signIn } from "../actions";
 import toast from "react-hot-toast";
 
+import { useLanguage } from "@/context/LanguageContext";
+
+import { sanitizeEmail, isValidEmail, isValidPassword } from "@/lib/security";
+
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const { t } = useLanguage();
 
   const handleSubmit = (formData: FormData) => {
     setError(null);
+    const rawEmail = (formData.get("email") as string || "").trim();
+    const rawPassword = (formData.get("password") as string || "").trim();
+
+    if (!rawEmail || !rawPassword) {
+      const msg = t("Please enter both email and password.", "कृपया ईमेल और पासवर्ड दोनों दर्ज करें।");
+      setError(msg);
+      toast.error(msg);
+      return;
+    }
+
+    const cleanEmail = sanitizeEmail(rawEmail);
+    if (!isValidEmail(cleanEmail)) {
+      const msg = t("Please enter a valid email address (e.g. name@example.com).", "कृपया एक वैध ईमेल पता दर्ज करें (उदा. name@example.com)।");
+      setError(msg);
+      toast.error(msg);
+      return;
+    }
+
+    const passCheck = isValidPassword(rawPassword);
+    if (!passCheck.valid) {
+      const msg = passCheck.message || t("Invalid password format.", "अमान्य पासवर्ड प्रारूप।");
+      setError(msg);
+      toast.error(msg);
+      return;
+    }
+
     startTransition(async () => {
       const result = await signIn(formData);
       if (result?.error) {
@@ -34,23 +65,23 @@ export default function LoginPage() {
         <div className="flex justify-center mb-6">
           <div className="inline-flex items-center gap-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] font-mono text-slate-600 uppercase tracking-widest">
             <span className="flex h-2 w-2 rounded-full bg-[#1D7A6C]" />
-            <span>SECURE DASHBOARD ACCESS</span>
+            <span>{t("SECURE DASHBOARD ACCESS", "सुरक्षित डैशबोर्ड पहुंच")}</span>
           </div>
         </div>
 
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-12 h-12 bg-[#1D7A6C] rounded-xl flex items-center justify-center mx-auto mb-4 shadow-sm">
-            <Shield className="w-6 h-6 text-white" />
+          <div className="w-14 h-14 rounded-2xl overflow-hidden border border-slate-200 bg-white flex items-center justify-center mx-auto mb-4 shadow-sm shrink-0">
+            <img src="/logo.png" alt="Suraksha.ai Logo" className="w-full h-full object-cover" />
           </div>
           <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
-            Welcome Back
+            {t("Welcome Back", "वापस स्वागत है")}
           </h1>
           <p className="text-slate-500 text-xs mt-1 font-sans">
-            Log in to your Suraksha AI intelligence portal
-          </p>
-          <p className="text-[#1D7A6C] font-hindi text-xs mt-1 font-medium">
-            सुरक्षा एआई खाते में प्रवेश करें
+            {t(
+              "Log in to your Suraksha AI intelligence portal",
+              "सुरक्षा एआई इंटेलिजेंस पोर्टल में प्रवेश करें"
+            )}
           </p>
         </div>
 

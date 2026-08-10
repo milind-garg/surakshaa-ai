@@ -29,11 +29,14 @@ const benefits = [
   "100% free — no credit card needed",
 ];
 
+import { useLanguage } from "@/context/LanguageContext";
+
 export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isPending, startTransition] = useTransition();
+  const { t } = useLanguage();
 
   const strength = passwordStrength(password);
 
@@ -57,7 +60,7 @@ export default function SignupPage() {
         <div className="flex justify-center mb-5">
           <div className="inline-flex items-center gap-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] font-mono text-slate-600 uppercase tracking-widest">
             <span className="flex h-2 w-2 rounded-full bg-[#1D7A6C]" />
-            <span>FREE FOREVER • NO CREDIT CARD</span>
+            <span>{t("FREE FOREVER • NO CREDIT CARD", "हमेशा मुफ़्त • कोई क्रेडिट कार्ड नहीं")}</span>
           </div>
         </div>
 
@@ -67,13 +70,13 @@ export default function SignupPage() {
             <Shield className="w-6 h-6 text-white" />
           </div>
           <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
-            Create Free Account
+            {t("Create Free Account", "निःशुल्क खाता बनाएं")}
           </h1>
           <p className="text-slate-500 text-xs mt-1 font-sans">
-            Start analyzing insurance policies in seconds
-          </p>
-          <p className="text-[#1D7A6C] font-hindi text-xs mt-1 font-medium">
-            आज ही शुरू करें — बिल्कुल मुफ़्त
+            {t(
+              "Start analyzing insurance policies in seconds",
+              "कुछ ही सेकंड में बीमा पॉलिसियों का विश्लेषण शुरू करें"
+            )}
           </p>
         </div>
 

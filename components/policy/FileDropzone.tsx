@@ -6,6 +6,8 @@ import { Upload, FileText, Image, AlertCircle, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
+import { useLanguage } from "@/context/LanguageContext";
+
 interface FileDropzoneProps {
   onFilesAccepted: (files: File[]) => void;
 }
@@ -25,6 +27,7 @@ function formatBytes(bytes: number): string {
 }
 
 export default function FileDropzone({ onFilesAccepted }: FileDropzoneProps) {
+  const { t } = useLanguage();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [fileError, setFileError] = useState<string | null>(null);
 
@@ -121,15 +124,14 @@ export default function FileDropzone({ onFilesAccepted }: FileDropzoneProps) {
             </button>
           </div>
         ) : isDragActive && !isDragReject ? (
-          /* Drag Over State */
+          /* Drag Active State */
           <div className="space-y-4">
             <div className="w-16 h-16 bg-[#1D7A6C] rounded-xl flex items-center justify-center mx-auto animate-bounce">
               <Upload className="w-8 h-8 text-white" />
             </div>
             <p className="text-slate-900 font-bold text-lg">
-              Drop it here!
+              {t("Drop it here!", "यहाँ फ़ाइल छोड़ें!")}
             </p>
-            <p className="text-[#1D7A6C] font-hindi text-sm">यहाँ छोड़ें!</p>
           </div>
         ) : isDragReject ? (
           /* Drag Reject State */
@@ -138,7 +140,7 @@ export default function FileDropzone({ onFilesAccepted }: FileDropzoneProps) {
               <AlertCircle className="w-8 h-8 text-red-500" />
             </div>
             <p className="text-red-600 font-bold text-lg">
-              File not supported
+              {t("File type not supported", "फ़ाइल प्रकार समर्थित नहीं है")}
             </p>
           </div>
         ) : (
@@ -150,15 +152,12 @@ export default function FileDropzone({ onFilesAccepted }: FileDropzoneProps) {
 
             <div>
               <p className="text-lg font-bold text-slate-900">
-                Drop your policy here
+                {t("Drop your insurance policy here", "अपनी बीमा पॉलिसी यहाँ छोड़ें")}
               </p>
-              <p className="text-[#1D7A6C] font-hindi text-xs mt-0.5 font-medium">
-                पॉलिसी यहाँ छोड़ें
-              </p>
-              <p className="text-slate-500 text-xs mt-2">
-                or{" "}
+              <p className="text-slate-500 text-xs mt-2 font-sans">
+                {t("or", "या")}{" "}
                 <span className="text-[#1D7A6C] font-semibold underline underline-offset-2">
-                  browse to choose a file
+                  {t("browse files from your device", "अपने डिवाइस से फ़ाइलें ब्राउज़ करें")}
                 </span>
               </p>
             </div>

@@ -10,30 +10,32 @@ interface PolicySummaryToggleProps {
   summaryHindi: string;
 }
 
+import { useLanguage } from "@/context/LanguageContext";
+
 export default function PolicySummaryToggle({
   summaryEnglish,
   summaryHindi,
 }: PolicySummaryToggleProps) {
-  const [lang, setLang] = useState<"en" | "hi">("en");
+  const { language, setLanguage, t } = useLanguage();
 
   return (
-    <Card className="p-6 border border-slate-200 bg-white rounded-xl shadow-xs transition-all">
+    <Card className="p-6 border border-slate-200 bg-white rounded-2xl shadow-xs transition-all">
       {/* Header with toggle */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
           <Shield className="w-4 h-4 text-[#1D7A6C]" />
-          <h2 className="font-bold text-slate-900 text-base">
-            {lang === "en" ? "Policy Summary" : "पॉलिसी सारांश"}
+          <h2 className="font-extrabold text-slate-900 text-base">
+            {t("Policy Summary", "पॉलिसी सारांश")}
           </h2>
         </div>
 
         {/* Language Toggle Pill */}
-        <div className="flex items-center gap-1 bg-slate-100 rounded-md p-1">
+        <div className="flex items-center gap-1 bg-slate-100 rounded-md p-1 font-mono text-xs">
           <button
-            onClick={() => setLang("en")}
+            onClick={() => setLanguage("en")}
             className={cn(
-              "flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-mono font-medium transition-all",
-              lang === "en"
+              "flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-semibold transition-all cursor-pointer",
+              language === "en"
                 ? "bg-[#1D7A6C] text-white shadow-xs"
                 : "text-slate-500 hover:text-slate-700"
             )}
@@ -42,10 +44,10 @@ export default function PolicySummaryToggle({
             EN
           </button>
           <button
-            onClick={() => setLang("hi")}
+            onClick={() => setLanguage("hi")}
             className={cn(
-              "flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-mono font-medium transition-all",
-              lang === "hi"
+              "flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-semibold transition-all cursor-pointer font-hindi",
+              language === "hi"
                 ? "bg-[#1D7A6C] text-white shadow-xs"
                 : "text-slate-500 hover:text-slate-700"
             )}
@@ -58,24 +60,16 @@ export default function PolicySummaryToggle({
 
       {/* Summary Text */}
       <div className="relative overflow-hidden">
-        {lang === "en" ? (
-          <p className="text-slate-700 leading-relaxed text-xs sm:text-sm">
+        {language === "en" ? (
+          <p className="text-slate-700 leading-relaxed text-xs sm:text-sm font-sans">
             {summaryEnglish}
           </p>
         ) : (
-          <p className="text-slate-700 leading-relaxed font-hindi text-sm sm:text-base">
+          <p className="text-slate-700 leading-relaxed font-hindi text-sm sm:text-base font-medium">
             {summaryHindi}
           </p>
         )}
       </div>
-
-      {/* Language hint */}
-      <p className="text-xs text-slate-400 mt-3 flex items-center gap-1 font-mono">
-        <Globe className="w-3 h-3 text-slate-400" />
-        {lang === "en"
-          ? "हिंदी में पढ़ने के लिए 'हि' पर क्लिक करें"
-          : "Click 'EN' to read in English"}
-      </p>
     </Card>
   );
 }

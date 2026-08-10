@@ -140,22 +140,45 @@ export default async function PolicyDetailPage({
         )}
       </div>
 
-      {/* No Analysis Yet */}
+      {/* No Analysis Yet or Processing */}
       {!analysis ? (
-        <Card className="p-8 text-center border-amber-200 bg-amber-50 rounded-xl">
-          <AlertTriangle className="w-10 h-10 text-amber-500 mx-auto mb-3" />
-          <p className="font-bold text-amber-800 text-sm">
-            Analysis not available
-          </p>
-          <p className="text-xs text-amber-700 mt-1">
-            Please re-upload the document.
-          </p>
-          <Link href="/upload" className="mt-4 inline-block">
-            <Button className="bg-[#1D7A6C] hover:bg-[#165E53] text-white rounded-lg text-xs font-medium">
-              Re-upload Policy
-            </Button>
-          </Link>
-        </Card>
+        policy.status === "processing" || policy.status === "uploading" ? (
+          <Card className="p-8 text-center border-teal-200 bg-teal-50/50 rounded-2xl shadow-xs space-y-4">
+            <div className="w-12 h-12 bg-[#1D7A6C] rounded-2xl flex items-center justify-center mx-auto shadow-md animate-bounce">
+              <Shield className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <h2 className="font-extrabold text-slate-900 text-base">
+                AI Clause Extraction in Progress...
+              </h2>
+              <p className="text-xs text-slate-600 max-w-md mx-auto mt-1">
+                Our Gemini AI OCR engine is currently parsing coverage details, co-pay rules, and claim probability metrics for this policy.
+              </p>
+            </div>
+            <div className="flex items-center justify-center gap-3 pt-2">
+              <Link href={`/policies/${id}`}>
+                <Button className="bg-[#1D7A6C] hover:bg-[#165E53] text-white rounded-xl text-xs font-semibold shadow-xs">
+                  Refresh Analysis Status
+                </Button>
+              </Link>
+            </div>
+          </Card>
+        ) : (
+          <Card className="p-8 text-center border-amber-200 bg-amber-50 rounded-2xl">
+            <AlertTriangle className="w-10 h-10 text-amber-500 mx-auto mb-3" />
+            <p className="font-bold text-amber-800 text-sm">
+              Analysis not available
+            </p>
+            <p className="text-xs text-amber-700 mt-1">
+              Please re-upload the document to trigger AI clause extraction.
+            </p>
+            <Link href="/upload" className="mt-4 inline-block">
+              <Button className="bg-[#1D7A6C] hover:bg-[#165E53] text-white rounded-xl text-xs font-semibold">
+                Re-upload Policy
+              </Button>
+            </Link>
+          </Card>
+        )
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Left Column */}

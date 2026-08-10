@@ -1,5 +1,8 @@
+"use client";
+
 import Link from "next/link";
-import { Shield, Heart, Mail, Phone, MapPin, Sparkles } from "lucide-react";
+import { Shield, Heart, Mail, MapPin } from "lucide-react";
+import { useLanguage } from "@/context/LanguageContext";
 
 const footerLinks = {
   product: [
@@ -23,25 +26,24 @@ const footerLinks = {
 };
 
 export default function Footer() {
+  const { t } = useLanguage();
+
   return (
     <footer className="bg-slate-900 text-slate-400 border-t border-slate-800 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
           {/* Brand */}
           <div className="space-y-4">
-            <Link href="/" className="flex items-center gap-2.5 group">
-              <div className="w-8 h-8 rounded-lg bg-[#1D7A6C] flex items-center justify-center shadow-xs">
-                <Shield className="w-4 h-4 text-white" />
+            <Link href="/" className="inline-block group">
+              <div className="w-10 h-10 rounded-xl overflow-hidden border border-slate-700 bg-white flex items-center justify-center shadow-xs shrink-0">
+                <img src="/logo.png" alt="Suraksha.ai Shield Logo" className="w-full h-full object-cover" />
               </div>
-              <span className="text-xl font-bold tracking-tight text-white">
-                Suraksha<span className="text-[#1D7A6C]">.ai</span>
-              </span>
             </Link>
             <p className="text-slate-400 text-xs leading-relaxed">
-              AI-powered insurance intelligence for Indian families. Understand fine print in plain Hindi & English.
-            </p>
-            <p className="text-teal-400 text-xs font-hindi font-medium">
-              भारतीय परिवारों के लिए AI-संचालित बीमा सहायक
+              {t(
+                "AI-powered insurance intelligence for Indian families. Understand fine print clearly.",
+                "भारतीय परिवारों के लिए AI-संचालित बीमा सहायक। बारीक शर्तों को आसानी से समझें।"
+              )}
             </p>
             <div className="space-y-2 pt-2">
               <div className="flex items-center gap-2 text-slate-400 text-xs">
