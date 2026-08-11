@@ -31,20 +31,13 @@ export function useUserProfile() {
         .eq("user_id", user.id)
         .single();
 
-      let localExtended: Partial<UserProfile> = {};
-      if (typeof window !== "undefined") {
-        try {
-          const saved = localStorage.getItem(`suraksha_ext_profile_${user.id}`);
-          if (saved) localExtended = JSON.parse(saved);
-        } catch (_) {}
-      }
 
       if (error && error.code !== "PGRST116") {
         console.warn("useUserProfile: Error fetching profile:", error);
       }
-      
-      const mergedProfile = data ? { ...data, ...localExtended } : localExtended.full_name ? (localExtended as UserProfile) : null;
-      setProfile(mergedProfile);
+
+      // DB is the single source of truth — no localStorage fallback (PHI must not be stored client-side)
+      setProfile(data ?? null);
     } catch (err) {
       console.warn("useUserProfile: Failed to fetch profile:", err);
     } finally {
@@ -59,19 +52,8 @@ export function useUserProfile() {
   const updateProfile = async (updates: Partial<UserProfile>) => {
     if (!user) return { data: null, error: "Not authenticated" };
 
-    // 1. Save extended physical & lifestyle metrics locally
-    if (typeof window !== "undefined") {
-      try {
-        const extendedObj = {
-          height_cm: updates.height_cm,
-          weight_kg: updates.weight_kg,
-          bmi: updates.bmi,
-          smoker: updates.smoker,
-          exercise_frequency: updates.exercise_frequency,
-        };
-        localStorage.setItem(`suraksha_ext_profile_${user.id}`, JSON.stringify(extendedObj));
-      } catch (_) {}
-    }
+    // All profile data is persisted to the Supabase database only.
+    // No localStorage is used — PHI must not be stored in the browser.
 
     try {
       const fullPayload = {
