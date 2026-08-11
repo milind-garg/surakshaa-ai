@@ -6,7 +6,13 @@ export async function GET() {
     // await the async createClient
     const supabase = await createClient();
 
-    // Test environment variables first
+    // SECURITY: Protect this diagnostic endpoint — only authenticated users
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Test environment variables
     const envCheck = {
       supabaseUrl: !!process.env.NEXT_PUBLIC_SUPABASE_URL,
       supabaseAnonKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
@@ -47,10 +53,10 @@ export async function GET() {
     });
 
   } catch (err) {
+    console.error("test-connection error:", err);
     return NextResponse.json({
       success: false,
-      message: "Unexpected error",
-      error: String(err),
+      message: "Unexpected error during health check",
     }, { status: 500 });
   }
 }

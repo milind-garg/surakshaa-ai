@@ -99,11 +99,15 @@ def score_single():
 
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5001))
+    # SECURITY: debug=True enables Werkzeug interactive shell on exceptions (RCE vector).
+    # Set FLASK_DEBUG=true in your .env / shell for local dev only. Never in production.
+    debug_mode = os.environ.get('FLASK_DEBUG', 'false').lower() == 'true'
     print(f"\n[Suraksha AI ML Service]")
     print(f"   Running at: http://localhost:{port}")
+    print(f"   Debug mode: {'ON (dev)' if debug_mode else 'OFF (production safe)'}")
     print(f"   Routes:")
     print(f"     GET  http://localhost:{port}/health")
     print(f"     POST http://localhost:{port}/recommend")
     print(f"     POST http://localhost:{port}/score")
     print(f"\n   Press Ctrl+C to stop\n")
-    app.run(host='0.0.0.0', port=port, debug=True)
+    app.run(host='0.0.0.0', port=port, debug=debug_mode)

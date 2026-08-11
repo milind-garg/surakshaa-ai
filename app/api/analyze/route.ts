@@ -1,8 +1,13 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { checkRateLimit } from "@/lib/rateLimit";
+import { validateFileMagicNumber, extractAndParseJson } from "@/lib/security";
 
 const GEMINI_MODEL = process.env.GEMINI_MODEL ?? "gemini-2.5-flash";
+
+// Strict allowlist regex for Supabase Storage file paths — prevents path traversal
+const SAFE_FILE_PATH_REGEX = /^[a-zA-Z0-9_\-\/\.]+$/;
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,6 +20,23 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Rate Limiting — Max 10 policy analyses per 10 minutes per user
+    const rateCheck = checkRateLimit(`analyze_${user.id}`, { limit: 10, windowMs: 10 * 60 * 1000 });
+    if (!rateCheck.success) {
+      return NextResponse.json(
+        {
+          error: "Rate limit exceeded. You can analyze up to 10 policies per 10 minutes. Please wait before trying again.",
+          retryAfterMs: rateCheck.resetMs,
+        },
+        {
+          status: 429,
+          headers: {
+            "Retry-After": Math.ceil(rateCheck.resetMs / 1000).toString(),
+          },
+        }
+      );
+    }
+
     const body = await request.json();
     const { policyId, filePath, fileType, fileName } = body;
 
@@ -25,13 +47,47 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // ── File path sanitization — prevent path traversal ──────
+    if (!SAFE_FILE_PATH_REGEX.test(filePath)) {
+      console.warn(`Path traversal attempt blocked for policy ${policyId}: "${filePath}"`);
+      return NextResponse.json(
+        { error: "Invalid file path format." },
+        { status: 400 }
+      );
+    }
+
+    // ── IDOR Protection: Verify resource ownership ───────────
+    const { data: policyRecord, error: policyCheckError } = await supabase
+      .from("policies")
+      .select("id, user_id, file_path")
+      .eq("id", policyId)
+      .eq("user_id", user.id)
+      .single();
+
+    if (policyCheckError || !policyRecord) {
+      console.warn(`IDOR blocked: User ${user.id} attempted to access unauthorized policy ${policyId}`);
+      return NextResponse.json(
+        { error: "Forbidden: You do not have permission to access or analyze this policy document." },
+        { status: 403 }
+      );
+    }
+
+    // Verify requested filePath matches registered policy record file_path
+    if (policyRecord.file_path && policyRecord.file_path !== filePath) {
+      console.warn(`IDOR blocked: File path mismatch for policy ${policyId}`);
+      return NextResponse.json(
+        { error: "Forbidden: Policy document file path mismatch." },
+        { status: 403 }
+      );
+    }
+
     if (!process.env.GEMINI_API_KEY) {
       await supabase
         .from("policies")
         .update({ status: "error" })
         .eq("id", policyId);
       return NextResponse.json(
-        { error: "GEMINI_API_KEY not configured" },
+        { error: "AI service is not configured. Please contact support." },
         { status: 500 },
       );
     }
@@ -53,11 +109,38 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // ── Heap OOM Protection: Reject files > 10MB before buffering ────
+    const maxSizeBytes = 10 * 1024 * 1024; // 10MB limit
+    if (fileData.size > maxSizeBytes) {
+      console.warn(`OOM Guard blocked large file upload: ${fileData.size} bytes`);
+      await supabase
+        .from("policies")
+        .update({ status: "error" })
+        .eq("id", policyId);
+      return NextResponse.json(
+        { error: "File exceeds maximum size limit of 10MB. Please upload a smaller document." },
+        { status: 400 }
+      );
+    }
+
     const fileBuffer = await fileData.arrayBuffer();
+
+    // ── Binary Magic-Number MIME Validation ──────────────────
+    const magicCheck = validateFileMagicNumber(fileBuffer);
+    if (!magicCheck.valid) {
+      console.warn("Magic number validation failed:", magicCheck.error);
+      await supabase
+        .from("policies")
+        .update({ status: "error" })
+        .eq("id", policyId);
+      return NextResponse.json(
+        { error: magicCheck.error || "Corrupted or unsupported file format signature." },
+        { status: 400 }
+      );
+    }
+
+    const mimeType = magicCheck.mimeType;
     const base64Content = Buffer.from(fileBuffer).toString("base64");
-    const mimeType =
-      fileData.type ||
-      (filePath.endsWith(".pdf") ? "application/pdf" : "image/jpeg");
 
     console.log(
       `Processing file: ${fileName}, type: ${mimeType}, size: ${fileBuffer.byteLength} bytes`,
@@ -108,9 +191,9 @@ export async function POST(request: NextRequest) {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
     const model = genAI.getGenerativeModel({ model: GEMINI_MODEL });
 
-    // Build the content parts based on file type
-    // Build content parts
+    // ── Build content parts ───────────────────────────────────
     let contentParts: any[];
+    let uploadedFileResourceName: string | null = null;
     const fileSizeMB = fileBuffer.byteLength / (1024 * 1024);
     console.log(`File size: ${fileSizeMB.toFixed(2)} MB`);
 
@@ -154,6 +237,7 @@ export async function POST(request: NextRequest) {
         if (uploadResponse.ok) {
           const uploadData = await uploadResponse.json();
           const fileUri = uploadData.file?.uri;
+          uploadedFileResourceName = uploadData.file?.name ?? null; // e.g. "files/abc123xyz"
           if (fileUri) {
             contentParts = [
               { fileData: { mimeType: "application/pdf", fileUri } },
@@ -213,7 +297,7 @@ Return ONLY a valid JSON object with no markdown or code blocks:
   "recommendations": ["specific recommendation 1", "specific recommendation 2", "specific recommendation 3"]
 }`;
 
-    let analysisData;
+    let analysisData: any;
 
     try {
       const result = await model.generateContent([
@@ -223,20 +307,11 @@ Return ONLY a valid JSON object with no markdown or code blocks:
       let responseText = result.response.text();
       console.log("Raw Gemini response length:", responseText.length);
 
-      // Clean response
-      responseText = responseText
-        .replace(/```json\s*/gi, "")
-        .replace(/```\s*/gi, "")
-        .trim();
-
-      const jsonStart = responseText.indexOf("{");
-      const jsonEnd = responseText.lastIndexOf("}");
-      if (jsonStart !== -1 && jsonEnd !== -1) {
-        responseText = responseText.slice(jsonStart, jsonEnd + 1);
+      analysisData = extractAndParseJson<any>(responseText, null);
+      if (!analysisData || typeof analysisData !== "object") {
+        throw new Error("Failed to parse valid structured JSON analysis from Gemini model response.");
       }
-
-      analysisData = JSON.parse(responseText);
-      console.log("✅ Analysis successful:", analysisData.policy_name);
+      console.log("✅ Analysis successful:", (analysisData as any).policy_name);
     } catch (geminiErr: any) {
       console.error("Gemini error:", geminiErr?.message);
 
@@ -303,6 +378,19 @@ Return ONLY a valid JSON object with no markdown or code blocks:
           "Try uploading individual pages as images if PDF doesn't work",
         ],
       };
+    } finally {
+      // ── Cloud Cleanup: Purge temporary Gemini File API resource ─────
+      if (uploadedFileResourceName && process.env.GEMINI_API_KEY) {
+        try {
+          console.log(`Purging Gemini File API resource: ${uploadedFileResourceName}`);
+          await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/${uploadedFileResourceName}?key=${process.env.GEMINI_API_KEY}`,
+            { method: "DELETE" }
+          );
+        } catch (cleanupErr) {
+          console.warn("Gemini File API cleanup error (non-fatal):", cleanupErr);
+        }
+      }
     }
 
     // ── Save analysis ─────────────────────────────────────────
@@ -333,6 +421,15 @@ Return ONLY a valid JSON object with no markdown or code blocks:
 
     if (analysisError) {
       console.error("DB save error:", analysisError);
+      await supabase
+        .from("policies")
+        .update({ status: "error" })
+        .eq("id", policyId);
+
+      return NextResponse.json(
+        { error: "Failed to persist policy analysis result to database." },
+        { status: 500 }
+      );
     }
 
     // Update extracted text
@@ -340,24 +437,21 @@ Return ONLY a valid JSON object with no markdown or code blocks:
       .from("policies")
       .update({
         extracted_text: extractedText || "Analyzed via Gemini Vision",
-        status: analysisError ? "error" : "analyzed",
+        status: "analyzed",
       })
       .eq("id", policyId);
 
-    console.log(
-      "✅ Policy analysis complete, status:",
-      analysisError ? "error" : "analyzed",
-    );
+    console.log("✅ Policy analysis complete, status: analyzed");
 
     return NextResponse.json({
-      success: !analysisError,
+      success: true,
       policyId,
       analysis: analysisData,
     });
   } catch (err) {
     console.error("Analyze API fatal error:", err);
     return NextResponse.json(
-      { error: "Analysis failed", details: String(err) },
+      { error: "Analysis failed. Please try again later." },
       { status: 500 },
     );
   }

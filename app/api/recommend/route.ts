@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 const ML_SERVICE_URL = process.env.ML_SERVICE_URL ?? "http://localhost:5001";
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
@@ -14,6 +15,21 @@ export async function POST(request: NextRequest) {
     } = await supabase.auth.getUser();
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // Rate Limiting — Max 20 recommendation requests per 10 minutes per user
+    const rateCheck = checkRateLimit(`recommend_${user.id}`, { limit: 20, windowMs: 10 * 60 * 1000 });
+    if (!rateCheck.success) {
+      return NextResponse.json(
+        {
+          error: "Rate limit exceeded. You can request up to 20 recommendations per 10 minutes. Please wait before trying again.",
+          retryAfterMs: rateCheck.resetMs,
+        },
+        {
+          status: 429,
+          headers: { "Retry-After": Math.ceil(rateCheck.resetMs / 1000).toString() },
+        }
+      );
     }
 
     const body = await request.json();
@@ -192,7 +208,7 @@ Rules:
   } catch (err) {
     console.error("Recommend API error:", err);
     return NextResponse.json(
-      { error: "Recommendation failed", details: String(err) },
+      { error: "Recommendation failed. Please try again later." },
       { status: 500 },
     );
   }

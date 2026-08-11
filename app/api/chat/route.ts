@@ -2,6 +2,7 @@ import { createClient } from "@/lib/supabase/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
@@ -69,7 +70,40 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const { message, sessionId, history } = await request.json();
+    // Rate Limiting — Max 30 chat messages per 10 minutes per user
+    const rateCheck = checkRateLimit(`chat_${user.id}`, { limit: 30, windowMs: 10 * 60 * 1000 });
+    if (!rateCheck.success) {
+      return NextResponse.json(
+        {
+          error: "Rate limit exceeded. You can send up to 30 messages per 10 minutes. Please wait before asking OREVA again.",
+          retryAfterMs: rateCheck.resetMs,
+        },
+        {
+          status: 429,
+          headers: { "Retry-After": Math.ceil(rateCheck.resetMs / 1000).toString() },
+        }
+      );
+    }
+
+    const body = await request.json();
+    const rawMessage = typeof body?.message === "string" ? body.message : "";
+    const sessionId = typeof body?.sessionId === "string" ? body.sessionId : undefined;
+    const rawHistory = Array.isArray(body?.history) ? body.history : [];
+
+    // Clamp message input (max 2,000 chars) — prevents oversized prompt injection
+    const message = rawMessage.trim().slice(0, 2000);
+    if (!message) {
+      return NextResponse.json({ error: "Message content cannot be empty." }, { status: 400 });
+    }
+
+    // Sanitize conversation history
+    const history = rawHistory
+      .filter((h: any) => h && typeof h.content === "string" && h.content.trim().length > 0)
+      .slice(-8)
+      .map((h: any) => ({
+        role: h.role === "assistant" ? "model" : "user",
+        parts: [{ text: String(h.content).trim().slice(0, 2000) }],
+      }));
 
     // ── Fetch user profile ────────────────────────────────────────
     const { data: profile } = await supabase
@@ -310,10 +344,7 @@ ${recommendationBlock}`;
             },
           ],
         },
-        ...history.slice(-8).map((h: { role: string; content: string }) => ({
-          role: h.role === "assistant" ? "model" : "user",
-          parts: [{ text: h.content }],
-        })),
+        ...history,
       ],
       generationConfig: {
         temperature: 0.7,
@@ -351,7 +382,7 @@ ${recommendationBlock}`;
   } catch (err) {
     console.error("Chat API error:", err);
     return NextResponse.json(
-      { error: "Chat failed", details: String(err) },
+      { error: "Chat service encountered an error. Please try again." },
       { status: 500 },
     );
   }
