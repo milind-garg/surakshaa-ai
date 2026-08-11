@@ -67,18 +67,10 @@ export default function LoginPage() {
       {/* Card */}
       <div className="bg-white rounded-2xl shadow-xl p-8 border border-slate-200/80">
 
-        {/* Top Monospaced Pill Badge */}
-        <div className="flex justify-center mb-6">
-          <div className="inline-flex items-center gap-2 rounded-md border border-slate-200 bg-slate-50 px-3 py-1 text-[11px] font-mono text-slate-600 uppercase tracking-widest">
-            <span className="flex h-2 w-2 rounded-full bg-[#1D7A6C]" />
-            <span>{t("SECURE DASHBOARD ACCESS", "सुरक्षित डैशबोर्ड पहुंच")}</span>
-          </div>
-        </div>
-
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-14 h-14 rounded-2xl overflow-hidden border border-slate-200 bg-white flex items-center justify-center mx-auto mb-4 shadow-sm shrink-0">
-            <img src="/logo_option4.png" alt="Surakshaa.ai" className="w-full h-full object-contain" />
+          <div className="w-28 h-28 rounded-3xl overflow-hidden border border-slate-200 bg-white flex items-center justify-center mx-auto mb-4 shadow-sm shrink-0 p-1">
+            <img src="/logo_option4.png" alt="Surakshaa.ai" className="w-full h-full object-contain scale-110" />
           </div>
           <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
             {t("Welcome Back", "वापस स्वागत है")}

@@ -72,8 +72,8 @@ export default function SignupPage() {
 
         {/* Header */}
         <div className="text-center mb-6">
-          <div className="w-12 h-12 rounded-xl overflow-hidden border border-slate-200 bg-white flex items-center justify-center mx-auto mb-4 shadow-sm shrink-0">
-            <img src="/logo_option4.png" alt="Surakshaa.ai" className="w-full h-full object-contain" />
+          <div className="w-28 h-28 rounded-3xl overflow-hidden border border-slate-200 bg-white flex items-center justify-center mx-auto mb-4 shadow-sm shrink-0 p-1">
+            <img src="/logo_option4.png" alt="Surakshaa.ai" className="w-full h-full object-contain scale-110" />
           </div>
           <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
             {t("Create Free Account", "निःशुल्क खाता बनाएं")}

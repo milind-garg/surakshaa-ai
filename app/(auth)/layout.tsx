@@ -24,7 +24,7 @@ export default function AuthLayout({
           <div className="hidden sm:flex items-center gap-4 text-xs font-mono uppercase tracking-wider text-slate-500">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 border border-teal-100 text-[#1D7A6C] font-semibold">
               <span className="w-2 h-2 rounded-full bg-[#1D7A6C] animate-pulse" />
-              256-Bit Encrypted
+              SECURE DASHBOARD ACCESS
             </span>
           </div>
         </div>
