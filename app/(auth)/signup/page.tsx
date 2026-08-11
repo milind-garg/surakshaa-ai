@@ -2,6 +2,7 @@
 
 import { useState, useTransition } from "react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { Eye, EyeOff, User, Mail, Lock, ArrowRight, CheckCircle, Shield } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -52,7 +53,12 @@ export default function SignupPage() {
   };
 
   return (
-    <div className="relative z-10 space-y-6">
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.45, ease: [0.21, 0.47, 0.32, 0.98] }}
+      className="relative z-10 space-y-6"
+    >
       {/* Card */}
       <div className="bg-white rounded-2xl shadow-xl p-8 border border-slate-200/80">
 
@@ -66,8 +72,8 @@ export default function SignupPage() {
 
         {/* Header */}
         <div className="text-center mb-6">
-          <div className="w-12 h-12 bg-[#1D7A6C] rounded-xl flex items-center justify-center mx-auto mb-4 shadow-sm">
-            <Shield className="w-6 h-6 text-white" />
+          <div className="w-28 h-28 rounded-3xl overflow-hidden border border-slate-200 bg-white flex items-center justify-center mx-auto mb-4 shadow-sm shrink-0 p-1">
+            <img src="/logo_option4.png" alt="Surakshaa.ai" className="w-full h-full object-contain scale-110" />
           </div>
           <h1 className="text-2xl font-extrabold text-slate-900 tracking-tight">
             {t("Create Free Account", "निःशुल्क खाता बनाएं")}
@@ -229,6 +235,6 @@ export default function SignupPage() {
           Log in here
         </Link>
       </p>
-    </div>
+    </motion.div>
   );
 }

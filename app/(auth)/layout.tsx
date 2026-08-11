@@ -13,8 +13,8 @@ export default function AuthLayout({
       <header className="px-6 py-5 border-b border-slate-200/60 bg-white/80 backdrop-blur-md">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <Link href="/" className="inline-flex items-center gap-3 group">
-            <div className="w-9 h-9 rounded-xl bg-[#1D7A6C] flex items-center justify-center shadow-xs transition-transform duration-200 group-hover:scale-105">
-              <Shield className="w-5 h-5 text-white" />
+            <div className="w-9 h-9 rounded-xl overflow-hidden border border-slate-200 bg-white flex items-center justify-center shadow-xs transition-transform duration-200 group-hover:scale-105 shrink-0">
+              <img src="/logo_option4.png" alt="Surakshaa.ai" className="w-full h-full object-contain" />
             </div>
             <span className="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900">
               Suraksha<span className="text-[#1D7A6C]">.ai</span>
@@ -24,7 +24,7 @@ export default function AuthLayout({
           <div className="hidden sm:flex items-center gap-4 text-xs font-mono uppercase tracking-wider text-slate-500">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-teal-50 border border-teal-100 text-[#1D7A6C] font-semibold">
               <span className="w-2 h-2 rounded-full bg-[#1D7A6C] animate-pulse" />
-              256-Bit Encrypted
+              SECURE DASHBOARD ACCESS
             </span>
           </div>
         </div>

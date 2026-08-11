@@ -158,8 +158,8 @@ export default function DashboardNav({ user }: { user: User }) {
           </Button>
 
           <Link href="/dashboard" className="flex items-center">
-            <div className="w-10 h-10 rounded-xl overflow-hidden shadow-xs border border-slate-200 bg-white flex items-center justify-center shrink-0 hover:scale-105 transition-transform">
-              <img src="/logo.png" alt="Suraksha.ai Shield Logo" className="w-full h-full object-cover" />
+            <div className="w-14 h-14 rounded-2xl overflow-hidden shadow-xs border border-slate-200 bg-white flex items-center justify-center shrink-0 hover:scale-105 transition-transform">
+              <img src="/logo_option4.png" alt="Surakshaa.ai" className="w-full h-full object-contain scale-115" />
             </div>
           </Link>
         </div>

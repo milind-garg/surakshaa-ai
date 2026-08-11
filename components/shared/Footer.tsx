@@ -36,7 +36,7 @@ export default function Footer() {
           <div className="space-y-4">
             <Link href="/" className="inline-block group">
               <div className="w-10 h-10 rounded-xl overflow-hidden border border-slate-700 bg-white flex items-center justify-center shadow-xs shrink-0">
-                <img src="/logo.png" alt="Suraksha.ai Shield Logo" className="w-full h-full object-cover" />
+                <img src="/logo_option4.png" alt="Surakshaa.ai" className="w-full h-full object-contain" />
               </div>
             </Link>
             <p className="text-slate-400 text-xs leading-relaxed">
