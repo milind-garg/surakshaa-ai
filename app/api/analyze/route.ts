@@ -21,7 +21,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Rate Limiting — Max 10 policy analyses per 10 minutes per user
-    const rateCheck = checkRateLimit(`analyze_${user.id}`, { limit: 10, windowMs: 10 * 60 * 1000 });
+    const rateCheck = await checkRateLimit(`analyze_${user.id}`, { limit: 10, windowMs: 10 * 60 * 1000 });
     if (!rateCheck.success) {
       return NextResponse.json(
         {

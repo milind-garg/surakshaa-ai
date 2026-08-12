@@ -14,7 +14,7 @@ export async function GET() {
     }
 
     // LOW-4: Rate limit diagnostic endpoint — max 10 calls per minute per user
-    const rateCheck = checkRateLimit(`health_${user.id}`, { limit: 10, windowMs: 60 * 1000 });
+    const rateCheck = await checkRateLimit(`health_${user.id}`, { limit: 10, windowMs: 60 * 1000 });
     if (!rateCheck.success) {
       return NextResponse.json({ error: "Rate limit exceeded." }, { status: 429 });
     }

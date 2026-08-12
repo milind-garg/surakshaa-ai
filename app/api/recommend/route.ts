@@ -20,7 +20,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Rate Limiting — Max 20 recommendation requests per 10 minutes per user
-    const rateCheck = checkRateLimit(`recommend_${user.id}`, { limit: 20, windowMs: 10 * 60 * 1000 });
+    const rateCheck = await checkRateLimit(`recommend_${user.id}`, { limit: 20, windowMs: 10 * 60 * 1000 });
     if (!rateCheck.success) {
       return NextResponse.json(
         {
