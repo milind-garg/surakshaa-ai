@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import traceback
+import functools
 import os
 
 app = Flask(__name__)
@@ -14,6 +15,20 @@ _dev_origins  = ["http://localhost:3000", "http://127.0.0.1:3000"]
 _allowed_origins = (_prod_origins + _dev_origins) if _debug_mode else _prod_origins
 
 CORS(app, origins=_allowed_origins)
+
+# ── Internal Secret Auth ──────────────────────────────────────
+# CRIT-1: All ML routes require X-Internal-Secret header from the Next.js server.
+# ML_INTERNAL_SECRET must be set in the environment and match NEXT_PUBLIC_APP_URL caller.
+_ML_SECRET = os.environ.get("ML_INTERNAL_SECRET", "")
+
+def require_internal_secret(f):
+    """Decorator: rejects requests missing or with wrong X-Internal-Secret header."""
+    @functools.wraps(f)
+    def decorated(*args, **kwargs):
+        if _ML_SECRET and request.headers.get("X-Internal-Secret") != _ML_SECRET:
+            return jsonify({"error": "Forbidden"}), 403
+        return f(*args, **kwargs)
+    return decorated
 
 
 recommender = None
@@ -49,6 +64,7 @@ def health():
 
 # ── Recommendations ───────────────────────────────────────────
 @app.route('/recommend', methods=['POST'])
+@require_internal_secret
 def recommend():
     try:
         data = request.get_json()
@@ -56,7 +72,8 @@ def recommend():
             return jsonify({"error": "No data provided"}), 400
 
         profile = data.get('profile', {})
-        top_n   = int(data.get('top_n', 5))
+        # HIGH-1: Clamp top_n to prevent resource exhaustion / DoS
+        top_n   = min(max(1, int(data.get('top_n', 5))), 20)
 
         if not profile:
             return jsonify({"error": "Profile is required"}), 400
@@ -85,26 +102,44 @@ def recommend():
         })
 
     except Exception as e:
-        traceback.print_exc()
-        return jsonify({"error": str(e), "success": False}), 500
+        traceback.print_exc()  # CRIT-2: log full exception server-side only
+        return jsonify({"error": "Internal server error", "success": False}), 500
 
 
 # ── Score single profile ──────────────────────────────────────
 @app.route('/score', methods=['POST'])
+@require_internal_secret
 def score_single():
     try:
         from recommender import predict_charge, get_user_segment
         data    = request.get_json()
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
         profile = data.get('profile', {})
-        charge  = predict_charge(profile)
-        segment = get_user_segment(profile)
+        if not profile:
+            return jsonify({"error": "Profile is required"}), 400
+        # MED-3: Sanitize inputs before passing to ML functions
+        safe_profile = {
+            'age':                float(profile.get('age', 30)),
+            'gender':             str(profile.get('gender', profile.get('sex', 'male'))).lower(),
+            'bmi':                float(profile.get('bmi', 25.0)),
+            'children':           int(profile.get('children', 0)),
+            'smoker':             bool(profile.get('smoker', False)),
+            'region':             str(profile.get('region', 'north')).lower(),
+            'annual_income':      float(profile.get('annual_income', 300000)),
+            'health_conditions':  profile.get('health_conditions', []),
+            'exercise_frequency': profile.get('exercise_frequency', 'Occasionally'),
+            'occupation':         profile.get('occupation', 'White collar'),
+        }
+        charge  = predict_charge(safe_profile)
+        segment = get_user_segment(safe_profile)
         return jsonify({
             "predicted_charge": round(charge, 2),
             "user_segment":     segment,
         })
     except Exception as e:
-        traceback.print_exc()
-        return jsonify({"error": str(e)}), 500
+        traceback.print_exc()  # CRIT-2: log server-side, don't expose to client
+        return jsonify({"error": "Internal server error"}), 500
 
 
 if __name__ == '__main__':

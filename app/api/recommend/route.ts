@@ -6,6 +6,8 @@ import { checkRateLimit } from "@/lib/rateLimit";
 
 const ML_SERVICE_URL = process.env.ML_SERVICE_URL ?? "http://localhost:5001";
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+// MED-2: UUID validation for sessionId
+const UUID_REGEX = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,7 +35,16 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { requirements, sessionId } = body;
+    // HIGH-2: Sanitize + cap requirements to prevent prompt injection
+    const rawRequirements = typeof body?.requirements === "string" ? body.requirements : "";
+    const requirements = rawRequirements.trim().slice(0, 2000);
+    if (!requirements) {
+      return NextResponse.json({ error: "Requirements cannot be empty." }, { status: 400 });
+    }
+    // MED-2: Validate sessionId is a proper UUID before use
+    const sessionId = typeof body?.sessionId === "string" && UUID_REGEX.test(body.sessionId)
+      ? body.sessionId
+      : undefined;
 
     // ── Fetch user profile from DB ───────────────────────────
     const { data: profile } = await supabase
@@ -83,7 +94,11 @@ export async function POST(request: NextRequest) {
     try {
       const mlResponse = await fetch(`${ML_SERVICE_URL}/recommend`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          // CRIT-1: Send internal secret to authenticate with Flask ML service
+          "X-Internal-Secret": process.env.ML_INTERNAL_SECRET ?? "",
+        },
         body: JSON.stringify({ profile: mlProfile, top_n: 5 }),
         signal: AbortSignal.timeout(10000), // 10s timeout
       });
@@ -203,7 +218,7 @@ Rules:
       intro: finalData.intro,
       recommendations: finalData.recommendations,
       ml_used: mlRecommendations.length > 0,
-      ml_profile: mlProfile,
+      // MED-4: ml_profile removed — avoid returning PHI (health data) to browser
     });
   } catch (err) {
     console.error("Recommend API error:", err);

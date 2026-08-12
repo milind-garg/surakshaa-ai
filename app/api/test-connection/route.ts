@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { checkRateLimit } from "@/lib/rateLimit";
 
 export async function GET() {
   try {
@@ -10,6 +11,12 @@ export async function GET() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    // LOW-4: Rate limit diagnostic endpoint — max 10 calls per minute per user
+    const rateCheck = checkRateLimit(`health_${user.id}`, { limit: 10, windowMs: 60 * 1000 });
+    if (!rateCheck.success) {
+      return NextResponse.json({ error: "Rate limit exceeded." }, { status: 429 });
     }
 
     // Test environment variables

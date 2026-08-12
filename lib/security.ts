@@ -53,3 +53,69 @@ export function isValidPassword(password: string): { valid: boolean; message?: s
   }
   return { valid: true };
 }
+
+/**
+ * Binary Magic-Number MIME Validation
+ * Validates that an uploaded file's actual binary signature matches an allowed type.
+ * Prevents MIME-type spoofing (e.g. a .php file renamed to .pdf).
+ */
+export interface MagicCheckResult {
+  valid: boolean;
+  mimeType: string;
+  error?: string;
+}
+
+const MAGIC_SIGNATURES: Array<{ bytes: number[]; mime: string }> = [
+  { bytes: [0x25, 0x50, 0x44, 0x46], mime: "application/pdf" },   // %PDF
+  { bytes: [0xff, 0xd8, 0xff],       mime: "image/jpeg" },         // JPEG
+  { bytes: [0x89, 0x50, 0x4e, 0x47], mime: "image/png" },          // PNG
+  { bytes: [0x52, 0x49, 0x46, 0x46], mime: "image/webp" },         // RIFF (WebP)
+];
+
+export function validateFileMagicNumber(buffer: ArrayBuffer): MagicCheckResult {
+  const bytes = new Uint8Array(buffer);
+  for (const sig of MAGIC_SIGNATURES) {
+    if (sig.bytes.every((b, i) => bytes[i] === b)) {
+      return { valid: true, mimeType: sig.mime };
+    }
+  }
+  return {
+    valid: false,
+    mimeType: "application/octet-stream",
+    error: "File type not allowed. Only PDF, JPEG, PNG, and WebP are accepted.",
+  };
+}
+
+/**
+ * Safe JSON Extraction from LLM Responses
+ * Strips markdown fences and attempts to parse the first valid JSON object/array.
+ * Returns a typed value or the provided fallback on failure.
+ */
+export function extractAndParseJson<T>(raw: string, fallback: T): T {
+  if (!raw || typeof raw !== "string") return fallback;
+
+  // Remove markdown code fences
+  let cleaned = raw
+    .replace(/```(?:json)?\s*/gi, "")
+    .replace(/```\s*/g, "")
+    .trim();
+
+  // Try parsing the full cleaned string
+  try {
+    return JSON.parse(cleaned) as T;
+  } catch { /* continue */ }
+
+  // Try extracting the first {...} JSON object
+  const objMatch = cleaned.match(/\{[\s\S]*\}/);
+  if (objMatch) {
+    try { return JSON.parse(objMatch[0]) as T; } catch { /* continue */ }
+  }
+
+  // Try extracting the first [...] JSON array
+  const arrMatch = cleaned.match(/\[[\s\S]*\]/);
+  if (arrMatch) {
+    try { return JSON.parse(arrMatch[0]) as T; } catch { /* continue */ }
+  }
+
+  return fallback;
+}

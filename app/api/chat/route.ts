@@ -187,15 +187,29 @@ ${policies
     let mlRecommendations = null;
     if (mlApplicable) {
       try {
-        const mlBase =
-          process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000";
-        const mlResponse = await fetch(`${mlBase}/api/recommend`, {
+        // LOW-3 fix: Call ML service directly via ML_SERVICE_URL instead of routing
+        // through NEXT_PUBLIC_APP_URL (which is SSRF-adjacent if misconfigured).
+        const mlServiceUrl = process.env.ML_SERVICE_URL ?? "http://localhost:5001";
+        const mlProfile = {
+          age: 30,             // Minimal profile for intent-based chat recommendations
+          sex: "male",
+          bmi: 25.0,
+          children: 0,
+          smoker: false,
+          region: "north",
+          annual_income: 300000,
+          health_conditions: [],
+          exercise_frequency: "Occasionally",
+        };
+        const mlResponse = await fetch(`${mlServiceUrl}/recommend`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Cookie: request.headers.get("cookie") ?? "",
+            // CRIT-1: Send internal secret to authenticate with Flask ML service
+            "X-Internal-Secret": process.env.ML_INTERNAL_SECRET ?? "",
           },
-          body: JSON.stringify({ requirements: message, sessionId }),
+          body: JSON.stringify({ profile: mlProfile, top_n: 5 }),
+          signal: AbortSignal.timeout(8000),
         });
         if (mlResponse.ok) {
           const mlData = await mlResponse.json();
