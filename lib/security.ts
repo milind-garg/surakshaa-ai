@@ -13,8 +13,10 @@ export function sanitizeInput(input: string): string {
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#x27;")
-    .replace(/\//g, "&#x2F;");
+    .replace(/'/g, "&#x27;");
+  // Note: forward slash (/) is NOT encoded — it is not dangerous in HTML context
+  // and encoding it breaks display of values like "IT/Software". Apply DOMPurify
+  // at render time if you need to sanitize user-generated HTML content.
 }
 
 /**

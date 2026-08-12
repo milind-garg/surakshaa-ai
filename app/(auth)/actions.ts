@@ -150,5 +150,9 @@ export async function updatePassword(formData: FormData) {
     return { error: sanitizeInput(error.message) };
   }
 
-  return { success: "Password updated successfully! You can now log in." };
+  // LOW-4: Invalidate all existing sessions after password change.
+  // This revokes any stolen/compromised session tokens immediately.
+  await supabase.auth.signOut({ scope: "global" });
+
+  return { success: "Password updated successfully! Please log in again with your new password." };
 }

@@ -4,7 +4,17 @@ import traceback
 import os
 
 app = Flask(__name__)
-CORS(app, origins=["http://localhost:3000", "https://*.vercel.app"])
+
+# LOW-3: CORS origins driven by env var — localhost excluded in production.
+# Dev: set FLASK_DEBUG=true (localhost auto-added)
+# Prod: set ALLOWED_ORIGINS=https://surakshaa-ai.vercel.app
+_debug_mode = os.environ.get("FLASK_DEBUG", "false").lower() == "true"
+_prod_origins = [o.strip() for o in os.environ.get("ALLOWED_ORIGINS", "https://surakshaa-ai.vercel.app").split(",") if o.strip()]
+_dev_origins  = ["http://localhost:3000", "http://127.0.0.1:3000"]
+_allowed_origins = (_prod_origins + _dev_origins) if _debug_mode else _prod_origins
+
+CORS(app, origins=_allowed_origins)
+
 
 recommender = None
 
