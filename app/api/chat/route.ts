@@ -6,6 +6,25 @@ import { checkRateLimit } from "@/lib/rateLimit";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 
+/**
+ * MED-4: Sanitize profile fields before injecting into LLM system prompt.
+ * Strips newlines, carriage returns, null bytes, and zero-width characters
+ * that could be used for indirect prompt injection.
+ * Wraps value in [brackets] to clearly demarcate data boundaries from instructions.
+ */
+function sanitizeField(value: string | null | undefined, fallback = "Not provided"): string {
+  if (value == null || String(value).trim() === "") return fallback;
+  return (
+    "[" +
+    String(value)
+      .replace(/[\r\n\u0000\u200b\u200c\u200d\ufeff]/g, " ") // strip injection chars
+      .replace(/\s+/g, " ")                                   // collapse whitespace
+      .trim()
+      .slice(0, 200)                                          // hard cap per field
+    + "]"
+  );
+}
+
 // ── Detect insurance type from message ───────────────────────────────────────
 function detectInsuranceType(message: string): string | null {
   if (/car|vehicle|auto|bike|motor|two.?wheel/i.test(message)) return "vehicle";
@@ -123,15 +142,15 @@ export async function POST(request: NextRequest) {
     const userContext = profile
       ? `
 USER PROFILE:
-- Name: ${profile.full_name ?? "Not provided"}
+- Name: ${sanitizeField(profile.full_name)}
 - Age: ${profile.age ?? "Not provided"}
-- Gender: ${profile.gender ?? "Not provided"}
-- Occupation: ${profile.occupation ?? "Not provided"}
+- Gender: ${sanitizeField(profile.gender)}
+- Occupation: ${sanitizeField(profile.occupation)}
 - Annual Income: ₹${profile.annual_income ? (profile.annual_income / 100000).toFixed(1) + " Lakh" : "Not provided"}
-- Health Conditions: ${profile.health_conditions?.join(", ") || "None"}
-- Existing Policies: ${profile.existing_policies?.join(", ") || "None"}
-- Risk Appetite: ${profile.risk_appetite ?? "Medium"}
-- Preferred Language: ${profile.preferred_language ?? "English"}
+- Health Conditions: ${sanitizeField((profile.health_conditions ?? []).join(", "), "None")}
+- Existing Policies: ${sanitizeField((profile.existing_policies ?? []).join(", "), "None")}
+- Risk Appetite: ${sanitizeField(profile.risk_appetite, "Medium")}
+- Preferred Language: ${sanitizeField(profile.preferred_language, "English")}
 `
       : "User profile not complete.";
 
@@ -142,7 +161,10 @@ USER'S EXISTING POLICIES:
 ${policies
   .map((p) => {
     const a = (p as any).policy_analyses?.[0];
-    return `- ${a?.policy_name ?? p.file_name}: ${a?.policy_type ?? "unknown"}, ₹${((a?.sum_insured ?? 0) / 100000).toFixed(1)}L, Gaps: ${a?.coverage_gaps?.join(", ") ?? "unknown"}`;
+    const name = sanitizeField(a?.policy_name ?? p.file_name);
+    const type = sanitizeField(a?.policy_type, "unknown");
+    const gaps = sanitizeField((a?.coverage_gaps ?? []).join(", "), "unknown");
+    return `- ${name}: ${type}, ₹${((a?.sum_insured ?? 0) / 100000).toFixed(1)}L, Gaps: ${gaps}`;
   })
   .join("\n")}
 `
