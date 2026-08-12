@@ -42,8 +42,9 @@ export function isValidPassword(password: string): { valid: boolean; message?: s
   if (!password) {
     return { valid: false, message: "Password is required." };
   }
-  if (password.length < 6) {
-    return { valid: false, message: "Password must be at least 6 characters long." };
+  // NIST SP 800-63B: minimum 8 characters
+  if (password.length < 8) {
+    return { valid: false, message: "Password must be at least 8 characters long." };
   }
   if (password.length > 128) {
     return { valid: false, message: "Password cannot exceed 128 characters." };
